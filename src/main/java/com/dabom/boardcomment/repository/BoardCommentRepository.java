@@ -1,7 +1,6 @@
 package com.dabom.boardcomment.repository;
 
 import com.dabom.boardcomment.model.entity.BoardComment;
-import com.dabom.channelboard.model.entity.ChannelBoard;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -4,7 +4,6 @@ import com.dabom.boardcomment.model.entity.BoardComment;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Builder
