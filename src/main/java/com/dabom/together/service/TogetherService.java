@@ -111,7 +111,7 @@ public class TogetherService {
         Together together = validMasterMember(togetherIdx, memberDetailsDto);
 
         Member member = memberRepository.findById(memberIdx).orElseThrow();
-        TogetherJoinMember kickMember = togetherJoinMemberRepository.findByMemberAndTogether(member, together).orElseThrow();
+        TogetherJoinMember kickMember = togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together).orElseThrow();
         kickMember.expel();
 
         togetherJoinMemberRepository.save(kickMember);

@@ -124,9 +124,9 @@ public class TogetherController {
 
     @DeleteMapping("/{togetherIdx}/kick")
     public ResponseEntity<BaseResponse<TogetherInfoResponseDto>> kickMember(@PathVariable Integer togetherIdx,
-                                                                            @RequestParam Integer kickedMemberIdx,
+                                                                            @RequestBody TogetherKickMemberRequestDto dto,
                                                      @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
-        TogetherInfoResponseDto response = togetherService.kickTogetherMember(togetherIdx, kickedMemberIdx, memberDetailsDto);
+        TogetherInfoResponseDto response = togetherService.kickTogetherMember(togetherIdx, dto.getKickedMemberIdx(), memberDetailsDto);
         return ResponseEntity.ok(BaseResponse.of(response, HttpStatus.OK));
     }
 

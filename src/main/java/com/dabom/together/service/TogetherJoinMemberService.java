@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,6 +30,11 @@ public class TogetherJoinMemberService {
     public TogetherInfoResponseDto joinNewTogetherMember(Integer togetherIdx, MemberDetailsDto memberDetailsDto) {
         Together together = togetherRepository.findById(togetherIdx).orElseThrow();
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
+        Optional<TogetherJoinMember> optional = togetherJoinMemberRepository.findByMemberAndTogether(member, together);
+        if(optional.isPresent()) {
+            return TogetherInfoResponseDto.toDto(together);
+        }
+
         TogetherJoinMember entity = TogetherJoinMember.builder()
                 .member(member)
                 .together(together)
@@ -47,15 +53,19 @@ public class TogetherJoinMemberService {
         Together together = togetherRepository.findById(togetherIdx).orElseThrow();
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
         TogetherJoinMember joinMember =
-                togetherJoinMemberRepository.findByMemberAndTogether(member, together).orElseThrow();
+                togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together).orElseThrow();
 
-        return TogetherInfoResponseDto.toDto(together);
+        return TogetherInfoResponseDto.toDtoInJoin(together, member);
     }
 
     @Transactional
     public TogetherInfoResponseDto joinTogetherWithCodeMember(Integer togetherIdx, TogetherJoinWithCodeRequestDto dto, MemberDetailsDto memberDetailsDto) {
         Together together = togetherRepository.findById(togetherIdx).orElseThrow();
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
+        Optional<TogetherJoinMember> optional = togetherJoinMemberRepository.findByMemberAndTogether(member, together);
+        if(optional.isPresent()) {
+            return TogetherInfoResponseDto.toDto(together);
+        }
 
         TogetherJoinMember entity = toEntity(together, member);
         validInvitedCode(dto, together);
@@ -65,7 +75,7 @@ public class TogetherJoinMemberService {
 
     public TogetherListResponseDto getTogethersFromMember(MemberDetailsDto memberDetailsDto) {
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
-        List<TogetherJoinMember> togethers = togetherJoinMemberRepository.findByMember(member);
+        List<TogetherJoinMember> togethers = togetherJoinMemberRepository.findByMemberAndIsDeleteFalse(member);
         List<Together> togetherList = togethers.stream()
                 .map(TogetherJoinMember::getTogether)
                 .toList();
@@ -82,7 +92,7 @@ public class TogetherJoinMemberService {
     public TogetherJoinInfoResponseDto loginTogetherMember(Integer togetherIdx, Member member) {
         Together together = togetherRepository.findById(togetherIdx).orElseThrow();
         TogetherJoinMember togetherJoinMember
-                = togetherJoinMemberRepository.findByMemberAndTogether(member, together).orElseThrow();
+                = togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together).orElseThrow();
 
         return TogetherJoinInfoResponseDto.toDto(together);
     }
@@ -93,7 +103,7 @@ public class TogetherJoinMemberService {
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
 
         TogetherJoinMember togetherJoinMember
-                = togetherJoinMemberRepository.findByMemberAndTogether(member, together).orElseThrow();
+                = togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together).orElseThrow();
         togetherJoinMember.leaveTogether();
 
         togetherJoinMemberRepository.save(togetherJoinMember);

@@ -42,7 +42,7 @@ public class TogetherJoinMember {
     }
 
     public void leaveTogether() {
-        this.isJoin = true;
+        this.isDelete = true;
     }
 
     public void expel() {
