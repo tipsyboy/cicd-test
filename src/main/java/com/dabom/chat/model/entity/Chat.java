@@ -27,11 +27,11 @@ public class Chat extends BaseEntity {
     private ChatRoom room;
 
     @ManyToOne
-    @JoinColumn(name = "sender_idx", nullable = false)
+    @JoinColumn(name = "sender", nullable = false)
     private Member sender;
 
     @ManyToOne
-    @JoinColumn(name = "recipient_idx", nullable = false)
+    @JoinColumn(name = "recipient", nullable = false)
     private Member recipient;
 
     @Column(nullable = false)
@@ -56,12 +56,12 @@ public class Chat extends BaseEntity {
         this.isDeleted = true;
     }
 
-    public static Chat from(ChatMessageDto messageDto,ChatRoom room,Member sender,Member recipient) {
+    public static Chat from(ChatMessageDto messageDto, ChatRoom room) {
         return Chat.builder()
                 .message(messageDto.getMessage())
                 .room(room)
-                .sender(sender)
-                .recipient(recipient)
+                .sender(room.getMember1())
+                .recipient(room.getMember2())
                 .build();
     }
 }
