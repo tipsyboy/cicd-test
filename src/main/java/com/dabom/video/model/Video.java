@@ -1,6 +1,7 @@
 package com.dabom.video.model;
 
 import com.dabom.common.BaseEntity;
+import com.dabom.likes.model.likes.Likes;
 import com.dabom.score.model.entity.Score;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,6 +32,7 @@ public class Video extends BaseEntity {
 
     private String savedPath; // 실제 저장된 경로 (로컬 경로 or S3 URL or m3u8 경로)
     private Long savedSize; // 파일 크기 (bytes)
+    private Integer likesCount;
 
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
@@ -38,6 +40,9 @@ public class Video extends BaseEntity {
     @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
     private List<Score> scoresList;     // 평점 리스트
     private Long score;                 // 평점
+
+    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
+    private List<Likes> likesList;
 
 
     @Builder
@@ -62,5 +67,13 @@ public class Video extends BaseEntity {
 
     public void updateSavedPath(String savedPath) {
         this.savedPath = savedPath;
+    }
+
+    public void decLikesCount() {
+        this.likesCount = this.likesCount - 1;
+    }
+
+    public void incLikesCount() {
+        this.likesCount = this.likesCount + 1;
     }
 }
