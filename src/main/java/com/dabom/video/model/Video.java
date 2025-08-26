@@ -1,11 +1,14 @@
 package com.dabom.video.model;
 
 import com.dabom.common.BaseEntity;
+import com.dabom.score.model.entity.Score;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -31,6 +34,11 @@ public class Video extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
+
+    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
+    private List<Score> scoresList;     // 평점 리스트
+    private Long score;                 // 평점
+
 
     @Builder
     public Video(String originalFilename, String originalPath, Long originalSize, String contentType, VideoStatus status) {

@@ -9,7 +9,6 @@ import com.dabom.chat.model.entity.ChatRoom;
 import com.dabom.chat.repository.ChatRepository;
 import com.dabom.chat.repository.ChatRoomRepository;
 import com.dabom.common.SliceBaseResponse;
-import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import lombok.RequiredArgsConstructor;
@@ -93,26 +92,12 @@ public class ChatService {
     }
 
     public void sendMessage(ChatMessageDto messageDto) {
-
         Optional<ChatRoom> chatRoomResult = chatRoomRepository.findById(messageDto.getRoomIdx());
-
         ChatRoom chatRoom = null;
         if (chatRoomResult.isPresent()) {
             chatRoom = chatRoomResult.get();
         }
-
-        Member recipient = null;
-        Optional<Member> recipientResult = memberRepository.findById(messageDto.getRecipientIdx());
-        if (recipientResult.isPresent()) {
-            recipient = recipientResult.get();
-        }
-
-        Member sender = null;
-        Optional<Member> senderResult = memberRepository.findById(messageDto.getSenderIdx());
-        if (senderResult.isPresent()) {
-            sender = senderResult.get();
-        }
-        chatRepository.save(Chat.from(messageDto, chatRoom, sender, recipient));
+        chatRepository.save(Chat.from(messageDto, chatRoom));
     }
 
 
