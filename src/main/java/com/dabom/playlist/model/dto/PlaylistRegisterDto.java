@@ -2,19 +2,20 @@ package com.dabom.playlist.model.dto;
 
 import com.dabom.member.model.entity.Member;
 import com.dabom.playlist.model.entity.Playlist;
-import com.dabom.video.model.Video;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
 public class PlaylistRegisterDto {
     private String playlistTitle;
+    private List<Integer> videoIds;
 
-    public Playlist toEntity(Video video, Member member){
+    public Playlist toEntity(Member member){
         return Playlist.builder()
                 .playlistTitle(this.playlistTitle)
-                .video(video)
                 .member(member)
                 .build();
     }

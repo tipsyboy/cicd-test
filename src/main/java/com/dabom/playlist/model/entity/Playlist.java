@@ -1,5 +1,6 @@
 package com.dabom.playlist.model.entity;
 
+import com.dabom.common.BaseEntity;
 import com.dabom.member.model.entity.Member;
 import com.dabom.video.model.Video;
 import jakarta.persistence.*;
@@ -8,40 +9,32 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Playlist {
+public class Playlist extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
     private String playlistTitle;
-    private Boolean isDeleted;
 
-    @ManyToOne
-    @JoinColumn(name = "video_idx")
-    private Video video;
+    @OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)
+    private List<PlaylistItem> items = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private Member member;
 
     @Builder
-    public Playlist(String playlistTitle, Boolean isDeleted, Video video, Member member) {
+    public Playlist(String playlistTitle, Member member) {
         this.playlistTitle = playlistTitle;
-        this.isDeleted = isDeleted;
-        this.video = video;
         this.member = member;
 
-    }
-
-    public void delete() {
-        this.isDeleted = true;
-    }
-
-    public void updateContent(String playlistTitle, Video video) {
-        this.playlistTitle = playlistTitle;
-        this.video = video;
     }
 
 }
