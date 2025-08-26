@@ -2,6 +2,7 @@ package com.dabom.member.model.entity;
 
 import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.common.BaseEntity;
+import com.dabom.likes.model.likes.Likes;
 import com.dabom.score.model.entity.Score;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -44,6 +45,9 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY)
     private List<Score> receivedChannelScores; // 평점 리스트
     private Long score;                        // 평점
+
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY)
+    private List<Likes> likesList;
 
     private Long sumScore;
     private Long sumScoreMember;
