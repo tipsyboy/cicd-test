@@ -1,4 +1,4 @@
-package com.dabom.video.service;
+package com.dabom.video.service.local;
 
 
 import com.dabom.video.model.Video;
@@ -19,9 +19,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
-public class VideoUploadService {
+@RequiredArgsConstructor
+public class VideoLocalUploadService {
 
     private static final String VIDEO_TEMP_DIR = "temp/";
 

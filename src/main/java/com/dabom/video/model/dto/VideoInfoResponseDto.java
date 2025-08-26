@@ -25,12 +25,12 @@ public class VideoInfoResponseDto {
         this.savedPath = savedPath;
     }
 
-    public static VideoInfoResponseDto toDto(Video entity) {
+    public static VideoInfoResponseDto toDto(Video entity, String savedPath) {
         return VideoInfoResponseDto.builder()
                 .idx(entity.getIdx())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
-                .savedPath(entity.getSavedPath())
+                .savedPath(savedPath)
                 .build();
     }
 }

@@ -1,7 +1,6 @@
 package com.dabom.video.repository;
 
 import com.dabom.video.model.Video;
-import com.dabom.video.model.VideoStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
