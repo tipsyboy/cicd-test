@@ -12,8 +12,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import java.security.Principal;
@@ -39,7 +39,7 @@ public class TogetherChatController {
         String destination = "/topic/together/" + togetherId; // 토픽 키
         int userCount = topicSessions.getOrDefault(destination, Collections.emptySet()).size();
 
-        TogetherChatResponseDto res = TogetherChatResponseDto.toDtoBySend(memberInfo.name(), message, userCount);
+        TogetherChatResponseDto res = TogetherChatResponseDto.toDtoBySend(memberInfo.name(), message, userCount, memberInfo.id());
 
         messagingTemplate.convertAndSend("/topic/together/" + togetherId, res);
     }
@@ -66,5 +66,31 @@ public class TogetherChatController {
 
             messagingTemplate.convertAndSend(destination, welcome);
         }
+    }
+
+    @EventListener
+    public void handleDisconnectEvent(SessionDisconnectEvent event) {
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+        String sessionId = headerAccessor.getSessionId();
+        Principal userPrincipal = headerAccessor.getUser();
+
+        if (userPrincipal == null) {
+            return; // 인증정보 없으면 종료
+        }
+
+        Authentication authentication = (Authentication) userPrincipal;
+        MemberDetailsDto memberDetailsDto = (MemberDetailsDto) authentication.getPrincipal();
+        Integer memberId = memberDetailsDto.getIdx();
+
+        // 연결된 모든 토픽에 대해 해당 멤버 아이디 제거
+        topicSessions.forEach((topic, memberSet) -> {
+            boolean removed = memberSet.remove(memberId);
+            if (removed) {
+                // 접속자 수 업데이트 후 알림 등 추가 작업 가능
+                int updatedUserCount = memberSet.size();
+//                TogetherChatResponseDto leaveMsg = TogetherChatResponseDto.toDtoBySend(memberDetailsDto.getName(), updatedUserCount);
+                messagingTemplate.convertAndSend(topic);
+            }
+        });
     }
 }
