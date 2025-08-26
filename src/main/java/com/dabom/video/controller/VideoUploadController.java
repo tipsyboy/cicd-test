@@ -1,16 +1,18 @@
 package com.dabom.video.controller;
 
 import com.dabom.common.BaseResponse;
-import com.dabom.video.service.VideoEncodingService;
-import com.dabom.video.service.VideoUploadService;
+import com.dabom.video.model.dto.PresignedUrlRequestDto;
+import com.dabom.video.model.dto.PresignedUrlResponseDto;
+import com.dabom.video.service.local.VideoLocalUploadService;
+import com.dabom.video.service.s3.VideoS3UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
 
 
 @Slf4j
@@ -19,17 +21,18 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class VideoUploadController {
 
-    private final VideoUploadService videoUploadService;
+    private final VideoLocalUploadService videoUploadService;
+    private final VideoS3UploadService videoS3UploadService;
 
     @PostMapping("/upload")
     public ResponseEntity<Integer> upload(@RequestPart MultipartFile file) throws IOException {
         return ResponseEntity.ok(videoUploadService.upload(file));
     }
 
-    // TODO: 인코딩 요청시 뭐 줄게 없는데 ??
-//    @PostMapping("/encode/{videoIdx}")
-//    public ResponseEntity<Void> encode(@PathVariable Integer videoIdx) throws IOException, InterruptedException {
-//        videoEncodingService.addEncodingJob(videoIdx);
-//        return ResponseEntity.ok(null);
-//    }
+    @PostMapping("/presigned")
+    public ResponseEntity<BaseResponse<PresignedUrlResponseDto>> getPresignedUrl(@RequestBody PresignedUrlRequestDto requestDto) {
+        PresignedUrlResponseDto response = videoS3UploadService.generatePresignedUrl(requestDto);
+        return ResponseEntity.ok(BaseResponse.of(response, HttpStatus.OK));
+    }
+
 }

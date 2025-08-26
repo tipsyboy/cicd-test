@@ -1,4 +1,4 @@
-package com.dabom.video.utils;
+package com.dabom.video.service.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,15 +39,7 @@ public class FfmpegEncoder {
             if (exitCode != 0) {
                 log.error("Video 인코딩 실패 (exitCode={})", exitCode);
             }
-
-            String localPath = encodingDir.resolve(INDEX_FILE_NAME).toString();
-            String webPath = localPath
-                    .replace("\\", "/")  // 백슬래시를 슬래시로 변환
-                    .replaceFirst("^videos/", "/hls/");  // videos/ 를 /hls/ 로 변환
-
-            log.info("인코딩 완료. 웹 경로: {}", webPath);
-            return webPath;
-
+            return encodingDir.toString();
         } catch (Exception e) {
             log.error("Video 인코딩 중 예외 발생", e);
         }
