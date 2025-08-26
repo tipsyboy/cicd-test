@@ -2,9 +2,9 @@ package com.dabom.channelboard.model.entity;
 
 import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.common.BaseEntity;
+import com.dabom.member.model.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
-import com.dabom.member.model.entity.Member;
 
 import java.util.List;
 
