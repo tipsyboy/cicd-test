@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class ImageController {
     @Operation(
             summary = "단일 이미지 업로드",
             description = "지정한 디렉토리에 단일 이미지를 업로드합니다.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            requestBody = @RequestBody(
                     description = "업로드할 이미지 파일과 디렉토리",
                     required = true,
                     content = @Content(
@@ -68,13 +69,14 @@ public class ImageController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("directory") String directory) throws IOException {
         ImageUploadResponseDto response = imageService.uploadSingleImage(file, directory);
+        System.out.println(response);
         return ResponseEntity.ok(BaseResponse.of(response, HttpStatus.OK, "이미지 업로드 성공"));
     }
 
     @Operation(
             summary = "다중 이미지 업로드",
             description = "지정한 디렉토리에 여러 이미지를 업로드합니다.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            requestBody = @RequestBody(
                     description = "업로드할 이미지 파일 목록과 디렉토리",
                     required = true,
                     content = @Content(

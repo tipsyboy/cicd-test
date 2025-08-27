@@ -9,6 +9,10 @@ import lombok.Getter;
 @Builder
 @Schema(description = "이미지 업로드 응답 DTO")
 public class ImageUploadResponseDto {
+
+    @Schema(description = "파일idx", example = "123")
+    private Integer idx;
+
     @Schema(description = "원본 파일 이름", example = "example.jpg")
     private String originalName;
 
