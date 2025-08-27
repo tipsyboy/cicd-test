@@ -6,8 +6,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -23,6 +26,10 @@ public class Together {
     private Boolean isOpen;
     private Boolean isDelete;
     private String invitedCode;
+
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "CHAR(36) DEFAULT (UUID())", updatable = false, nullable = false)
+    private UUID code;
 
     @ManyToOne
     @JoinColumn(name = "master_idx")
