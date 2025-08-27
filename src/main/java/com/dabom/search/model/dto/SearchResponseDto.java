@@ -16,7 +16,7 @@ public class SearchResponseDto {
     //    private String duration;
 //    private String views;
 //    private Double rating;
-    private Boolean isVisibility;
+    private Boolean isPublic;
     private Integer uploadedAt;
     private ChannelInfo channel;
 
@@ -46,7 +46,7 @@ public class SearchResponseDto {
 //                .duration(formatDuration(video.getDuration()))
 //                .views(formatViews(video.getViewCount()))
 //                .rating(video.getRating())
-                .isVisibility(video.isVisibility())
+                .isPublic(video.isPublic())
                 .uploadedAt(calculateDaysAgo(video.getCreatedAt()))
                 .channel(ChannelInfo.builder()
 //                        .email(video.getChannel().getIdx())

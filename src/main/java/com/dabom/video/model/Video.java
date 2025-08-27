@@ -22,7 +22,7 @@ public class Video extends BaseEntity {
 
     private String title;
     private String description;
-    private boolean isVisibility;
+    private boolean isPublic;
 
     private String originalFilename;  // 업로드한 원본 파일 이름 (예: user_uploaded.mp4)
     private String originalPath;
@@ -58,10 +58,10 @@ public class Video extends BaseEntity {
         this.videoStatus = status;
     }
 
-    public void mappingVideoMetadata(String title, String description, boolean isVisibility) {
+    public void mappingVideoMetadata(String title, String description, boolean isPublic) {
         this.title = title;
         this.description = description;
-        this.isVisibility = isVisibility;
+        this.isPublic = isPublic;
         this.videoStatus = VideoStatus.ENCODING_PENDING;
     }
 
