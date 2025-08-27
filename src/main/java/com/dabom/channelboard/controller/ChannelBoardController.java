@@ -136,8 +136,9 @@ public class ChannelBoardController {
             }
     )
     @GetMapping("/read/{boardIdx}")
-    public ResponseEntity<BaseResponse<ChannelBoardReadResponseDto>> read(@PathVariable Integer boardIdx) {
-        ChannelBoardReadResponseDto result = channelBoardService.read(boardIdx);
+    public ResponseEntity<BaseResponse<ChannelBoardReadResponseDto>> read(@PathVariable Integer boardIdx,
+                                                                          @AuthenticationPrincipal MemberDetailsDto memberDetailsDto ) {
+        ChannelBoardReadResponseDto result = channelBoardService.read(boardIdx, memberDetailsDto);
         if (result == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(BaseResponse.of(null, HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));

@@ -2,6 +2,7 @@ package com.dabom.channelboard.model.entity;
 
 import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.common.BaseEntity;
+import com.dabom.likes.model.likes.Likes;
 import com.dabom.member.model.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,7 +19,10 @@ public class ChannelBoard extends BaseEntity {
     private Integer idx;
     private String title;
     private String contents;
-    private Integer likesCount;
+
+    @Column(name = "likes_count", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer likesCount = 0;
+
     @Setter
     private Boolean isDeleted;
 
@@ -30,11 +34,13 @@ public class ChannelBoard extends BaseEntity {
         this.contents = contents;
         this.isDeleted = false;
         this.channel = channel;
-        this.likesCount = 0;
     }
 
     @OneToMany(mappedBy = "channelBoard")
     private List<BoardComment> boardCommentList;
+
+    @OneToMany(mappedBy = "channelBoard")
+    private List<Likes> likesList;
 
     @ManyToOne
     @JoinColumn(name = "member_idx")
