@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AddVideoRequestDto {
+public class AddVideoDto {
     private Integer playlistIdx;
     private Integer videoIdx;
 }
