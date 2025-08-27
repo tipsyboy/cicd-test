@@ -10,10 +10,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Table(name = "scores")  // 테이블 이름 명시
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "scores")  // 테이블 이름 명시
 public class Score extends BaseEntity {
 
     @Id

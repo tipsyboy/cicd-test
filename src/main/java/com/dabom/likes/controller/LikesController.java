@@ -22,7 +22,9 @@ public class LikesController {
     public ResponseEntity<BaseResponse<Void>> handleBoardCommentLike(
             @AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
             @PathVariable Integer idx) {
+
         likesService.handleBoardCommentLike(memberDetailsDto, idx);
+
 
         return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
     }

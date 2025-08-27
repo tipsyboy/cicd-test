@@ -19,6 +19,7 @@ import java.util.Optional;
 public class LikesService {
     private final LikesRepository likesRepository;
     private final MemberRepository memberRepository;
+
     private final BoardCommentRepository boardCommentRepository;
     private final ChannelBoardRepository channelBoardRepository;
 
@@ -59,4 +60,5 @@ public class LikesService {
         }
         channelBoardRepository.save(channelBoard);
     }
+
 }
