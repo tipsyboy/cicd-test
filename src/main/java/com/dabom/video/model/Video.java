@@ -37,12 +37,11 @@ public class Video extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
 
-    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
-    private List<Score> scoresList;     // 평점 리스트
-    private Long score;                 // 평점
-
-    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
-    private List<Likes> likesList;
+    private Long totalRatingCount = 0L; // 총 평가한 사람 수
+    private Long totalScore = 0L; // 총 점수
+    private double averageScore = 0; // 평점 평균
+//    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
+//    private List<Score> scoresList;     // 평점 리스트
 
 
     @Builder
@@ -69,11 +68,9 @@ public class Video extends BaseEntity {
         this.savedPath = savedPath;
     }
 
-    public void decLikesCount() {
-        this.likesCount = this.likesCount - 1;
-    }
-
-    public void incLikesCount() {
-        this.likesCount = this.likesCount + 1;
+    public void addScore(Long newScore) {
+        this.totalRatingCount++;
+        this.totalScore += newScore;
+        this.averageScore = ((this.averageScore * (this.totalRatingCount - 1)) + newScore.doubleValue()) / this.totalRatingCount;
     }
 }
