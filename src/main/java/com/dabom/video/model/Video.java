@@ -36,6 +36,7 @@ public class Video extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
 
+
     private Long totalRatingCount = 0L; // 총 평가한 사람 수
     private Long totalScore = 0L; // 총 점수
     private double averageScore = 0; // 평점 평균

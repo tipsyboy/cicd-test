@@ -17,6 +17,7 @@ public class BoardComment extends BaseEntity {
     private Integer idx;
     private String content;
     private Boolean isDeleted;
+    private Integer likesCount;
 
     @ManyToOne
     @JoinColumn(name = "board_idx")
@@ -27,6 +28,7 @@ public class BoardComment extends BaseEntity {
         this.content = content;
         this.channelBoard = channelBoard;
         this.isDeleted = false;
+        this.likesCount = 0;
     }
 
     public void delete() {
@@ -37,4 +39,11 @@ public class BoardComment extends BaseEntity {
         this.content = content;
     }
 
+    public void decrementLikeCount() {
+        this.likesCount = this.likesCount - 1;
+    }
+
+    public void incrementLikeCount() {
+        this.likesCount = this.likesCount + 1;
+    }
 }
