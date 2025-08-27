@@ -1,15 +1,11 @@
 package com.dabom.video.model;
 
 import com.dabom.common.BaseEntity;
-import com.dabom.likes.model.likes.Likes;
-import com.dabom.score.model.entity.Score;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @Entity
@@ -23,6 +19,9 @@ public class Video extends BaseEntity {
     private String title;
     private String description;
     private boolean isPublic;
+
+    @Enumerated(EnumType.STRING)
+    private VideoTag videoTag;
 
     private String originalFilename;  // 업로드한 원본 파일 이름 (예: user_uploaded.mp4)
     private String originalPath;
@@ -40,12 +39,11 @@ public class Video extends BaseEntity {
     private Long totalRatingCount = 0L; // 총 평가한 사람 수
     private Long totalScore = 0L; // 총 점수
     private double averageScore = 0; // 평점 평균
-//    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
-//    private List<Score> scoresList;     // 평점 리스트
 
 
     @Builder
-    public Video(String originalFilename, String originalPath, Long originalSize, String contentType, VideoStatus status) {
+    public Video(String originalFilename, String originalPath, Long originalSize,
+                 String contentType, VideoStatus status) {
         this.originalFilename = originalFilename;
         this.originalPath = originalPath;
         this.originalSize = originalSize;
@@ -57,11 +55,12 @@ public class Video extends BaseEntity {
         this.videoStatus = status;
     }
 
-    public void mappingVideoMetadata(String title, String description, boolean isPublic) {
+    public void mappingVideoMetadata(String title, String description, boolean isPublic, VideoTag videoTag) {
         this.title = title;
         this.description = description;
         this.isPublic = isPublic;
         this.videoStatus = VideoStatus.ENCODING_PENDING;
+        this.videoTag = videoTag;
     }
 
     public void updateSavedPath(String savedPath) {
