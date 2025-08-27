@@ -53,12 +53,11 @@ public class TogetherController {
         return ResponseEntity.ok(BaseResponse.of(togetherListResponseDto, HttpStatus.OK));
     }
 
-    @PostMapping("{togetherIdx}/code")
-    public ResponseEntity<BaseResponse<TogetherInfoResponseDto>> joinTogetherWithCode(@PathVariable Integer togetherIdx,
-                                                               @RequestBody TogetherJoinWithCodeRequestDto dto,
+    @PostMapping("/code")
+    public ResponseEntity<BaseResponse<TogetherInfoResponseDto>> joinTogetherWithCode(@RequestBody TogetherJoinWithCodeRequestDto dto,
                                                                @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
         TogetherInfoResponseDto responseDto =
-                togetherJoinMemberService.joinTogetherWithCodeMember(togetherIdx, dto, memberDetailsDto);
+                togetherJoinMemberService.joinTogetherWithCodeMember(dto, memberDetailsDto);
         return ResponseEntity.ok(BaseResponse.of(responseDto, HttpStatus.OK));
     }
 
