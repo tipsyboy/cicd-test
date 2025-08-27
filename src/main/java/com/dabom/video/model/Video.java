@@ -41,10 +41,6 @@ public class Video extends BaseEntity {
     private List<Score> scoresList;     // 평점 리스트
     private Long score;                 // 평점
 
-    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
-    private List<Likes> likesList;
-
-
     @Builder
     public Video(String originalFilename, String originalPath, Long originalSize, String contentType, VideoStatus status) {
         this.originalFilename = originalFilename;

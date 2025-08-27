@@ -6,6 +6,7 @@ import com.dabom.member.model.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.net.Inet4Address;
 import java.util.List;
 
 @Entity
@@ -17,6 +18,7 @@ public class ChannelBoard extends BaseEntity {
     private Integer idx;
     private String title;
     private String contents;
+    private Integer likesCount;
     @Setter
     private Boolean isDeleted;
 
@@ -28,6 +30,7 @@ public class ChannelBoard extends BaseEntity {
         this.contents = contents;
         this.isDeleted = false;
         this.channel = channel;
+        this.likesCount = 0;
     }
 
     @OneToMany(mappedBy = "channelBoard")
@@ -40,6 +43,14 @@ public class ChannelBoard extends BaseEntity {
     public void update(String title,String contents) {
         this.title = title;
         this.contents = contents;
+    }
+
+    public void decrementLikeCount() {
+        this.likesCount = this.likesCount - 1;
+    }
+
+    public void incrementLikeCount() {
+        this.likesCount = this.likesCount + 1;
     }
 
 }

@@ -25,6 +25,8 @@ public class ChannelBoardReadResponseDto {
     @Schema(description = "댓글 개수", example = "5")
     private Integer commentCount;
 
+    private Integer likesCount;
+
     public static ChannelBoardReadResponseDto from(ChannelBoard entity) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -33,10 +35,9 @@ public class ChannelBoardReadResponseDto {
                 .title(entity.getTitle())
                 .contents(entity.getContents())
                 .createdAt(entity.getCreatedAt().format(formatter))
-                .commentCount(0) // 기본값
+                .commentCount(0)
                 .build();
     }
-
 
     public static ChannelBoardReadResponseDto fromWithCommentCount(ChannelBoard entity, Long commentCount) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -47,8 +48,6 @@ public class ChannelBoardReadResponseDto {
                 .contents(entity.getContents())
                 .createdAt(entity.getCreatedAt().format(formatter))
                 .commentCount(commentCount.intValue())
-
-
                 .build();
     }
 }

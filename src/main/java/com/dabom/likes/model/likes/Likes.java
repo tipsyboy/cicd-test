@@ -1,5 +1,7 @@
 package com.dabom.likes.model.likes;
 
+import com.dabom.boardcomment.model.entity.BoardComment;
+import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.member.model.entity.Member;
 import com.dabom.video.model.Video;
 import com.dabom.videocomment.model.entity.VideoComment;
@@ -28,6 +30,12 @@ public class Likes {
     private VideoComment videoComment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_idx")
-    private Video video;
+    @JoinColumn(name = "channelBoard_idx")
+    private ChannelBoard channelBoard ;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "boardComment_idx")
+    private BoardComment boardComment;
+
+
 }
