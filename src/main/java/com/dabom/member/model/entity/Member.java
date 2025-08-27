@@ -4,6 +4,7 @@ import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.common.BaseEntity;
 import com.dabom.likes.model.likes.Likes;
 import com.dabom.score.model.entity.Score;
+import com.dabom.video.model.Video;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

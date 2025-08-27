@@ -54,7 +54,7 @@ public class ChannelBoardService {
                 .stream()
                 .map(board -> {
                     Long commentCount = channelBoardRepository.countCommentsByBoardIdx(board.getIdx());
-                    return ChannelBoardReadResponseDto.fromWithCommentCount(board, commentCount);
+                    return ChannelBoardReadResponseDto.fromWithCommentCount(board, commentCount, memberDetailsDto);
                 })
                 .toList();
 
@@ -62,12 +62,12 @@ public class ChannelBoardService {
         return new SliceBaseResponse<ChannelBoardReadResponseDto>(content, channelBoardSlice.hasNext(), totalCount);
     }
 
-    public ChannelBoardReadResponseDto read(Integer idx) {
+    public ChannelBoardReadResponseDto read(Integer idx,  MemberDetailsDto memberDetailsDto) {
         Optional<ChannelBoard> result = channelBoardRepository.findById(idx);
         if (result.isPresent()) {
             ChannelBoard board = result.get();
             Long commentCount = channelBoardRepository.countCommentsByBoardIdx(board.getIdx());
-            return ChannelBoardReadResponseDto.fromWithCommentCount(board, commentCount);
+            return ChannelBoardReadResponseDto.fromWithCommentCount(board, commentCount, memberDetailsDto);
         } else {
             throw new EntityNotFoundException("해당 게시글이 존재하지 않습니다: " + idx);
         }

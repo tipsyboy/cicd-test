@@ -1,6 +1,7 @@
 package com.dabom.video.model;
 
 import com.dabom.common.BaseEntity;
+import com.dabom.member.model.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,7 +32,6 @@ public class Video extends BaseEntity {
 
     private String savedPath; // 실제 저장된 경로 (로컬 경로 or S3 URL or m3u8 경로)
     private Long savedSize; // 파일 크기 (bytes)
-    private Integer likesCount;
 
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
@@ -40,7 +40,6 @@ public class Video extends BaseEntity {
     private Long totalRatingCount = 0L; // 총 평가한 사람 수
     private Long totalScore = 0L; // 총 점수
     private double averageScore = 0; // 평점 평균
-
 
     @Builder
     public Video(String originalFilename, String originalPath, Long originalSize,

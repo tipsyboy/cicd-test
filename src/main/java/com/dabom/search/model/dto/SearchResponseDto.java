@@ -49,7 +49,6 @@ public class SearchResponseDto {
                 .isPublic(video.isPublic())
                 .uploadedAt(calculateDaysAgo(video.getCreatedAt()))
                 .channel(ChannelInfo.builder()
-//                        .email(video.getChannel().getIdx())
 //                        .name(video.getChannel().getName())
 //                        .content(video.getChannel().getContent)
                         .build())
