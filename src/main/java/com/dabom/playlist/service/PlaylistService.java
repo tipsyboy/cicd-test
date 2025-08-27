@@ -2,9 +2,10 @@ package com.dabom.playlist.service;
 
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
-import com.dabom.playlist.model.dto.AddVideoRequestDto;
+import com.dabom.playlist.model.dto.AddVideoDto;
 import com.dabom.playlist.model.dto.PlaylistRegisterDto;
 import com.dabom.playlist.model.dto.PlaylistUpdateDto;
+import com.dabom.playlist.model.dto.playlistResponseDto;
 import com.dabom.playlist.model.entity.Playlist;
 import com.dabom.playlist.model.entity.PlaylistItem;
 import com.dabom.playlist.repository.PlaylistRepository;
@@ -42,7 +43,7 @@ public class PlaylistService {
         return playlistRepository.save(playlist).getIdx();
     }
 
-    public void addVideoToPlaylist(AddVideoRequestDto dto, Integer memberIdx) {
+    public void add(AddVideoDto dto, Integer memberIdx) {
         Playlist playlist = playlistRepository.findById(dto.getPlaylistIdx())
                 .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다" + memberIdx));
 
@@ -74,5 +75,29 @@ public class PlaylistService {
         playlistItemRepository.deleteAll(itemsToDelete);
 
         playlistRepository.delete(playlist);
+    }
+
+    public List<playlistResponseDto> list(Integer memberidx) {
+        Member member = memberRepository.findById(memberidx)
+                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다: " + memberidx));
+
+        List<Playlist> playlists = playlistRepository.findAllByMember(member);
+
+        return playlists.stream()
+                .map(playlistResponseDto::from)
+                .toList();
+    }
+
+    public Integer update(PlaylistUpdateDto dto, Integer memberIdx) {
+        Member member = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다" +  memberIdx));
+
+        Playlist playlist = playlistRepository.findById(dto.getPlaylistIdx())
+                .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다: " + dto.getPlaylistIdx()));
+
+        playlist.setPlaylistTitle(dto.getPlaylistTitle());
+
+
+        return playlistRepository.save(playlist).getIdx();
     }
 }
