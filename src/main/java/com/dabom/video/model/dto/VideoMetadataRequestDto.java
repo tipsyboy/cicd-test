@@ -1,6 +1,7 @@
 package com.dabom.video.model.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ public class VideoMetadataRequestDto {
     private Integer idx;
     private String title;
     private String description;
-    private boolean isVisibility;
+    @JsonProperty("isPublic")
+    private boolean isPublic;
 
 }

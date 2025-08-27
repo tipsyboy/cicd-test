@@ -20,7 +20,7 @@ public class VideoService {
         Video video = videoRepository.findById(requestDto.getIdx())
                 .orElseThrow(() -> new IllegalArgumentException("비디오를 찾을 수 없습니다. idx=" + requestDto.getIdx()));
 
-        video.mappingVideoMetadata(requestDto.getTitle(), requestDto.getDescription(), requestDto.isVisibility());
+        video.mappingVideoMetadata(requestDto.getTitle(), requestDto.getDescription(), requestDto.isPublic());
 
         // TODO: 리턴 뭐해야되지
         return 1;
