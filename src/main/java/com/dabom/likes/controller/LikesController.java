@@ -22,7 +22,7 @@ public class LikesController {
     public ResponseEntity<BaseResponse<Void>> likes(
             @AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
             @PathVariable Integer idx) {
-        likesService.likes(memberDetailsDto, idx);
+//        likesService.likes(memberDetailsDto, idx);
 
         return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.MULTI_STATUS));
     }

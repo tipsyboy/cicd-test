@@ -8,4 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ScoreRepository extends JpaRepository<Score,Integer> {
     boolean existsByMemberAndChannelAndIsDeletedFalse(Member member, Member channel);
     boolean existsByMemberAndVideoAndIsDeletedFalse(Member member, Video video);
+
+    boolean existsByMemberAndVideo(Member member, Video video);
+
 }
