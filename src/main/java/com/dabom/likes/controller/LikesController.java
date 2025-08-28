@@ -13,18 +13,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/likes")
+@RequestMapping("/api/likes")
 @RequiredArgsConstructor
 public class LikesController {
     private final LikesService likesService;
 
-    @GetMapping("/{idx}")
-    public ResponseEntity<BaseResponse<Void>> likes(
+    @GetMapping("/boardComment/{idx}")
+    public ResponseEntity<BaseResponse<Void>> handleBoardCommentLike(
             @AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
             @PathVariable Integer idx) {
-//        likesService.likes(memberDetailsDto, idx);
 
-        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.MULTI_STATUS));
+        likesService.handleBoardCommentLike(memberDetailsDto, idx);
+
+
+        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
+    }
+
+    @GetMapping("/channelBoard/{idx}")
+    public ResponseEntity handleChannelBoardLike(
+            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+            @PathVariable Integer idx) {
+        likesService.handleChannelBoardLike(memberDetailsDto, idx);
+
+        return ResponseEntity.ok(true);
     }
 
 }

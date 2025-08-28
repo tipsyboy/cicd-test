@@ -18,7 +18,7 @@ public class playlistResponseDto {
     private Boolean isModified;
     private List<PlaylistItem> items;
 
-    public static  playlistResponseDto from(Playlist entity) {
+    public static playlistResponseDto from(Playlist entity) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         return playlistResponseDto.builder()

@@ -1,6 +1,7 @@
 package com.dabom.channelboard.model.dto;
 
 import com.dabom.channelboard.model.entity.ChannelBoard;
+import com.dabom.member.security.dto.MemberDetailsDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +26,11 @@ public class ChannelBoardReadResponseDto {
     @Schema(description = "댓글 개수", example = "5")
     private Integer commentCount;
 
-    public static ChannelBoardReadResponseDto from(ChannelBoard entity) {
+    private Integer likesCount;
+
+    private Boolean isLikes;
+
+    public static ChannelBoardReadResponseDto from(ChannelBoard entity, MemberDetailsDto memberDetailsDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         return ChannelBoardReadResponseDto.builder()
@@ -33,12 +38,20 @@ public class ChannelBoardReadResponseDto {
                 .title(entity.getTitle())
                 .contents(entity.getContents())
                 .createdAt(entity.getCreatedAt().format(formatter))
-                .commentCount(0) // 기본값
+                .likesCount(entity.getLikesCount())
+                .commentCount(0)
+                .isLikes(checkUserLikes(entity, memberDetailsDto))
                 .build();
     }
 
+    private static Boolean checkUserLikes(ChannelBoard entity, MemberDetailsDto memberDetailsDto) {
+        if (memberDetailsDto == null || entity.getLikesList() == null) return false;
 
-    public static ChannelBoardReadResponseDto fromWithCommentCount(ChannelBoard entity, Long commentCount) {
+        return entity.getLikesList().stream()
+                .anyMatch(like -> like.getChannel().getIdx().equals(memberDetailsDto.getIdx()));
+    }
+
+    public static ChannelBoardReadResponseDto fromWithCommentCount(ChannelBoard entity, Long commentCount, MemberDetailsDto memberDetailsDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         return ChannelBoardReadResponseDto.builder()
@@ -46,9 +59,9 @@ public class ChannelBoardReadResponseDto {
                 .title(entity.getTitle())
                 .contents(entity.getContents())
                 .createdAt(entity.getCreatedAt().format(formatter))
+                .likesCount(entity.getLikesCount())
                 .commentCount(commentCount.intValue())
-
-
+                .isLikes(checkUserLikes(entity, memberDetailsDto))
                 .build();
     }
 }

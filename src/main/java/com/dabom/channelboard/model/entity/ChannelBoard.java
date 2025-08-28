@@ -2,10 +2,12 @@ package com.dabom.channelboard.model.entity;
 
 import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.common.BaseEntity;
+import com.dabom.likes.model.likes.Likes;
 import com.dabom.member.model.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.net.Inet4Address;
 import java.util.List;
 
 @Entity
@@ -17,6 +19,10 @@ public class ChannelBoard extends BaseEntity {
     private Integer idx;
     private String title;
     private String contents;
+
+    @Column(name = "likes_count", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer likesCount = 0;
+
     @Setter
     private Boolean isDeleted;
 
@@ -33,6 +39,9 @@ public class ChannelBoard extends BaseEntity {
     @OneToMany(mappedBy = "channelBoard")
     private List<BoardComment> boardCommentList;
 
+    @OneToMany(mappedBy = "channelBoard")
+    private List<Likes> likesList;
+
     @ManyToOne
     @JoinColumn(name = "member_idx")
     private Member channel;
@@ -40,6 +49,14 @@ public class ChannelBoard extends BaseEntity {
     public void update(String title,String contents) {
         this.title = title;
         this.contents = contents;
+    }
+
+    public void decrementLikeCount() {
+        this.likesCount = this.likesCount - 1;
+    }
+
+    public void incrementLikeCount() {
+        this.likesCount = this.likesCount + 1;
     }
 
 }

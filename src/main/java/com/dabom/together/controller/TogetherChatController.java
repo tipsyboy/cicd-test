@@ -3,6 +3,7 @@ package com.dabom.together.controller;
 import com.dabom.member.model.dto.MemberInfoResponseDto;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.service.MemberService;
+import com.dabom.together.model.dto.request.TogetherMoveVideoRequestDto;
 import com.dabom.together.model.dto.response.TogetherChatResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -44,6 +45,13 @@ public class TogetherChatController {
         messagingTemplate.convertAndSend("/topic/together/" + togetherId, res);
     }
 
+    @MessageMapping("/master/together/{togetherId}")
+    public void moveVideos(Principal principal,
+                            @DestinationVariable Integer togetherId, @Payload TogetherMoveVideoRequestDto dto) {
+        System.out.println(dto.getCurrentTime());
+        messagingTemplate.convertAndSend("/topic/master/together/" + togetherId, dto);
+    }
+
     @EventListener
     public void handleSubscribeEvent(SessionSubscribeEvent event) {
         SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
@@ -63,7 +71,6 @@ public class TogetherChatController {
             Integer userCount = topicSessions.get(destination).size();
 
             TogetherChatResponseDto welcome = TogetherChatResponseDto.toDtoByJoin(memberInfo.name(), userCount);
-
             messagingTemplate.convertAndSend(destination, welcome);
         }
     }
@@ -86,9 +93,6 @@ public class TogetherChatController {
         topicSessions.forEach((topic, memberSet) -> {
             boolean removed = memberSet.remove(memberId);
             if (removed) {
-                // 접속자 수 업데이트 후 알림 등 추가 작업 가능
-                int updatedUserCount = memberSet.size();
-//                TogetherChatResponseDto leaveMsg = TogetherChatResponseDto.toDtoBySend(memberDetailsDto.getName(), updatedUserCount);
                 messagingTemplate.convertAndSend(topic);
             }
         });

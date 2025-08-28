@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,8 +60,8 @@ public class TogetherJoinMemberService {
     }
 
     @Transactional
-    public TogetherInfoResponseDto joinTogetherWithCodeMember(Integer togetherIdx, TogetherJoinWithCodeRequestDto dto, MemberDetailsDto memberDetailsDto) {
-        Together together = togetherRepository.findById(togetherIdx).orElseThrow();
+    public TogetherInfoResponseDto joinTogetherWithCodeMember(TogetherJoinWithCodeRequestDto dto, MemberDetailsDto memberDetailsDto) {
+        Together together = togetherRepository.findByCode(UUID.fromString(dto.getCode())).orElseThrow();
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
         Optional<TogetherJoinMember> optional = togetherJoinMemberRepository.findByMemberAndTogether(member, together);
         if(optional.isPresent()) {

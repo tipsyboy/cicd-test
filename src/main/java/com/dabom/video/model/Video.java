@@ -32,7 +32,6 @@ public class Video extends BaseEntity {
 
     private String savedPath; // 실제 저장된 경로 (로컬 경로 or S3 URL or m3u8 경로)
     private Long savedSize; // 파일 크기 (bytes)
-    private Integer likesCount;
 
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
@@ -44,7 +43,6 @@ public class Video extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private Member channel;
-
 
     @Builder
     public Video(String originalFilename, String originalPath, Long originalSize,
