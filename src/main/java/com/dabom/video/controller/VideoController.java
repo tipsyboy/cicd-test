@@ -3,6 +3,7 @@ package com.dabom.video.controller;
 
 import com.dabom.common.BaseResponse;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.video.model.dto.VideoInformationResponseDto;
 import com.dabom.video.model.dto.VideoMetadataRequestDto;
 import com.dabom.video.model.dto.score.VideoScoreRequestDto;
 import com.dabom.video.service.VideoService;
@@ -15,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Slf4j
@@ -44,6 +46,16 @@ public class VideoController {
         videoS3EncodingService.encode(videoIdx);
         return ResponseEntity.ok(BaseResponse.of(i, HttpStatus.OK));
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<BaseResponse<List<VideoInformationResponseDto>>> myVideo(@AuthenticationPrincipal MemberDetailsDto loginMember) {
+        List<VideoInformationResponseDto> videoList = videoService.getVideoListByMemberForChannel(loginMember.getIdx());
+        return ResponseEntity.ok(BaseResponse.of(
+                videoList,
+                HttpStatus.OK
+        ));
+    }
+
 }
 
 

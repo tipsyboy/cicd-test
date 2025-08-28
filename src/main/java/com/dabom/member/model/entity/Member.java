@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -50,6 +51,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY)
     private List<Likes> likesList;
+
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Video> videoList = new ArrayList<>();
 
     private Long sumScore;
     private Long sumScoreMember;

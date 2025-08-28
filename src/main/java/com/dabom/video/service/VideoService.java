@@ -1,11 +1,16 @@
 package com.dabom.video.service;
 
+import com.dabom.member.exception.MemberException;
+import com.dabom.member.exception.MemberExceptionType;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.score.model.entity.Score;
 import com.dabom.score.model.entity.ScoreType;
 import com.dabom.score.repository.ScoreRepository;
+import com.dabom.video.exception.VideoException;
+import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.video.model.Video;
+import com.dabom.video.model.dto.VideoInformationResponseDto;
 import com.dabom.video.model.dto.VideoMetadataRequestDto;
 import com.dabom.video.model.dto.score.VideoScoreRequestDto;
 import com.dabom.video.repository.VideoRepository;
@@ -14,8 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class VideoService {
 
@@ -26,7 +34,7 @@ public class VideoService {
     @Transactional
     public Integer mappingMetadata(VideoMetadataRequestDto requestDto) {
         Video video = videoRepository.findById(requestDto.getIdx())
-                .orElseThrow(() -> new IllegalArgumentException("비디오를 찾을 수 없습니다. idx=" + requestDto.getIdx()));
+                .orElseThrow(() -> new VideoException(VideoExceptionType.VIDEO_NOT_FOUND));
 
         video.mappingVideoMetadata(
                 requestDto.getTitle(),
@@ -38,16 +46,30 @@ public class VideoService {
         return video.getIdx();
     }
 
+    public VideoInformationResponseDto getOne() {
+        // TODO: 비디오 정보 단건 조회
+        return null;
+    }
+
+    public List<VideoInformationResponseDto> getVideoListByMemberForChannel(Integer memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
+
+        return member.getVideoList().stream()
+                .map(video -> VideoInformationResponseDto.toDto(video))
+                .toList();
+    }
+
     @Transactional
     public void scoreVideo(VideoScoreRequestDto requestDto, Integer memberIdx, Integer videoIdx) {
         Member scoreSender = memberRepository.findById(memberIdx)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. idx=" + memberIdx));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
 
         Video targetVideo = videoRepository.findById(videoIdx)
-                .orElseThrow(() -> new IllegalArgumentException("해당 비디오가 존재하지 않습니다. idx=" + videoIdx));
+                .orElseThrow(() -> new VideoException(VideoExceptionType.VIDEO_NOT_FOUND));
 
         if (scoreRepository.existsByMemberAndVideo(scoreSender, targetVideo)) {
-            throw new IllegalArgumentException("이미 평가 완료된 영상입니다");
+            throw new VideoException(VideoExceptionType.VIDEO_ALREADY_RATED);
         }
 
         targetVideo.addScore(requestDto.score());

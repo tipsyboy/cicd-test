@@ -6,6 +6,8 @@ import com.dabom.channelboard.model.dto.ChannelBoardUpdateRequestDto;
 import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.channelboard.repositroy.ChannelBoardRepository;
 import com.dabom.common.SliceBaseResponse;
+import com.dabom.member.exception.MemberException;
+import com.dabom.member.exception.MemberExceptionType;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
@@ -28,7 +30,7 @@ public class ChannelBoardService {
     public Integer register(ChannelBoardRegisterRequestDto dto
             , MemberDetailsDto memberDetailsDto) {
         Member memberIdx = memberRepository.findById(memberDetailsDto.getIdx()).
-                orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
         ChannelBoard result = channelBoardRepository.save(dto.toEntity(memberIdx));
         return result.getIdx();
     }

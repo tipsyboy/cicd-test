@@ -36,20 +36,25 @@ public class Video extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
 
-
-    private Long totalRatingCount = 0L; // 총 평가한 사람 수
+    private Long totalReviewerCount = 0L; // 총 평가한 사람 수
     private Long totalScore = 0L; // 총 점수
     private double averageScore = 0; // 평점 평균
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_idx")
+    private Member channel;
+
     @Builder
     public Video(String originalFilename, String originalPath, Long originalSize,
-                 String contentType, VideoStatus status) {
+                 String contentType, VideoStatus status, Member channel) {
         this.originalFilename = originalFilename;
         this.originalPath = originalPath;
         this.originalSize = originalSize;
         this.contentType = contentType;
         this.videoStatus = status;
+        mappingChannel(channel);
     }
+
 
     public void updateVideoStatus(VideoStatus status) {
         this.videoStatus = status;
@@ -68,8 +73,13 @@ public class Video extends BaseEntity {
     }
 
     public void addScore(Long newScore) {
-        this.totalRatingCount++;
+        this.totalReviewerCount++;
         this.totalScore += newScore;
-        this.averageScore = ((this.averageScore * (this.totalRatingCount - 1)) + newScore.doubleValue()) / this.totalRatingCount;
+        this.averageScore = ((this.averageScore * (this.totalReviewerCount - 1)) + newScore.doubleValue()) / this.totalReviewerCount;
+    }
+
+    private void mappingChannel(Member channel) {
+        this.channel = channel;
+        channel.getVideoList().add(this);
     }
 }
