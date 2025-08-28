@@ -1,5 +1,11 @@
 package com.dabom.video.service.s3;
 
+import com.dabom.member.exception.MemberException;
+import com.dabom.member.exception.MemberExceptionType;
+import com.dabom.member.model.entity.Member;
+import com.dabom.member.repository.MemberRepository;
+import com.dabom.video.exception.VideoException;
+import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.video.model.Video;
 import com.dabom.video.model.VideoStatus;
 import com.dabom.video.model.dto.PresignedUrlRequestDto;
@@ -35,8 +41,12 @@ public class VideoS3UploadService {
 
     private final S3Presigner s3Presigner;
     private final VideoRepository videoRepository;
+    private final MemberRepository memberRepository;
 
-    public PresignedUrlResponseDto generatePresignedUrl(PresignedUrlRequestDto requestDto) {
+    public PresignedUrlResponseDto generatePresignedUrl(PresignedUrlRequestDto requestDto, Integer memberIdx) {
+        Member channel = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
+
         // 1. 파일 검증
 //        validateFile(request);
 
@@ -44,7 +54,7 @@ public class VideoS3UploadService {
         String s3Key = generateS3Key(requestDto.originalFilename());
 
         // 3. Video Entity 생성
-        Integer videoIdx = createVideoEntity(requestDto, s3Key);
+        Integer videoIdx = createVideoEntity(requestDto, s3Key, channel);
 
         // 4. Presigned URL 생성
         String uploadUrl = createPresignedUrl(s3Key, requestDto.contentType());
@@ -66,8 +76,9 @@ public class VideoS3UploadService {
         return VIDEO_TEMP_PATH + todayPath + "/" + uuid + "." + extension;
     }
 
-    private Integer createVideoEntity(PresignedUrlRequestDto requestDto, String s3Key) {
+    private Integer createVideoEntity(PresignedUrlRequestDto requestDto, String s3Key, Member channel) {
         Video video = Video.builder()
+                .channel(channel)
                 .originalFilename(requestDto.originalFilename())
                 .originalPath(s3Key)
                 .originalSize(requestDto.fileSize())
@@ -97,7 +108,7 @@ public class VideoS3UploadService {
     private String extractExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf(".");
         if (dotIndex == -1) {
-            throw new IllegalArgumentException("파일 확장자가 없습니다.");
+            throw new VideoException(VideoExceptionType.MISSING_FILE_EXTENSION);
         }
         return fileName.substring(dotIndex + 1).toLowerCase();
     }
@@ -106,18 +117,18 @@ public class VideoS3UploadService {
     private void validateFile(PresignedUrlRequestDto requestDto) {
         // 파일 크기 검증 (100MB 제한)
         if (requestDto.fileSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("파일 크기는 100MB를 초과할 수 없습니다.");
+            throw new VideoException(VideoExceptionType.FILE_SIZE_EXCEEDED);
         }
 
         // 컨텐츠 타입 검증
         if (!requestDto.contentType().startsWith("video/")) {
-            throw new IllegalArgumentException("비디오 파일만 업로드 가능합니다.");
+            throw new VideoException(VideoExceptionType.INVALID_CONTENT_TYPE);
         }
 
         // 지원 확장자 검증
         String extension = extractExtension(requestDto.originalFilename());
         if (!isValidVideoExtension(extension)) {
-            throw new IllegalArgumentException("지원하지 않는 비디오 형식입니다.");
+            throw new VideoException(VideoExceptionType.UNSUPPORTED_VIDEO_FORMAT);
         }
     }
 

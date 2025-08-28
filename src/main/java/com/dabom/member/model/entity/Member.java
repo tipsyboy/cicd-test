@@ -4,6 +4,7 @@ import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.common.BaseEntity;
 import com.dabom.likes.model.likes.Likes;
 import com.dabom.score.model.entity.Score;
+import com.dabom.video.model.Video;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -49,6 +51,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY)
     private List<Likes> likesList;
+
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Video> videoList = new ArrayList<>();
 
     private Long sumScore;
     private Long sumScoreMember;

@@ -1,6 +1,10 @@
 package com.dabom.video.service.local;
 
 
+import com.dabom.member.exception.MemberException;
+import com.dabom.member.exception.MemberExceptionType;
+import com.dabom.member.model.entity.Member;
+import com.dabom.member.repository.MemberRepository;
 import com.dabom.video.model.Video;
 import com.dabom.video.model.VideoStatus;
 import com.dabom.video.repository.VideoRepository;
@@ -26,8 +30,12 @@ public class VideoLocalUploadService {
     private static final String VIDEO_TEMP_DIR = "temp/";
 
     private final VideoRepository videoRepository;
+    private final MemberRepository memberRepository;
 
-    public Integer upload(MultipartFile file) throws IOException {
+    public Integer upload(MultipartFile file, Integer memberIdx) throws IOException {
+        Member channel = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
+
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isEmpty()) {
             throw new IllegalArgumentException("파일 이름이 없습니다.");
@@ -38,6 +46,7 @@ public class VideoLocalUploadService {
         String savedTempPath = saveTempFile(file, originalFilename, uuid);
 
         Video video = Video.builder()
+                .channel(channel)
                 .originalFilename(originalFilename)
                 .originalPath(savedTempPath)
                 .originalSize(file.getSize())
