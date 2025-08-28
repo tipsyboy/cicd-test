@@ -11,7 +11,9 @@ import java.util.Optional;
 public interface TogetherJoinMemberRepository extends JpaRepository<TogetherJoinMember, Integer> {
     Optional<TogetherJoinMember> findByMemberAndTogether(Member member, Together together);
     List<TogetherJoinMember> findByMember(Member member);
+    List<TogetherJoinMember> findByTogether(Together together);
 
     Optional<TogetherJoinMember> findByMemberAndTogetherAndIsDeleteFalse(Member member, Together together);
-    List<TogetherJoinMember> findByMemberAndIsDeleteFalse(Member member);;
+    List<TogetherJoinMember> findByMemberAndIsDeleteFalse(Member member);
+    List<TogetherJoinMember> findByIsDeleteTrue();
 }

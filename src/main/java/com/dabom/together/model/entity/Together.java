@@ -25,10 +25,9 @@ public class Together {
     private Integer joinMemberNum;
     private Boolean isOpen;
     private Boolean isDelete;
-    private String invitedCode;
 
     @JdbcTypeCode(SqlTypes.CHAR)
-    @Column(columnDefinition = "CHAR(36) DEFAULT (UUID())", updatable = false, nullable = false)
+    @Column(columnDefinition = "CHAR(36) DEFAULT (UUID())", updatable = false, insertable = false)
     private UUID code;
 
     @ManyToOne
@@ -39,14 +38,13 @@ public class Together {
     private List<TogetherJoinMember> members;
 
     @Builder
-    public Together(String title, String videoUrl, Integer maxMemberNum, Boolean isOpen, Boolean isDelete, Member master, String invitedCode) {
+    public Together(String title, String videoUrl, Integer maxMemberNum, Boolean isOpen, Boolean isDelete, Member master) {
         this.title = title;
         this.videoUrl = videoUrl;
         this.maxMemberNum = maxMemberNum;
         this.isOpen = isOpen;
         this.isDelete = isDelete;
         this.master = master;
-        this.invitedCode = invitedCode;
         this.joinMemberNum = 1;
     }
 

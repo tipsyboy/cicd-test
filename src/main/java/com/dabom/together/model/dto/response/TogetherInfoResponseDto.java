@@ -17,6 +17,13 @@ public record TogetherInfoResponseDto(Integer togetherIdx, String title, Integer
                 joinMember.getIdx(), together.getCode().toString());
     }
 
+    public static TogetherInfoResponseDto toCreateDto(Together together) {
+        Member member = together.getMaster();
+        return new TogetherInfoResponseDto(together.getIdx(), together.getTitle(), together.getMaxMemberNum(),
+                together.getJoinMemberNum(), MemberInfoResponseDto.toDto(member), together.getIsOpen(),
+                null, null);
+    }
+
     public static TogetherInfoResponseDto toDto(Together together) {
         Member member = together.getMaster();
         return new TogetherInfoResponseDto(together.getIdx(), together.getTitle(), together.getMaxMemberNum(),

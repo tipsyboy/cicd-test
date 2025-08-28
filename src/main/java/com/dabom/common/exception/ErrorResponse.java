@@ -1,5 +1,8 @@
 package com.dabom.common.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ErrorResponse {
     private final Integer code;
     private final String message;

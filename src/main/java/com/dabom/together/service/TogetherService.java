@@ -3,6 +3,7 @@ package com.dabom.together.service;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.together.exception.TogetherException;
 import com.dabom.together.model.dto.request.*;
 import com.dabom.together.model.dto.response.TogetherInfoResponseDto;
 import com.dabom.together.model.dto.response.TogetherListResponseDto;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.dabom.together.exception.TogetherExceptionMessages.NOT_MASTER_MEMBER;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,11 +40,11 @@ public class TogetherService {
                 .together(together)
                 .build();
         togetherJoinMemberRepository.save(togetherJoinMember);
-        return TogetherInfoResponseDto.toDto(together);
+        return TogetherInfoResponseDto.toCreateDto(together);
     }
 
     public TogetherListResponseDto getTogetherList() {
-        List<Together> togethers = togetherRepository.findAll();
+        List<Together> togethers = togetherRepository.findAllByIsOpenTrue();
         return TogetherListResponseDto.toDto(togethers);
     }
 
@@ -125,6 +128,10 @@ public class TogetherService {
         Together together = validMasterMember(togetherIdx, memberDetailsDto);
 
         together.deleteTogether();
+        List<TogetherJoinMember> joinMembers = togetherJoinMemberRepository.findByTogether(together);
+        joinMembers.forEach(TogetherJoinMember::leaveTogether);
+
+        togetherJoinMemberRepository.saveAll(joinMembers);
         togetherRepository.save(together);
     }
 
@@ -132,7 +139,7 @@ public class TogetherService {
         Together together = togetherRepository.findById(togetherIdx).orElseThrow();
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
         if(!together.getMaster().equals(member)) {
-            throw new RuntimeException();
+            throw new TogetherException(NOT_MASTER_MEMBER);
         }
         return together;
     }

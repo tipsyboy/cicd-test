@@ -41,6 +41,10 @@ public class TogetherJoinMember {
         this.isJoin = false;
     }
 
+    public void comeBackTogether() {
+        this.isDelete = false;
+    }
+
     public void leaveTogether() {
         this.isDelete = true;
     }
