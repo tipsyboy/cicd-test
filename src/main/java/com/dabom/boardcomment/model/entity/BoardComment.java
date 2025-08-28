@@ -2,11 +2,14 @@ package com.dabom.boardcomment.model.entity;
 
 import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.common.BaseEntity;
+import com.dabom.likes.model.likes.Likes;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +25,9 @@ public class BoardComment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "board_idx")
     private ChannelBoard channelBoard;
+
+    @OneToMany(mappedBy = "boardComment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Likes> likesList;
 
     @Builder
     public BoardComment(String content, ChannelBoard channelBoard) {
