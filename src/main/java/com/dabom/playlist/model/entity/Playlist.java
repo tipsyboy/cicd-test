@@ -35,4 +35,8 @@ public class Playlist extends BaseEntity{
 
     }
 
+    public void updatetitle(String title){
+        this.playlistTitle = title;
+    }
+
 }

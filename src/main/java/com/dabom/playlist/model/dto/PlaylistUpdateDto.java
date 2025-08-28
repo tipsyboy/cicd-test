@@ -11,7 +11,7 @@ public class PlaylistUpdateDto {
     private Integer playlistIdx;
     private String playlistTitle;
 
-    public void update(Playlist playlist) {
-        playlist.setPlaylistTitle(this.playlistTitle);
+    public void toEntity(Playlist entity) {
+        entity.updatetitle(this.playlistTitle);
     }
 }

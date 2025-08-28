@@ -88,16 +88,13 @@ public class PlaylistService {
                 .toList();
     }
 
-    public Integer update(PlaylistUpdateDto dto, Integer memberIdx) {
-        Member member = memberRepository.findById(memberIdx)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다" +  memberIdx));
+    public Integer update(PlaylistUpdateDto dto, Integer playlistIdx) {
+        Playlist entity = playlistRepository.findById(playlistIdx)
+                .orElseThrow(() -> new EntityNotFoundException("플레이 리스트를 찾을 수 없습니다: " + playlistIdx));
 
-        Playlist playlist = playlistRepository.findById(dto.getPlaylistIdx())
-                .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다: " + dto.getPlaylistIdx()));
+        dto.toEntity(entity);
+        playlistRepository.save(entity);
 
-        playlist.setPlaylistTitle(dto.getPlaylistTitle());
-
-
-        return playlistRepository.save(playlist).getIdx();
+        return playlistRepository.save(entity).getIdx();
     }
 }
