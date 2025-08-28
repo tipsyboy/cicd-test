@@ -90,10 +90,10 @@ public class TogetherChatController {
         Integer memberId = memberDetailsDto.getIdx();
 
         // 연결된 모든 토픽에 대해 해당 멤버 아이디 제거
-        topicSessions.forEach((topic, memberSet) -> {
+        topicSessions.  forEach((topic, memberSet) -> {
             boolean removed = memberSet.remove(memberId);
             if (removed) {
-                messagingTemplate.convertAndSend(topic);
+                messagingTemplate.convertAndSend(topic, "");
             }
         });
     }
