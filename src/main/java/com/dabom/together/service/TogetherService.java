@@ -14,6 +14,8 @@ import com.dabom.together.model.entity.TogetherJoinMember;
 import com.dabom.together.repository.TogetherJoinMemberRepository;
 import com.dabom.together.repository.TogetherRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,9 +46,14 @@ public class TogetherService {
     }
 
     public TogetherListResponseDto getTogetherList() {
-        List<Together> togethers = togetherRepository.findAllByIsOpenTrue();
+        List<Together> togethers = togetherRepository.findAllTrue();
         return TogetherListResponseDto.toDto(togethers);
     }
+
+//    public TogetherListResponseDto getTogetherListTest(Pageable pageable) {
+//        Slice<Together> openTrue = togetherRepository.findAllByIsOpenTrue(pageable);
+//        return TogetherListResponseDto.toDto(togethers);
+//    }
 
     public TogetherListResponseDto searchTogetherList(TogetherSearchRequestDto dto) {
         List<Together> togethers = togetherRepository.findAll();

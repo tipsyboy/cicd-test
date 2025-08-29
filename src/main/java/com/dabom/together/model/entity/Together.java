@@ -1,5 +1,6 @@
 package com.dabom.together.model.entity;
 
+import com.dabom.common.BaseEntity;
 import com.dabom.member.model.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Together {
+public class Together extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
