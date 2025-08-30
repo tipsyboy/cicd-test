@@ -2,11 +2,15 @@ package com.dabom.video.model;
 
 import com.dabom.common.BaseEntity;
 import com.dabom.member.model.entity.Member;
+import com.dabom.videocomment.model.entity.VideoComment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -43,6 +47,10 @@ public class Video extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private Member channel;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<VideoComment> videoCommentList = new ArrayList<>();
+
 
     @Builder
     public Video(String originalFilename, String originalPath, Long originalSize,
