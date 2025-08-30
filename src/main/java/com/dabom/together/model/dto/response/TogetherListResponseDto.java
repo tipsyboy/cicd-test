@@ -10,4 +10,8 @@ public record TogetherListResponseDto(List<TogetherInfoResponseDto> togethers) {
 
         return new TogetherListResponseDto(togetherList);
     }
+
+    public static TogetherListResponseDto of(List<TogetherInfoResponseDto> togethers) {
+        return new TogetherListResponseDto(togethers);
+    }
 }
