@@ -1,6 +1,5 @@
 package com.dabom.together.controller;
 
-import com.dabom.common.exception.BaseException;
 import com.dabom.common.exception.ErrorResponse;
 import com.dabom.together.exception.TogetherException;
 import lombok.extern.slf4j.Slf4j;
