@@ -81,4 +81,18 @@ public class VideoService {
                 .build();
         scoreRepository.save(score);
     }
+
+    public Integer deleteVideo(Integer videoIdx, Integer memberIdx) {
+        Video video = videoRepository.findById(videoIdx)
+                .orElseThrow(() -> new VideoException(VideoExceptionType.VIDEO_NOT_FOUND));
+        Member channel = video.getChannel();
+
+        if (!channel.getIdx().equals(memberIdx)) {
+            throw new VideoException(VideoExceptionType.PERMISSION_DENIED);
+        }
+
+        video.deleteVideo();
+
+        return videoIdx;
+    }
 }

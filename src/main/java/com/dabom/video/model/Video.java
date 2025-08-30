@@ -55,17 +55,23 @@ public class Video extends BaseEntity {
         mappingChannel(channel);
     }
 
-
-    public void updateVideoStatus(VideoStatus status) {
-        this.videoStatus = status;
+    private void mappingChannel(Member channel) {
+        this.channel = channel;
+        channel.getVideoList().add(this);
     }
 
+
+    // ===== 비즈니스 로직 =====//
     public void mappingVideoMetadata(String title, String description, boolean isPublic, VideoTag videoTag) {
         this.title = title;
         this.description = description;
         this.isPublic = isPublic;
         this.videoStatus = VideoStatus.ENCODING_PENDING;
         this.videoTag = videoTag;
+    }
+
+    public void updateVideoStatus(VideoStatus status) {
+        this.videoStatus = status;
     }
 
     public void updateSavedPath(String savedPath) {
@@ -78,8 +84,8 @@ public class Video extends BaseEntity {
         this.averageScore = ((this.averageScore * (this.totalReviewerCount - 1)) + newScore.doubleValue()) / this.totalReviewerCount;
     }
 
-    private void mappingChannel(Member channel) {
-        this.channel = channel;
-        channel.getVideoList().add(this);
+    public void deleteVideo() {
+        this.isPublic = false;
     }
+
 }
