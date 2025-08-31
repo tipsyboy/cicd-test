@@ -9,6 +9,7 @@ import com.dabom.video.service.utils.S3UrlBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -18,6 +19,7 @@ public class VideoStreamService {
     private final VideoRepository videoRepository;
     private final S3UrlBuilder s3UrlBuilder;
 
+    @Transactional // TODO: views 증가 로직을 위함인데, 스트림에 @Transactional이 붙어야 할까?
     public VideoInfoResponseDto getVideoInfo(Integer videoId) {
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new VideoException(VideoExceptionType.VIDEO_NOT_FOUND));
