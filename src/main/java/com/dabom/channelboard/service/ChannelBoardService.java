@@ -1,17 +1,16 @@
 package com.dabom.channelboard.service;
 
+import com.dabom.channelboard.exception.ChannelBoardException;
+import com.dabom.channelboard.exception.ChannelBoardExceptionMessages;
 import com.dabom.channelboard.model.dto.ChannelBoardReadResponseDto;
 import com.dabom.channelboard.model.dto.ChannelBoardRegisterRequestDto;
 import com.dabom.channelboard.model.dto.ChannelBoardUpdateRequestDto;
 import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.channelboard.repositroy.ChannelBoardRepository;
 import com.dabom.common.SliceBaseResponse;
-import com.dabom.member.exception.MemberException;
-import com.dabom.member.exception.MemberExceptionType;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,7 @@ public class ChannelBoardService {
     public Integer register(ChannelBoardRegisterRequestDto dto
             , MemberDetailsDto memberDetailsDto) {
         Member memberIdx = memberRepository.findById(memberDetailsDto.getIdx()).
-                orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
+                orElseThrow(() -> new ChannelBoardException(ChannelBoardExceptionMessages.MEMBER_NOT_FOUND));
         ChannelBoard result = channelBoardRepository.save(dto.toEntity(memberIdx));
         return result.getIdx();
     }
@@ -71,13 +70,13 @@ public class ChannelBoardService {
             Long commentCount = channelBoardRepository.countCommentsByBoardIdx(board.getIdx());
             return ChannelBoardReadResponseDto.fromWithCommentCount(board, commentCount, memberDetailsDto);
         } else {
-            throw new EntityNotFoundException("해당 게시글이 존재하지 않습니다: " + idx);
+            throw new ChannelBoardException(ChannelBoardExceptionMessages.BOARD_NOT_FOUND);
         }
     }
 
     public Integer update(ChannelBoardUpdateRequestDto dto) {
         ChannelBoard result = channelBoardRepository.findById(dto.toEntity().getIdx())
-                .orElseThrow(() -> new EntityNotFoundException(""));
+                .orElseThrow(() -> new ChannelBoardException(ChannelBoardExceptionMessages.BOARD_NOT_FOUND));
 
         result.update(dto.getTitle(),dto.getContents());
 
@@ -93,7 +92,7 @@ public class ChannelBoardService {
             ChannelBoard deleteBoard = dto.softDelete(board);
             channelBoardRepository.save(deleteBoard);
         } else {
-            throw new EntityNotFoundException("해당 게시글이 존재하지 않습니다: " + idx);
+            throw new ChannelBoardException(ChannelBoardExceptionMessages.BOARD_NOT_FOUND);
         }
     }
 }

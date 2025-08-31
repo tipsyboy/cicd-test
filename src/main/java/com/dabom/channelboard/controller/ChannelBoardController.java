@@ -139,10 +139,6 @@ public class ChannelBoardController {
     public ResponseEntity<BaseResponse<ChannelBoardReadResponseDto>> read(@PathVariable Integer boardIdx,
                                                                           @AuthenticationPrincipal MemberDetailsDto memberDetailsDto ) {
         ChannelBoardReadResponseDto result = channelBoardService.read(boardIdx, memberDetailsDto);
-        if (result == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(BaseResponse.of(null, HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
-        }
         return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK, "게시글 검색 완료"));
     }
 

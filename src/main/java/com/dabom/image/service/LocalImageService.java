@@ -1,5 +1,7 @@
 package com.dabom.image.service;
 
+import com.dabom.image.exception.ImageException;
+import com.dabom.image.exception.ImageExceptionMessages;
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.model.entity.Image;
 import com.dabom.image.repository.ImageRepository;
@@ -31,9 +33,21 @@ public class LocalImageService implements ImageService {
     private String fileUrl;
 
     @Override
-    public ImageUploadResponseDto uploadSingleImage(MultipartFile file, String directory) throws IOException {
+    public ImageUploadResponseDto uploadSingleImage(MultipartFile file, String directory) throws ImageException {
 
-        validateImage(file);
+        try {
+            validateImage(file);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("비어있습니다")) {
+                throw new ImageException(ImageExceptionMessages.FILE_EMPTY);
+            } else if (e.getMessage().contains("초과할 수 없습니다")) {
+                throw new ImageException(ImageExceptionMessages.FILE_TOO_LARGE);
+            } else if (e.getMessage().contains("지원하지 않는 파일 형식")) {
+                throw new ImageException(ImageExceptionMessages.UNSUPPORTED_FILE_TYPE);
+            } else {
+                throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
+            }
+        }
 
         String imageName = generateFileName(file.getOriginalFilename());
         String imagePath = uploadPath + "/" + directory + "/" + imageName;
@@ -56,39 +70,43 @@ public class LocalImageService implements ImageService {
             return ImageUploadResponseDto.from(entity);
 
         } catch (IOException e) {
-            throw new RuntimeException("파일 업로드에 실패했습니다.", e);
+            throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
         }
     }
 
-    public List<ImageUploadResponseDto> uploadMultipleImages(List<MultipartFile> files, String directory) {
+    @Override
+    public List<ImageUploadResponseDto> uploadMultipleImages(List<MultipartFile> files, String directory) throws ImageException {
         return files.stream()
                 .map(file -> {
                     try {
                         return uploadSingleImage(file, directory);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (ImageException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
                     }
                 })
                 .collect(Collectors.toList());
     }
 
     @Override
-    public String find(Integer idx) {
+    public String find(Integer idx) throws ImageException {
         Optional<Image> result = imageRepository.findById(idx);
         if (result.isPresent()) {
             return result.get().getImageUrl();
+        } else {
+            throw new ImageException(ImageExceptionMessages.IMAGE_NOT_FOUND);
         }
-        else throw new RuntimeException();
     }
 
     @Override
-    public void deleteImage(Integer idx) {
+    public void deleteImage(Integer idx) throws ImageException {
         Optional<Image> result = imageRepository.findById(idx);
         if (result.isPresent()) {
             Image delImg = result.get();
             delImg.safeDelete();
+        } else {
+            throw new ImageException(ImageExceptionMessages.IMAGE_NOT_FOUND);
         }
-        else throw new RuntimeException();
     }
-
 }

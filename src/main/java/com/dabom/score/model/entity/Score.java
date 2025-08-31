@@ -2,6 +2,8 @@ package com.dabom.score.model.entity;
 
 import com.dabom.common.BaseEntity;
 import com.dabom.member.model.entity.Member;
+import com.dabom.score.exception.ScoreException;
+import com.dabom.score.exception.ScoreExceptionMessages;
 import com.dabom.video.model.Video;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -57,19 +59,19 @@ public class Score extends BaseEntity {
     @PreUpdate
     private void validate() {
         if (score < 0.0 || score > 5.0) {
-            throw new IllegalArgumentException("평점은 0.1에서 5.0 사이여야 합니다.");
+            throw new ScoreException(ScoreExceptionMessages.INVALID_SCORE_RANGE);
         }
         if (member == null) {
-            throw new IllegalArgumentException("평점자(member)는 필수입니다.");
+            throw new ScoreException(ScoreExceptionMessages.MEMBER_NOT_FOUND);
         }
         if ((channel == null && video == null) || (channel != null && video != null)) {
-            throw new IllegalArgumentException("channel 또는 video 중 정확히 하나만 값이 있어야 합니다.");
+            throw new ScoreException(ScoreExceptionMessages.TARGET_NOT_SPECIFIED);
         }
         if (channel != null && scoreType != ScoreType.CHANNEL) {
-            throw new IllegalArgumentException("channel 평점 시 scoreType은 CHANNEL이어야 합니다.");
+            throw new ScoreException(ScoreExceptionMessages.SCORE_TYPE_MISMATCH);
         }
         if (video != null && scoreType != ScoreType.VIDEO) {
-            throw new IllegalArgumentException("video 평점 시 scoreType은 VIDEO이어야 합니다.");
+            throw new ScoreException(ScoreExceptionMessages.SCORE_TYPE_MISMATCH);
         }
     }
 

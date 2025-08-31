@@ -52,9 +52,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")
                 .addInterceptors(jwtHandShakeInterceptor)
-                .setAllowedOriginPatterns("http://localhost:5173", "http://localhost:5174");
+                .setAllowedOriginPatterns("http://localhost:5173", "http://localhost:5174")
                 // 나중에 서버 도메인 추가, serverAddress
-//                .withSockJS();
+                .withSockJS();
     }
 
     @Override

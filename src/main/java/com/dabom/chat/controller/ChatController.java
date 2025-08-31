@@ -7,12 +7,16 @@ import com.dabom.chat.model.dto.ChatRoomRegisterRequestDto;
 import com.dabom.chat.serivce.ChatService;
 import com.dabom.common.BaseResponse;
 import com.dabom.common.SliceBaseResponse;
+import com.dabom.member.security.dto.MemberDetailsDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -31,8 +35,8 @@ public class ChatController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<List<ChatRoomListResponseDto>>> list(Principal principal) {
-        Integer memberidx = chatService.getMember(principal);
+    public ResponseEntity<BaseResponse<List<ChatRoomListResponseDto>>> list(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
+        Integer memberidx = memberDetailsDto.getIdx();
         List<ChatRoomListResponseDto> result = chatService.getList(memberidx);
         return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK));
     }
@@ -43,23 +47,18 @@ public class ChatController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             Principal principal) {
-        try {
-            Integer memberIdx = chatService.getMember(principal);
-            SliceBaseResponse<ChatRoomReadResponseDto> result = chatService.readRoom(roomIdx, memberIdx, page, size);
-            return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(BaseResponse.of(null, HttpStatus.UNAUTHORIZED, "Authentication failed"));
-        }
+        Integer memberIdx = chatService.getMember(principal);
+        SliceBaseResponse<ChatRoomReadResponseDto> result = chatService.readRoom(roomIdx, memberIdx, page, size);
+        return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK));
     }
 
-    @MessageMapping("/send")
-    @SendToUser("/queue/messages")
-    public ResponseEntity<BaseResponse<Void>> sendMessage(@Payload ChatMessageDto messageDto) {
-        chatService.sendMessage(messageDto);
-
-        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
-    }
+//    @MessageMapping("/send")
+//    @SendToUser("/queue/messages")
+//    public ResponseEntity<BaseResponse<Void>> sendMessage(@Payload ChatMessageDto messageDto) {
+//        chatService.sendMessage(messageDto);
+//
+//        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
+//    }
 
 
 }

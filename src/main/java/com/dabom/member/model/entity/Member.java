@@ -57,7 +57,7 @@ public class Member extends BaseEntity {
 
     private Long sumScore;
     private Long sumScoreMember;
-//    private ImageFile profileImage;
+    //private String profileImagePath;
     private Boolean isDeleted;
 
     @Builder
