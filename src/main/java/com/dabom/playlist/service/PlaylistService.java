@@ -3,6 +3,7 @@ package com.dabom.playlist.service;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.playlist.model.dto.AddVideoDto;
+import com.dabom.playlist.model.dto.PlaylistInnerDto;
 import com.dabom.playlist.model.dto.PlaylistRegisterDto;
 import com.dabom.playlist.model.dto.PlaylistUpdateDto;
 import com.dabom.playlist.model.dto.playlistResponseDto;
@@ -12,7 +13,8 @@ import com.dabom.playlist.repository.PlaylistRepository;
 import com.dabom.playlist.repository.playlistItemRepository;
 import com.dabom.video.model.Video;
 import com.dabom.video.repository.VideoRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.dabom.playlist.exception.PlaylistException;
+import com.dabom.playlist.exception.PlaylistExceptionMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,7 @@ public class PlaylistService {
     public Integer register(PlaylistRegisterDto dto, Integer memberIdx) {
 
         Member member = memberRepository.findById(memberIdx)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다: " + memberIdx));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.MEMBER_NOT_FOUND));
 
         Playlist playlist = Playlist.builder()
                 .playlistTitle(dto.getPlaylistTitle())
@@ -43,32 +45,33 @@ public class PlaylistService {
         return playlistRepository.save(playlist).getIdx();
     }
 
+    @Transactional
     public void add(AddVideoDto dto, Integer memberIdx) {
         Playlist playlist = playlistRepository.findById(dto.getPlaylistIdx())
-                .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다" + memberIdx));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
 
         Video video = videoRepository.findById(dto.getVideoIdx())
-                .orElseThrow(() -> new EntityNotFoundException("비디오를 찾을 수 없습니다"));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.VIDEO_NOT_FOUND));
 
         if (!playlist.getMember().getIdx().equals(memberIdx)) {
-            throw new SecurityException("영상을 추가 할 수 없습니다");
+            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_ADD_VIDEO);
 
         }
 
         if (playlistItemRepository.existsByPlaylistAndVideo(playlist, video)) {
-            throw new IllegalStateException("이미 플레이리스트에 추가된 영상입니다.");
+            throw new PlaylistException(PlaylistExceptionMessages.VIDEO_ALREADY_IN_PLAYLIST);
         }
 
         playlistItemRepository.save(new PlaylistItem(playlist, video));
     }
 
-
+    @Transactional
     public void delete(Integer playlistIdx, Integer memberIdx) {
         Playlist playlist = playlistRepository.findById(playlistIdx)
-                .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
 
         if (!playlist.getMember().getIdx().equals(memberIdx)) {
-            throw new SecurityException("플레이리스트를 삭제할 권한이 없습니다.");
+            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_DELETE_PLAYLIST);
         }
         List<PlaylistItem> itemsToDelete = playlistItemRepository.findAllByPlaylist(playlist);
 
@@ -79,7 +82,7 @@ public class PlaylistService {
 
     public List<playlistResponseDto> list(Integer memberidx) {
         Member member = memberRepository.findById(memberidx)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다: " + memberidx));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.MEMBER_NOT_FOUND));
 
         List<Playlist> playlists = playlistRepository.findAllByMember(member);
 
@@ -88,13 +91,31 @@ public class PlaylistService {
                 .toList();
     }
 
-    public Integer update(PlaylistUpdateDto dto, Integer playlistIdx) {
+    @Transactional
+    public void update(PlaylistUpdateDto dto, Integer playlistIdx, Integer memberIdx) {
         Playlist entity = playlistRepository.findById(playlistIdx)
-                .orElseThrow(() -> new EntityNotFoundException("플레이 리스트를 찾을 수 없습니다: " + playlistIdx));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
 
-        dto.toEntity(entity);
+        if (!entity.getMember().getIdx().equals(memberIdx)) {
+            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_UPDATE_PLAYLIST);
+        }
+
+        entity.setPlaylistTitle(dto.getPlaylistTitle());
         playlistRepository.save(entity);
+    }
 
-        return playlistRepository.save(entity).getIdx();
+    public PlaylistInnerDto getPlaylistDetails(Integer playlistIdx, Integer memberIdx) {
+        Playlist playlist = playlistRepository.findById(playlistIdx)
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
+
+        if (!playlist.getMember().getIdx().equals(memberIdx)) {
+            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_VIEW_PLAYLIST);
+        }
+
+        List<Video> videos = playlistItemRepository.findVideosByPlaylist(playlist);
+
+        return PlaylistInnerDto.from(playlist, videos);
     }
 }
+
+
