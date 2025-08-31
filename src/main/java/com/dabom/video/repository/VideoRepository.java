@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface VideoRepository extends JpaRepository<Video, Integer> {
+public interface VideoRepository extends JpaRepository<Video, Integer>,VideoRepositoryCustom  {
 
     // 키워드 검색말고 그냥 비디오 전체검색임
     @Query(value = "SELECT * FROM video WHERE is_public = 1 ORDER BY created_at DESC", nativeQuery = true)

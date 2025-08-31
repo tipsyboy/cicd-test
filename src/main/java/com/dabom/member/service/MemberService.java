@@ -127,4 +127,10 @@ public class MemberService {
         }
         return optionalMember.get();
     }
+
+    public MemberInfoResponseDto getChannelInfoByIdx(Integer channelIdx) {
+        Member member = repository.findById(channelIdx)
+                .orElseThrow(() -> new RuntimeException("채널을 찾을 수 없습니다"));
+        return MemberInfoResponseDto.toDto(member);
+    }
 }

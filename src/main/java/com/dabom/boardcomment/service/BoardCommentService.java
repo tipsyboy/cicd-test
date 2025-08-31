@@ -1,5 +1,7 @@
 package com.dabom.boardcomment.service;
 
+import com.dabom.boardcomment.exception.BoardCommentException;
+import com.dabom.boardcomment.exception.BoardCommentExceptionType;
 import com.dabom.boardcomment.model.dto.BoardCommentCreateRequestDto;
 import com.dabom.boardcomment.model.dto.BoardCommentResponseDto;
 import com.dabom.boardcomment.model.entity.BoardComment;
@@ -8,6 +10,7 @@ import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.channelboard.repositroy.ChannelBoardRepository;
 import com.dabom.common.SliceBaseResponse;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.video.exception.VideoException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +29,11 @@ public class BoardCommentService {
 
     public Integer create(BoardCommentCreateRequestDto dto, Integer boardIdx, MemberDetailsDto memberDetailsDto) {
         ChannelBoard board = channelBoardRepository.findById(boardIdx)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다: " + boardIdx));
+                .orElseThrow(() -> new BoardCommentException(BoardCommentExceptionType.BOARD_NOT_FOUND_FOR_COMMENT));
+
+        if (dto.getContent().isBlank()) {
+            throw new BoardCommentException(BoardCommentExceptionType.COMMENT_CONTENT_EMPTY);
+        }
 
         BoardComment comment = dto.toEntity(board);
         return boardCommentRepository.save(comment).getIdx();
@@ -34,7 +41,10 @@ public class BoardCommentService {
 
     public void delete(Integer commentIdx) {
         BoardComment entity = boardCommentRepository.findById(commentIdx)
-                .orElseThrow(() -> new EntityNotFoundException("댓글 찾을 수 없음"));
+                .orElseThrow(() -> new BoardCommentException(BoardCommentExceptionType.COMMENT_NOT_FOUND));
+        if (entity.getIsDeleted()) {
+            throw new BoardCommentException(BoardCommentExceptionType.COMMENT_ALREADY_DELETED);
+        }
         entity.delete();
         boardCommentRepository.save(entity);
     }
@@ -61,13 +71,9 @@ public class BoardCommentService {
                 .toList();
     }
 
-    public List<BoardCommentResponseDto> list(Integer boardIdx) {
-        return list(boardIdx, "oldest", null);  // 기본값: 오래된 순, 로그인하지 않은 사용자
-    }
-
     public BoardCommentResponseDto update(Integer boardCommentIdx, BoardCommentCreateRequestDto dto, MemberDetailsDto memberDetailsDto) {
         BoardComment comment = boardCommentRepository.findById(boardCommentIdx)
-                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new BoardCommentException(BoardCommentExceptionType.BOARD_NOT_FOUND_FOR_COMMENT));
 
         comment.updateContent(dto.getContent());
         BoardComment updatedComment = boardCommentRepository.save(comment);
