@@ -46,11 +46,6 @@ public class TogetherService {
         return TogetherInfoResponseDto.toCreateDto(together);
     }
 
-    public TogetherListResponseDto getTogetherList() {
-        List<Together> togethers = togetherRepository.findAllTrue();
-        return TogetherListResponseDto.toDto(togethers);
-    }
-
     public TogetherListResponseDto getTogetherListTest(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Together> openTrue = togetherRepository.findAllByIsOpenTrue(pageable);

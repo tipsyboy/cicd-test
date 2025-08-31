@@ -3,10 +3,7 @@ package com.dabom.together.model.entity;
 import com.dabom.common.BaseEntity;
 import com.dabom.member.model.entity.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -16,6 +13,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(callSuper = false)
 public class Together extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,13 +37,14 @@ public class Together extends BaseEntity {
     private List<TogetherJoinMember> members;
 
     @Builder
-    public Together(String title, String videoUrl, Integer maxMemberNum, Boolean isOpen, Boolean isDelete, Member master) {
+    private Together(String title, String videoUrl, Integer maxMemberNum, Boolean isOpen, Boolean isDelete, Member master, UUID code) {
         this.title = title;
         this.videoUrl = videoUrl;
         this.maxMemberNum = maxMemberNum;
         this.isOpen = isOpen;
         this.isDelete = isDelete;
         this.master = master;
+        this.code = code;
         this.joinMemberNum = 1;
     }
 

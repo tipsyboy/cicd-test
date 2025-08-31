@@ -1,5 +1,6 @@
 package com.dabom.member.service;
 
+import com.dabom.member.exception.MemberException;
 import com.dabom.member.model.dto.*;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
@@ -13,7 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+
+import static com.dabom.member.exception.MemberExceptionType.DUPLICATED_CHANNEL_NAME;
+import static com.dabom.member.exception.MemberExceptionType.MEMBER_NOT_FOUND;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,6 +31,7 @@ public class MemberService {
     @Transactional
     public void signUpMember(MemberSignupRequestDto dto) {
         String encodedPassword = encoder.encode(dto.getPassword());
+        checkDuplicatedName(dto);
         repository.save(dto.toEntity(encodedPassword));
     }
 
@@ -36,6 +42,11 @@ public class MemberService {
         MemberDetailsDto userDto = (MemberDetailsDto) authenticate.getPrincipal();
 
         return JwtUtils.generateLoginToken(userDto.getIdx(), userDto.getEmail(), userDto.getMemberRole());
+    }
+
+    public MemberListResponseDto searchMemberName(MemberSearchRequestDto dto) {
+        List<Member> members = repository.findMembersByName(dto.getName());
+        return MemberListResponseDto.toDto(members);
     }
 
     public MemberInfoResponseDto readMemberInfo(MemberDetailsDto dto) {
@@ -80,6 +91,14 @@ public class MemberService {
         repository.save(member);
     }
 
+    private void checkDuplicatedName(MemberSignupRequestDto dto) {
+        Optional<Member> checkName = repository.findByName(dto.getChannelName());
+        if(checkName.isEmpty()) {
+            return;
+        }
+        throw new MemberException(DUPLICATED_CHANNEL_NAME);
+    }
+
     private void updateChannelContent(MemberUpdateChannelRequestDto dto, Member member) {
         if(dto.getContent() != null) {
             member.updateContent(dto.getContent());
@@ -96,7 +115,7 @@ public class MemberService {
     private void checkDuplicateName(MemberUpdateChannelRequestDto dto) {
         MemberChannelNameCheckResponseDto check = checkMemberChannelName(dto.getName());
         if(check.isDuplicate()) {
-            throw new RuntimeException();
+            throw new MemberException(DUPLICATED_CHANNEL_NAME);
         }
     }
 
@@ -104,7 +123,7 @@ public class MemberService {
         Integer idx = dto.getIdx();
         Optional<Member> optionalMember = repository.findById(idx);
         if(optionalMember.isEmpty()) {
-            throw new RuntimeException();
+            throw new MemberException(MEMBER_NOT_FOUND);
         }
         return optionalMember.get();
     }
