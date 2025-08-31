@@ -103,9 +103,10 @@ public class ChannelBoardController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "oldest") String sort,
+            @RequestParam(required = false) Integer channelIdx,
             @AuthenticationPrincipal MemberDetailsDto memberDetailsDto
     ) {
-        SliceBaseResponse<ChannelBoardReadResponseDto> result = channelBoardService.list(page, size, sort, memberDetailsDto);
+        SliceBaseResponse<ChannelBoardReadResponseDto> result = channelBoardService.list(page, size, sort, channelIdx, memberDetailsDto);
         return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK, "게시글 목록 조회 성공"));
     }
 

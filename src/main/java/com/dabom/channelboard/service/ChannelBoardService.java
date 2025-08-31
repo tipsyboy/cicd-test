@@ -1,7 +1,11 @@
 package com.dabom.channelboard.service;
 
-import com.dabom.channelboard.exception.ChannelBoardException2;
-import com.dabom.channelboard.exception.ChannelBoardExceptionMessages2;
+import com.dabom.channelboard.exception.ChannelBoardException;
+import com.dabom.channelboard.exception.ChannelBoardExceptionMessages;
+import com.dabom.boardcomment.model.entity.BoardComment;
+import com.dabom.boardcomment.repository.BoardCommentRepository;
+import com.dabom.channelboard.exception.ChannelBoardException;
+import com.dabom.channelboard.exception.ChannelBoardExceptionType;
 import com.dabom.channelboard.model.dto.ChannelBoardReadResponseDto;
 import com.dabom.channelboard.model.dto.ChannelBoardRegisterRequestDto;
 import com.dabom.channelboard.model.dto.ChannelBoardUpdateRequestDto;
@@ -25,6 +29,7 @@ import java.util.Optional;
 public class ChannelBoardService {
     private final ChannelBoardRepository channelBoardRepository;
     private final MemberRepository memberRepository;
+    private final BoardCommentRepository boardCommentRepository;
 
     public Integer register(ChannelBoardRegisterRequestDto dto
             , MemberDetailsDto memberDetailsDto) {
@@ -35,19 +40,21 @@ public class ChannelBoardService {
     }
 
     public SliceBaseResponse<ChannelBoardReadResponseDto> list(
-            Integer page, Integer size, String sort, MemberDetailsDto memberDetailsDto) {
+            Integer page, Integer size, String sort, Integer channelIdx,MemberDetailsDto memberDetailsDto) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<ChannelBoard> channelBoardSlice;
+
+        Integer targetIdx = (channelIdx != null) ? channelIdx : memberDetailsDto.getIdx();
 
         switch (sort) {
             case "latest":
                 channelBoardSlice = channelBoardRepository.findAllByChannelIdxAndIsDeletedFalseOrderByIdxDesc(
-                        memberDetailsDto.getIdx(), pageable);
+                        targetIdx, pageable);
                 break;
             case "oldest":
             default:
                 channelBoardSlice = channelBoardRepository.findAllByChannelIdxAndIsDeletedFalseOrderByIdxAsc(
-                        memberDetailsDto.getIdx(), pageable);
+                        targetIdx, pageable);
                 break;
         }
 
@@ -59,7 +66,7 @@ public class ChannelBoardService {
                 })
                 .toList();
 
-        Long totalCount = channelBoardRepository.countByChannelIdxAndIsDeletedFalse(memberDetailsDto.getIdx());
+        Long totalCount = channelBoardRepository.countByChannelIdxAndIsDeletedFalse(targetIdx);
         return new SliceBaseResponse<ChannelBoardReadResponseDto>(content, channelBoardSlice.hasNext(), totalCount);
     }
 
@@ -91,8 +98,13 @@ public class ChannelBoardService {
             ChannelBoardUpdateRequestDto dto = new ChannelBoardUpdateRequestDto();
             ChannelBoard deleteBoard = dto.softDelete(board);
             channelBoardRepository.save(deleteBoard);
+
+            List<BoardComment> boardComments = boardCommentRepository.findByChannelBoard_Idx(idx);
+            boardComments.forEach(BoardComment ::delete);
+            boardCommentRepository.saveAll(boardComments);
+
         } else {
-            throw new ChannelBoardException2(ChannelBoardExceptionMessages2.BOARD_NOT_FOUND);
+            throw new ChannelBoardException(ChannelBoardExceptionType.BOARD_NOT_FOUND);
         }
     }
 }
