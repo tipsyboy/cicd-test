@@ -25,7 +25,10 @@ public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String email;
-    private String name;
+
+    @Column(unique = true)
+    private String name; // 채널명
+
     private String password;
     private String content;
     @Enumerated(EnumType.STRING)

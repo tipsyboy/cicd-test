@@ -46,17 +46,21 @@ public class VideoService {
         return video.getIdx();
     }
 
-    public VideoInformationResponseDto getOne() {
-        // TODO: 비디오 정보 단건 조회
-        return null;
-    }
-
-    public List<VideoInformationResponseDto> getVideoListByMemberForChannel(Integer memberId) {
-        Member member = memberRepository.findById(memberId)
+    public List<VideoInformationResponseDto> getVideoListByChannelName(String channelName) {
+        Member channel = memberRepository.findByName(channelName)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
 
-        return member.getVideoList().stream()
-                .map(video -> VideoInformationResponseDto.toDto(video))
+        return channel.getVideoList().stream()
+                .map(VideoInformationResponseDto::toDto)
+                .toList();
+    }
+
+    public List<VideoInformationResponseDto> getVideoListByLoginMember(Integer memberIdx) {
+        Member channel = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
+
+        return channel.getVideoList().stream()
+                .map(VideoInformationResponseDto::toDto)
                 .toList();
     }
 
