@@ -2,11 +2,15 @@ package com.dabom.video.model;
 
 import com.dabom.common.BaseEntity;
 import com.dabom.member.model.entity.Member;
+import com.dabom.videocomment.model.entity.VideoComment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -33,6 +37,8 @@ public class Video extends BaseEntity {
     private String savedPath; // 실제 저장된 경로 (로컬 경로 or S3 URL or m3u8 경로)
     private Long savedSize; // 파일 크기 (bytes)
 
+    private Long views; // 영상 조회수
+
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
 
@@ -43,6 +49,10 @@ public class Video extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private Member channel;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<VideoComment> videoCommentList = new ArrayList<>();
+
 
     @Builder
     public Video(String originalFilename, String originalPath, Long originalSize,
@@ -55,17 +65,23 @@ public class Video extends BaseEntity {
         mappingChannel(channel);
     }
 
-
-    public void updateVideoStatus(VideoStatus status) {
-        this.videoStatus = status;
+    private void mappingChannel(Member channel) {
+        this.channel = channel;
+        channel.getVideoList().add(this);
     }
 
+
+    // ===== 비즈니스 로직 =====//
     public void mappingVideoMetadata(String title, String description, boolean isPublic, VideoTag videoTag) {
         this.title = title;
         this.description = description;
         this.isPublic = isPublic;
         this.videoStatus = VideoStatus.ENCODING_PENDING;
         this.videoTag = videoTag;
+    }
+
+    public void updateVideoStatus(VideoStatus status) {
+        this.videoStatus = status;
     }
 
     public void updateSavedPath(String savedPath) {
@@ -78,8 +94,11 @@ public class Video extends BaseEntity {
         this.averageScore = ((this.averageScore * (this.totalReviewerCount - 1)) + newScore.doubleValue()) / this.totalReviewerCount;
     }
 
-    private void mappingChannel(Member channel) {
-        this.channel = channel;
-        channel.getVideoList().add(this);
+    public void deleteVideo() {
+        this.isPublic = false;
+    }
+
+    public void incrementViews() {
+        this.views = (this.views == null ? 1 : this.views + 1);
     }
 }
