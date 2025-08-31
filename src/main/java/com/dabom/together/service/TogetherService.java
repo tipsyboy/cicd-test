@@ -54,9 +54,12 @@ public class TogetherService {
         return TogetherListResponseDto.of(togethers);
     }
 
-    public TogetherListResponseDto searchTogetherList(TogetherSearchRequestDto dto) {
-        List<Together> togethers = togetherRepository.findAll();
-        return TogetherListResponseDto.toDto(togethers);
+    public TogetherListResponseDto searchTogetherList(String search, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Together> searchTogether = togetherRepository.searchAllByIsOpenTrue(search, pageable);
+        List<TogetherInfoResponseDto> togethers = searchTogether.stream().map(TogetherInfoResponseDto::toDto).toList();
+//        List<Together> togethers = togetherRepository.findAll();
+        return TogetherListResponseDto.of(togethers);
     }
 
     @Transactional
