@@ -1,6 +1,6 @@
 package com.dabom.channelboard.controller;
 
-import com.dabom.channelboard.exception.ChannelBoardException;
+import com.dabom.channelboard.exception.ChannelBoardException2;
 import com.dabom.common.exception.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ChannelBoardExceptionController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ChannelBoardException.class)
-    public ResponseEntity<ErrorResponse> channelBoardExceptionHandler(ChannelBoardException e) {
+    @ExceptionHandler(ChannelBoardException2.class)
+    public ResponseEntity<ErrorResponse> channelBoardExceptionHandler(ChannelBoardException2 e) {
         log.info("[ChannelBoardException] ex : {}", e.getExceptionType().message());
         return ResponseEntity.ok(ErrorResponse.from(e));
     }
