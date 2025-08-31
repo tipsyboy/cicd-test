@@ -1,5 +1,7 @@
 package com.dabom.video.service;
 
+import com.dabom.video.exception.VideoException;
+import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.video.model.Video;
 import com.dabom.video.model.dto.VideoInfoResponseDto;
 import com.dabom.video.repository.VideoRepository;
@@ -18,7 +20,10 @@ public class VideoStreamService {
 
     public VideoInfoResponseDto getVideoInfo(Integer videoId) {
         Video video = videoRepository.findById(videoId)
-                .orElseThrow(() -> new IllegalArgumentException("비디오 못찾음"));
+                .orElseThrow(() -> new VideoException(VideoExceptionType.VIDEO_NOT_FOUND));
+
+        video.incrementViews();
+
         String savedPath = s3UrlBuilder.buildPublicUrl(video.getSavedPath());
         return VideoInfoResponseDto.toDto(video, savedPath);
     }

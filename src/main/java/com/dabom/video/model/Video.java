@@ -37,6 +37,8 @@ public class Video extends BaseEntity {
     private String savedPath; // 실제 저장된 경로 (로컬 경로 or S3 URL or m3u8 경로)
     private Long savedSize; // 파일 크기 (bytes)
 
+    private Long views; // 영상 조회수
+
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // 영상 상태
 
@@ -96,4 +98,7 @@ public class Video extends BaseEntity {
         this.isPublic = false;
     }
 
+    public void incrementViews() {
+        this.views = (this.views == null ? 1 : this.views + 1);
+    }
 }
