@@ -28,4 +28,6 @@ public interface BoardCommentRepository extends JpaRepository<BoardComment, Inte
 
     // 전체 댓글 개수 조회
     long countByChannelBoard_IdxAndIsDeletedFalse(Integer boardIdx);
+
+
 }

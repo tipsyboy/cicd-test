@@ -5,6 +5,8 @@ import com.dabom.member.model.dto.*;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -379,4 +381,47 @@ public class MemberController {
         memberService.deleteMember(dto);
         return ResponseEntity.ok(BaseResponse.of("삭제 완료 되었습니다. 실제 데이터 삭제까지는 하루정도 소요됩니다.", HttpStatus.OK));
     }
+    @Operation(
+            summary = "채널 정보 조회",
+            description = "채널 고유 ID를 통해 특정 채널의 정보를 조회합니다.",
+            parameters = {
+                    @Parameter(
+                            name = "channelIdx",
+                            description = "조회할 채널의 고유 ID",
+                            required = true,
+                            example = "1",
+                            in = ParameterIn.PATH
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "채널 정보 조회 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MemberInfoResponseDto.class),
+                                    examples = @ExampleObject(
+                                            name = "채널 정보 조회 완료",
+                                            value = READ_MEMBER_INFO_RESPONSE
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "존재하지 않는 채널입니다.",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "채널을 찾을 수 없습니다.",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
+    @GetMapping("/info/{channelIdx}")
+    public ResponseEntity<BaseResponse<MemberInfoResponseDto>> getChannelInfo(@PathVariable Integer channelIdx) {
+        MemberInfoResponseDto channelInfo = memberService.getChannelInfoByIdx(channelIdx);
+        return ResponseEntity.ok(BaseResponse.of(channelInfo, HttpStatus.OK));
+    }
+
 }
