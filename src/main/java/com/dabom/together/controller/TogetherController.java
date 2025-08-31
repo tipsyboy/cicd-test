@@ -54,9 +54,11 @@ public class TogetherController {
         return ResponseEntity.ok(BaseResponse.of(togetherListResponseDto, HttpStatus.OK));
     }
 
-    @PostMapping("/search")
-    public ResponseEntity<BaseResponse<TogetherListResponseDto>> searchTogethers(@RequestBody TogetherSearchRequestDto dto) {
-        TogetherListResponseDto togetherListResponseDto = togetherService.searchTogetherList(dto);
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<TogetherListResponseDto>> searchTogethers(@RequestParam String search,
+                                                                                 @RequestParam(defaultValue = "0") Integer page,
+                                                                                 @RequestParam(defaultValue = "10") Integer size) {
+        TogetherListResponseDto togetherListResponseDto = togetherService.searchTogetherList(search, page, size);
         return ResponseEntity.ok(BaseResponse.of(togetherListResponseDto, HttpStatus.OK));
     }
 

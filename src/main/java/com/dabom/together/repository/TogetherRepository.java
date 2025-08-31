@@ -18,4 +18,6 @@ public interface TogetherRepository extends JpaRepository<Together, Integer> {
     List<Together> findAllTrue();
     @Query("SELECT t FROM Together t WHERE t.isOpen = true AND t.isDelete = false ORDER BY t.createdAt DESC")
     Slice<Together> findAllByIsOpenTrue(Pageable pageable);
+    @Query("SELECT t FROM Together t WHERE t.isOpen = true AND t.isDelete = false AND t.title = :title ORDER BY t.createdAt DESC")
+    Slice<Together> searchAllByIsOpenTrue(String title, Pageable pageable);
 }
