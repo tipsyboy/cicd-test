@@ -1,5 +1,6 @@
 package com.dabom.member.security.service;
 
+import com.dabom.member.exception.MemberException;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.dabom.member.exception.MemberExceptionType.MEMBER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class CustomMemberDetailsService implements UserDetailsService {
@@ -20,7 +23,7 @@ public class CustomMemberDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Member> optionalMember = repository.findByEmail(username);
         if(optionalMember.isEmpty()) {
-            throw new RuntimeException();
+            throw new MemberException(MEMBER_NOT_FOUND);
         }
         Member member = optionalMember.get();
 

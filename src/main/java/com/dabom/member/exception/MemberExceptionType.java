@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public enum MemberExceptionType implements ExceptionType {
 
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 를 찾을 수 없습니다.");
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다. 회원가입을 진행해주세요"),
+    DUPLICATED_CHANNEL_NAME(HttpStatus.NOT_FOUND, "같은 채널의 이름이 존재합니다. 다른 이름을 입력해주세요");
 
     private final HttpStatus httpStatusCode;
     private final String message;
