@@ -35,13 +35,14 @@ public class MemberService {
         repository.save(dto.toEntity(encodedPassword));
     }
 
-    public String loginMember(MemberLoginRequestDto dto) {
+    public MemberLoginResponseDto loginMember(MemberLoginRequestDto dto) {
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword(), null);
         Authentication authenticate = manager.authenticate(token);
         MemberDetailsDto userDto = (MemberDetailsDto) authenticate.getPrincipal();
+        String jwt = JwtUtils.generateLoginToken(userDto.getIdx(), userDto.getEmail(), userDto.getMemberRole());
 
-        return JwtUtils.generateLoginToken(userDto.getIdx(), userDto.getEmail(), userDto.getMemberRole());
+        return MemberLoginResponseDto.of(jwt, userDto.getName());
     }
 
     public MemberListResponseDto searchMemberName(MemberSearchRequestDto dto) {

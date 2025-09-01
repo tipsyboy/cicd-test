@@ -109,9 +109,9 @@ public class MemberController {
     )
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<String>> loginMember(@Valid @RequestBody MemberLoginRequestDto dto) {
-        String jwt = memberService.loginMember(dto);
-        if (jwt != null) {
-            ResponseCookie accessTokenCookie = ResponseCookie.from(ACCESS_TOKEN, jwt)
+        MemberLoginResponseDto responseDto = memberService.loginMember(dto);
+        if (responseDto.jwt() != null) {
+            ResponseCookie accessTokenCookie = ResponseCookie.from(ACCESS_TOKEN, responseDto.jwt())
                     .httpOnly(true)
                     .secure(false)
 //                    .sameSite("None")
@@ -121,7 +121,7 @@ public class MemberController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                    .body(BaseResponse.of("로그인 성공", HttpStatus.OK));
+                    .body(BaseResponse.of(responseDto.channelName(), HttpStatus.OK));
         }
         return ResponseEntity.status(400).body(BaseResponse.of("로그인 실패", HttpStatus.BAD_REQUEST));
     }
@@ -424,4 +424,11 @@ public class MemberController {
         return ResponseEntity.ok(BaseResponse.of(channelInfo, HttpStatus.OK));
     }
 
+    @GetMapping("/token")
+    public ResponseEntity<BaseResponse<String>> getToken(@AuthenticationPrincipal MemberDetailsDto dto) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + dto.getJwt());
+
+        return ResponseEntity.ok().headers(headers).body(BaseResponse.of("데이터 전달 성공", HttpStatus.OK));
+    }
 }
