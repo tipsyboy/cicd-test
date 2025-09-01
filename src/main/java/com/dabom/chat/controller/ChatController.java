@@ -8,6 +8,7 @@ import com.dabom.chat.serivce.ChatService;
 import com.dabom.common.BaseResponse;
 import com.dabom.common.SliceBaseResponse;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.chat.model.dto.ChatListResponseWrapperDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +36,17 @@ public class ChatController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<List<ChatRoomListResponseDto>>> list(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
+    public ResponseEntity<BaseResponse<ChatListResponseWrapperDto>> list( @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
         Integer memberidx = memberDetailsDto.getIdx();
-        List<ChatRoomListResponseDto> result = chatService.getList(memberidx);
-        return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK));
+        System.out.println(memberidx);
+        List<ChatRoomListResponseDto> chatRooms = chatService.getList(memberidx);
+
+        ChatListResponseWrapperDto response = ChatListResponseWrapperDto.builder()
+                .currentMemberIdx(memberidx)
+                .chatRooms(chatRooms)
+                .build();
+
+        return ResponseEntity.ok(BaseResponse.of(response, HttpStatus.OK));
     }
 
     @GetMapping("/read/{room_idx}")
@@ -48,17 +56,9 @@ public class ChatController {
             @RequestParam(defaultValue = "20") int size,
             Principal principal) {
         Integer memberIdx = chatService.getMember(principal);
+        System.out.println(memberIdx);
         SliceBaseResponse<ChatRoomReadResponseDto> result = chatService.readRoom(roomIdx, memberIdx, page, size);
         return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK));
     }
-
-//    @MessageMapping("/send")
-//    @SendToUser("/queue/messages")
-//    public ResponseEntity<BaseResponse<Void>> sendMessage(@Payload ChatMessageDto messageDto) {
-//        chatService.sendMessage(messageDto);
-//
-//        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
-//    }
-
 
 }
