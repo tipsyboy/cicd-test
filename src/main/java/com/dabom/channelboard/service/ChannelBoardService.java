@@ -1,10 +1,10 @@
 package com.dabom.channelboard.service;
 
 import com.dabom.channelboard.exception.ChannelBoardException;
-import com.dabom.channelboard.exception.ChannelBoardExceptionMessages;
 import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.boardcomment.repository.BoardCommentRepository;
-import com.dabom.channelboard.exception.ChannelBoardException;
+import com.dabom.channelboard.exception.ChannelBoardException2;
+import com.dabom.channelboard.exception.ChannelBoardExceptionMessages2;
 import com.dabom.channelboard.exception.ChannelBoardExceptionType;
 import com.dabom.channelboard.model.dto.ChannelBoardReadResponseDto;
 import com.dabom.channelboard.model.dto.ChannelBoardRegisterRequestDto;
