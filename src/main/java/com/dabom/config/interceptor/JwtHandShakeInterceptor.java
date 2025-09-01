@@ -77,13 +77,13 @@ public class JwtHandShakeInterceptor implements HandshakeInterceptor {
     private void haveTokenLogic(String jwt, Map<String, Object> attributes) {
         if (jwt != null) {
             Claims claims = JwtUtils.getClaims(jwt);
-            haveDabomTokenLogic(claims, attributes);
+            haveDabomTokenLogic(claims, attributes, jwt);
         }
     }
 
-    private void haveDabomTokenLogic(Claims claims, Map<String, Object> attributes) {
+    private void haveDabomTokenLogic(Claims claims, Map<String, Object> attributes, String jwt) {
         if (claims != null) {
-            MemberDetailsDto dto = createDetailsFromToken(claims);
+            MemberDetailsDto dto = createDetailsFromToken(claims, jwt);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     dto,
@@ -96,11 +96,11 @@ public class JwtHandShakeInterceptor implements HandshakeInterceptor {
         }
     }
 
-    private MemberDetailsDto createDetailsFromToken(Claims claims) {
+    private MemberDetailsDto createDetailsFromToken(Claims claims, String jwt) {
         Integer idx = Integer.parseInt(JwtUtils.getValue(claims, TOKEN_IDX));
         String name = JwtUtils.getValue(claims, TOKEN_NAME);
         String role = JwtUtils.getValue(claims, TOKEN_USER_ROLE);
-        return MemberDetailsDto.createFromToken(idx, name, role);
+        return MemberDetailsDto.createFromToken(idx, name, role, jwt);
     }
 
     @Override
