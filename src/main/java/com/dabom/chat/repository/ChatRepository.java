@@ -18,4 +18,8 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     @Query("SELECT COUNT(c) FROM Chat c WHERE c.room.idx = :roomIdx AND c.isDeleted = false")
     long countByRoomIdxAndIsDeleted(@Param("roomIdx") Long roomIdx);
+
+    @Query("SELECT COUNT(c) FROM Chat c WHERE c.room.idx = :roomIdx AND c.isDeleted = false AND c.isRead = false AND c.recipient.idx = :memberIdx")
+    long countUnreadByRoomIdxAndMemberIdx(@Param("roomIdx") Long roomIdx, @Param("memberIdx") Integer memberIdx);
+
 }

@@ -4,6 +4,7 @@ import com.dabom.common.BaseResponse;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.score.model.dto.ScoreRegisterReqDto;
 import com.dabom.score.model.dto.ScoreUpdateReqDto;
+import com.dabom.score.model.entity.Score;
 import com.dabom.score.model.entity.ScoreType;
 import com.dabom.score.service.ScoreService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/score")
@@ -40,6 +43,22 @@ public class ScoreController {
         scoreService.delete(type,Scoreidx,memberDetailsDto.getIdx());
         return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
 
+    }
+
+    @GetMapping("/{type}/{idx}/average")
+    public ResponseEntity<BaseResponse<Double>> getAverageScore(
+            @PathVariable("type") ScoreType type,
+            @PathVariable("idx") Integer idx) {
+        Double averageScore = scoreService.getAverageScore(type, idx);
+        return ResponseEntity.ok(BaseResponse.of(averageScore, HttpStatus.OK));
+    }
+
+    @GetMapping("/video/{videoIdx}/user/{memberIdx}")
+    public ResponseEntity<BaseResponse<Score>> getUserScoreForVideo(
+            @PathVariable("videoIdx") Integer videoIdx,
+            @PathVariable("memberIdx") Integer memberIdx) {
+        Optional<Score> score = scoreService.getUserScoreForVideo(videoIdx, memberIdx);
+        return ResponseEntity.ok(BaseResponse.of(score.orElse(null), HttpStatus.OK));
     }
 
 

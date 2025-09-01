@@ -1,5 +1,7 @@
 package com.dabom.chat.serivce;
 
+import com.dabom.chat.exception.ChatException;
+import com.dabom.chat.exception.ChatExceptionMessages;
 import com.dabom.chat.model.dto.ChatMessageDto;
 import com.dabom.chat.model.dto.ChatRoomListResponseDto;
 import com.dabom.chat.model.dto.ChatRoomReadResponseDto;
@@ -9,6 +11,7 @@ import com.dabom.chat.model.entity.ChatRoom;
 import com.dabom.chat.repository.ChatRepository;
 import com.dabom.chat.repository.ChatRoomRepository;
 import com.dabom.common.SliceBaseResponse;
+import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +40,13 @@ public class ChatService {
     }
 
     public Integer getMember(Principal principal) {
+        if (!(principal instanceof UsernamePasswordAuthenticationToken)) {
+            throw new ChatException(ChatExceptionMessages.UNAUTHORIZED_ACCESS);
+        }
         UsernamePasswordAuthenticationToken authToken = (UsernamePasswordAuthenticationToken) principal;
+        if (!(authToken.getPrincipal() instanceof MemberDetailsDto)) {
+            throw new ChatException(ChatExceptionMessages.UNAUTHORIZED_ACCESS);
+        }
         MemberDetailsDto memberDetails = (MemberDetailsDto) authToken.getPrincipal();
         return memberDetails.getIdx();
 
@@ -45,11 +54,19 @@ public class ChatService {
 
     public List<ChatRoomListResponseDto> getList(Integer memberIdx) {
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByMemberIdxAndIsDeleted(memberIdx);
-
         return chatRooms.stream()
                 .map(chatRoom -> {
                     Optional<Chat> lastChat = chatRepository.findTopByRoomIdxAndIsDeletedOrderByCreatedAtDesc(chatRoom.getIdx());
-                    return ChatRoomListResponseDto.fromEntity(chatRoom, lastChat.orElse(null));
+                    long unreadCount = chatRepository.countUnreadByRoomIdxAndMemberIdx(chatRoom.getIdx(), memberIdx);
+
+                    // 상대방 정보 찾기
+                    Member opponent = chatRoom.getMember1().getIdx().equals(memberIdx) ? chatRoom.getMember2() : chatRoom.getMember1();
+
+                    return ChatRoomListResponseDto.fromEntity(chatRoom, lastChat.orElse(null), unreadCount,
+                            //임시
+                            //opponent.getProfileImageUrl()
+                            "asd"
+                    );
                 })
                 .collect(Collectors.toList());
     }
@@ -57,9 +74,9 @@ public class ChatService {
     public SliceBaseResponse<ChatRoomReadResponseDto> readRoom(Long roomIdx, Integer memberIdx, int page, int size) {
         // 채팅방 존재 여부 및 권한 확인
         ChatRoom chatRoom = chatRoomRepository.findById(roomIdx)
-                .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
+                .orElseThrow(() -> new ChatException(ChatExceptionMessages.CHAT_ROOM_NOT_FOUND));
         if (!chatRoom.getMember1().getIdx().equals(memberIdx) && !chatRoom.getMember2().getIdx().equals(memberIdx)) {
-            throw new SecurityException("Unauthorized access to chat room");
+            throw new ChatException(ChatExceptionMessages.UNAUTHORIZED_ACCESS);
         }
 
         // 페이징된 메시지 목록 조회
@@ -91,13 +108,24 @@ public class ChatService {
         );
     }
 
-    public void sendMessage(ChatMessageDto messageDto) {
-        Optional<ChatRoom> chatRoomResult = chatRoomRepository.findById(messageDto.getRoomIdx());
-        ChatRoom chatRoom = null;
-        if (chatRoomResult.isPresent()) {
-            chatRoom = chatRoomResult.get();
-        }
-        chatRepository.save(Chat.from(messageDto, chatRoom));
+    public ChatMessageDto sendMessage(ChatMessageDto messageDto, MemberDetailsDto userDetails) {
+        ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getRoomIdx())
+                .orElseThrow(() -> new ChatException(ChatExceptionMessages.CHAT_ROOM_NOT_FOUND));
+
+        Member sender = memberRepository.findById(userDetails.getIdx())
+                .orElseThrow(() -> new ChatException(ChatExceptionMessages.MEMBER_NOT_FOUND));
+
+        Member recipient = chatRoom.getMember1().getIdx().equals(sender.getIdx()) ? chatRoom.getMember2() : chatRoom.getMember1();
+
+        Chat chatToSave = Chat.builder()
+                .message(messageDto.getMessage())
+                .room(chatRoom)
+                .sender(sender)
+                .recipient(recipient)
+                .build();
+
+        Chat savedChat = chatRepository.save(chatToSave);
+        return ChatMessageDto.fromEntity(savedChat);
     }
 
 

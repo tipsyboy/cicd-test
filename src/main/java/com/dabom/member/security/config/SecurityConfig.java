@@ -33,6 +33,7 @@ public class SecurityConfig {
             "/api/member/signup",
             "/api/member/exists/**",
             "/api/channel/board/**",
+            "/api/chat/**",
             "/oauth2/authorization/**",
     };
     private static final String[] SWAGGER_LIST = {"/swagger-ui*/**", "/v3/api-docs/**", "/webjars/**"};

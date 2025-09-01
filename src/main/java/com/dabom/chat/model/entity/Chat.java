@@ -19,7 +19,7 @@ public class Chat extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
 
     @ManyToOne
@@ -27,11 +27,11 @@ public class Chat extends BaseEntity {
     private ChatRoom room;
 
     @ManyToOne
-    @JoinColumn(name = "sender", nullable = false)
+    @JoinColumn(name = "sender_idx", nullable = false)
     private Member sender;
 
     @ManyToOne
-    @JoinColumn(name = "recipient", nullable = false)
+    @JoinColumn(name = "recipient_idx", nullable = false)
     private Member recipient;
 
     @Column(nullable = false)
@@ -57,11 +57,13 @@ public class Chat extends BaseEntity {
     }
 
     public static Chat from(ChatMessageDto messageDto, ChatRoom room) {
+        Member sender = room.getMember1().getIdx().equals(messageDto.getSenderIdx()) ? room.getMember1() : room.getMember2();
+        Member recipient = room.getMember1().getIdx().equals(messageDto.getRecipientIdx()) ? room.getMember1() : room.getMember2();
         return Chat.builder()
                 .message(messageDto.getMessage())
                 .room(room)
-                .sender(room.getMember1())
-                .recipient(room.getMember2())
+                .sender(sender)
+                .recipient(recipient)
                 .build();
     }
 }
