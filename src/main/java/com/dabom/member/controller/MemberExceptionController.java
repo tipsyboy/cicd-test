@@ -1,5 +1,6 @@
 package com.dabom.member.controller;
 
+import com.dabom.common.exception.BaseException;
 import com.dabom.common.exception.ErrorResponse;
 import com.dabom.member.exception.MemberException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class MemberExceptionController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MemberException.class)
-    public ResponseEntity<ErrorResponse> memberExceptionHandler(MemberException e) {
-        log.info("[MemberException] ex : {}", e.getExceptionType().message());
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<ErrorResponse> memberExceptionHandler(BaseException e) {
+        log.info("[] ex : {}", e.getExceptionType().message());
         return ResponseEntity.ok(ErrorResponse.from(e));
     }
 }

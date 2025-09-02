@@ -36,7 +36,8 @@ public class MemberDetailsDto implements UserDetails, OAuth2User {
     }
 
     public static MemberDetailsDto createFromOauth2(Member member, Map<String, Object> attributes) {
-        return new MemberDetailsDto(member, attributes);
+        MemberDetailsDto memberDetailsDto = new MemberDetailsDto(member, attributes);
+        return memberDetailsDto;
     }
 
     private MemberDetailsDto(Member member, Map<String, Object> attributes) {

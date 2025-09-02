@@ -25,14 +25,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String jwt = JwtUtils.generateLoginToken(dto.getIdx(), dto.getEmail(), dto.getMemberRole());
 
         if (jwt != null) {
-            Cookie removeCookie = new Cookie("JSESSIONID","");
-            removeCookie.setMaxAge(0);
             Cookie cookie = new Cookie(ACCESS_TOKEN, jwt);
             cookie.setHttpOnly(true);
             cookie.setPath("/");
 
             response.addCookie(cookie);
-            response.addCookie(removeCookie);
             response.setContentType("text/html");
             response.getWriter().write(
                     "<script>" +

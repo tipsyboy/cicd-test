@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 
 import java.util.concurrent.ConcurrentHashMap;
 
-// 강사님께 이렇게 하면 토큰만 생성되고 세션은 막히는게 맞는지 확인하기 (Security 필터를 다 통과하는지 확인)
 public class StatelessAuthorizationRequestRepository
         implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
