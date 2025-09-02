@@ -1,9 +1,10 @@
 package com.dabom.channelboard.service;
 
+
+import com.dabom.channelboard.exception.ChannelBoardException2;
 import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.boardcomment.repository.BoardCommentRepository;
 import com.dabom.channelboard.exception.ChannelBoardException;
-import com.dabom.channelboard.exception.ChannelBoardException2;
 import com.dabom.channelboard.exception.ChannelBoardExceptionMessages2;
 import com.dabom.channelboard.exception.ChannelBoardExceptionType;
 import com.dabom.channelboard.model.dto.ChannelBoardReadResponseDto;
@@ -34,7 +35,7 @@ public class ChannelBoardService {
     public Integer register(ChannelBoardRegisterRequestDto dto
             , MemberDetailsDto memberDetailsDto) {
         Member memberIdx = memberRepository.findById(memberDetailsDto.getIdx()).
-                orElseThrow(() -> new ChannelBoardException2(ChannelBoardExceptionMessages2.MEMBER_NOT_FOUND));
+                orElseThrow(() -> new ChannelBoardException(ChannelBoardExceptionMessages2.MEMBER_NOT_FOUND));
         ChannelBoard result = channelBoardRepository.save(dto.toEntity(memberIdx));
         return result.getIdx();
     }

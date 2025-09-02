@@ -13,7 +13,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     @Query("SELECT c FROM Chat c WHERE c.room.idx = :roomIdx AND c.isDeleted = false ORDER BY c.createdAt ASC")
     Slice<Chat> findByRoomIdxAndIsDeleted(@Param("roomIdx") Long roomIdx, Pageable pageable);
 
-    @Query("SELECT c FROM Chat c WHERE c.room.idx = :roomIdx AND c.isDeleted = false ORDER BY c.createdAt DESC")
+    @Query("SELECT c FROM Chat c WHERE c.room.idx = :roomIdx AND c.isDeleted = false ORDER BY c.createdAt DESC LIMIT 1")
     Optional<Chat> findTopByRoomIdxAndIsDeletedOrderByCreatedAtDesc(@Param("roomIdx") Long roomIdx);
 
     @Query("SELECT COUNT(c) FROM Chat c WHERE c.room.idx = :roomIdx AND c.isDeleted = false")
