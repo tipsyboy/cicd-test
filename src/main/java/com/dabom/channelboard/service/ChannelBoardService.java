@@ -1,5 +1,6 @@
 package com.dabom.channelboard.service;
 
+
 import com.dabom.channelboard.exception.ChannelBoardException2;
 import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.boardcomment.repository.BoardCommentRepository;

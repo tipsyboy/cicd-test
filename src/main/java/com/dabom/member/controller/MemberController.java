@@ -418,9 +418,9 @@ public class MemberController {
                     )
             }
     )
-    @GetMapping("/info/{channelIdx}")
-    public ResponseEntity<BaseResponse<MemberInfoResponseDto>> getChannelInfo(@PathVariable Integer channelIdx) {
-        MemberInfoResponseDto channelInfo = memberService.getChannelInfoByIdx(channelIdx);
+    @GetMapping("/info/{channelName}")
+    public ResponseEntity<BaseResponse<MemberInfoResponseDto>> getChannelInfo(@PathVariable String channelName) {
+        MemberInfoResponseDto channelInfo = memberService.getChannelInfoByChannelName(channelName);
         return ResponseEntity.ok(BaseResponse.of(channelInfo, HttpStatus.OK));
     }
 

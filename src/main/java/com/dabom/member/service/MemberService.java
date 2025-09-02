@@ -1,6 +1,7 @@
 package com.dabom.member.service;
 
 import com.dabom.member.exception.MemberException;
+import com.dabom.member.exception.MemberExceptionType;
 import com.dabom.member.model.dto.*;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
@@ -129,9 +130,9 @@ public class MemberService {
         return optionalMember.get();
     }
 
-    public MemberInfoResponseDto getChannelInfoByIdx(Integer channelIdx) {
-        Member member = repository.findById(channelIdx)
-                .orElseThrow(() -> new RuntimeException("채널을 찾을 수 없습니다"));
+    public MemberInfoResponseDto getChannelInfoByChannelName(String channelName) {
+        Member member = repository.findByName(channelName)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         return MemberInfoResponseDto.toDto(member);
     }
 }
