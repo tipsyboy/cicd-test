@@ -1,7 +1,11 @@
 package com.dabom.member.controller;
 
 import com.dabom.common.BaseResponse;
-import com.dabom.member.model.dto.*;
+import com.dabom.member.model.dto.request.*;
+import com.dabom.member.model.dto.response.MemberChannelNameCheckResponseDto;
+import com.dabom.member.model.dto.response.MemberEmailCheckResponseDto;
+import com.dabom.member.model.dto.response.MemberInfoResponseDto;
+import com.dabom.member.model.dto.response.MemberLoginResponseDto;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;

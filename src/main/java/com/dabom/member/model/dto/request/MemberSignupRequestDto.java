@@ -1,4 +1,4 @@
-package com.dabom.member.model.dto;
+package com.dabom.member.model.dto.request;
 
 import com.dabom.member.model.entity.Member;
 import jakarta.validation.constraints.NotBlank;

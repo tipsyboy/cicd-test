@@ -1,10 +1,8 @@
 package com.dabom.together.model.dto.response;
 
-import com.dabom.member.model.dto.MemberInfoResponseDto;
+import com.dabom.member.model.dto.response.MemberInfoResponseDto;
 import com.dabom.member.model.entity.Member;
 import com.dabom.together.model.entity.Together;
-
-import java.util.UUID;
 
 public record TogetherInfoResponseDto(Integer togetherIdx, String title, Integer maxMemberNum,
                                       Integer joinMemberNumber, MemberInfoResponseDto master,
