@@ -13,6 +13,10 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Integer> {
     Optional<Member> findByEmail(String email);
     Optional<Member> findByName(String name);
+    @Query("SELECT m FROM Member m JOIN FETCH m.videoList v WHERE m.isDeleted = false AND m.name = :name ORDER BY m.createdAt DESC")
+    Optional<Member> findByNameWithVideos(String name);
+    @Query("SELECT m FROM Member m JOIN FETCH m.videoList v WHERE m.isDeleted = false AND m.idx = :id ORDER BY m.createdAt DESC")
+    Optional<Member> findByIdWithVideos(Integer id);
     @Query("SELECT m FROM Member m WHERE m.isDeleted = false AND m.name = :name ORDER BY m.createdAt DESC")
     List<Member> findMembersByName(String name);
 }

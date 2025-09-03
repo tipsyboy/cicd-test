@@ -47,7 +47,7 @@ public class VideoService {
     }
 
     public List<VideoInformationResponseDto> getVideoListByChannelName(String channelName) {
-        Member channel = memberRepository.findByName(channelName)
+        Member channel = memberRepository.findByNameWithVideos(channelName)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
 
         return channel.getVideoList().stream()
@@ -56,7 +56,7 @@ public class VideoService {
     }
 
     public List<VideoInformationResponseDto> getVideoListByLoginMember(Integer memberIdx) {
-        Member channel = memberRepository.findById(memberIdx)
+        Member channel = memberRepository.findByIdWithVideos(memberIdx)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
 
         return channel.getVideoList().stream()
