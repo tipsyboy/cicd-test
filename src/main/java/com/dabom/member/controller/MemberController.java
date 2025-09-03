@@ -383,7 +383,16 @@ public class MemberController {
     @DeleteMapping
     public ResponseEntity<BaseResponse<String>> deleteMember(@AuthenticationPrincipal MemberDetailsDto dto) {
         memberService.deleteMember(dto);
-        return ResponseEntity.ok(BaseResponse.of("삭제 완료 되었습니다. 실제 데이터 삭제까지는 하루정도 소요됩니다.", HttpStatus.OK));
+        ResponseCookie deleteAccessToken = ResponseCookie.from(ACCESS_TOKEN, "")
+                .httpOnly(true)
+                .secure(true)
+//                .sameSite("None")
+                .path("/")
+                .maxAge(0)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteAccessToken.toString())
+                .body(BaseResponse.of("삭제 완료 되었습니다. 실제 데이터 삭제까지는 하루정도 소요됩니다.", HttpStatus.OK));
     }
     @Operation(
             summary = "채널 정보 조회",
