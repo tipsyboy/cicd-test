@@ -21,7 +21,6 @@ public class PlaylistItem {
     private Playlist playlist;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_idx")
     private Video video;
 
     public PlaylistItem(Playlist playlist, Video video){
