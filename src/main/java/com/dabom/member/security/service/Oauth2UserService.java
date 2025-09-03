@@ -12,9 +12,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +71,12 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
                     .build();
             return repository.save(newMember);
         }
-        return optionalMember.get();
+        Member member = optionalMember.get();
+        if(member.getIsDeleted()) {
+            member.rollBackMember();
+            return repository.save(member);
+        }
+        return member;
     }
 }
 

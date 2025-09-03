@@ -21,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dabom.member.exception.MemberExceptionType.DUPLICATED_CHANNEL_NAME;
-import static com.dabom.member.exception.MemberExceptionType.MEMBER_NOT_FOUND;
+import static com.dabom.member.exception.MemberExceptionType.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,6 +35,14 @@ public class MemberService {
     public void signUpMember(MemberSignupRequestDto dto) {
         String encodedPassword = encoder.encode(dto.getPassword());
         checkDuplicatedName(dto);
+        Optional<Member> optional = repository.findByEmail(dto.getEmail());
+        if(optional.isPresent()) {
+            Member member = optional.get();
+            checkIsNotDelete(member);
+            member.rollBackMember();
+            repository.save(member);
+            return;
+        }
         repository.save(dto.toEntity(encodedPassword));
     }
 
@@ -96,6 +103,18 @@ public class MemberService {
         repository.save(member);
     }
 
+    public MemberInfoResponseDto getChannelInfoByChannelName(String channelName) {
+        Member member = repository.findByName(channelName)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        return MemberInfoResponseDto.toDto(member);
+    }
+
+    private void checkIsNotDelete(Member member) {
+        if(member.getIsDeleted()) {
+            throw new MemberException(DUPLICATED_SIGNUP);
+        }
+    }
+
     private void checkDuplicatedName(MemberSignupRequestDto dto) {
         Optional<Member> checkName = repository.findByName(dto.getChannelName());
         if(checkName.isEmpty()) {
@@ -131,11 +150,5 @@ public class MemberService {
             throw new MemberException(MEMBER_NOT_FOUND);
         }
         return optionalMember.get();
-    }
-
-    public MemberInfoResponseDto getChannelInfoByChannelName(String channelName) {
-        Member member = repository.findByName(channelName)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        return MemberInfoResponseDto.toDto(member);
     }
 }
