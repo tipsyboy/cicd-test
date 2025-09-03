@@ -18,7 +18,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "채널 게시판 기능")
@@ -103,10 +105,17 @@ public class ChannelBoardController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "oldest") String sort,
-            @RequestParam(required = false) Integer channelIdx,
-            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto
-    ) {
-        SliceBaseResponse<ChannelBoardReadResponseDto> result = channelBoardService.list(page, size, sort, channelIdx, memberDetailsDto);
+            @RequestParam String channelName) {
+        // 인증 정보 수동으로 가져오기
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        MemberDetailsDto memberDetailsDto = null;
+
+        if (auth != null && auth.isAuthenticated() &&
+            auth.getPrincipal() instanceof MemberDetailsDto) {
+            memberDetailsDto = (MemberDetailsDto) auth.getPrincipal();
+        }
+
+        SliceBaseResponse<ChannelBoardReadResponseDto> result = channelBoardService.list(page, size, sort, channelName, memberDetailsDto);
         return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK, "게시글 목록 조회 성공"));
     }
 
@@ -138,7 +147,7 @@ public class ChannelBoardController {
     )
     @GetMapping("/read/{boardIdx}")
     public ResponseEntity<BaseResponse<ChannelBoardReadResponseDto>> read(@PathVariable Integer boardIdx,
-                                                                          @AuthenticationPrincipal MemberDetailsDto memberDetailsDto ) {
+                                                                          @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
         ChannelBoardReadResponseDto result = channelBoardService.read(boardIdx, memberDetailsDto);
         return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK, "게시글 검색 완료"));
     }

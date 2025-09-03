@@ -43,21 +43,19 @@ public class ChannelBoardService {
     }
 
     public SliceBaseResponse<ChannelBoardReadResponseDto> list(
-            Integer page, Integer size, String sort, Integer channelIdx,MemberDetailsDto memberDetailsDto) {
+            Integer page, Integer size, String sort, String name,MemberDetailsDto memberDetailsDto) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<ChannelBoard> channelBoardSlice;
 
-        Integer targetIdx = (channelIdx != null) ? channelIdx : memberDetailsDto.getIdx();
-
         switch (sort) {
             case "latest":
-                channelBoardSlice = channelBoardRepository.findAllByChannelIdxAndIsDeletedFalseOrderByIdxDesc(
-                        targetIdx, pageable);
+                channelBoardSlice = channelBoardRepository.findAllByChannelNameAndIsDeletedFalseOrderByIdxDesc(
+                        name, pageable);
                 break;
             case "oldest":
             default:
-                channelBoardSlice = channelBoardRepository.findAllByChannelIdxAndIsDeletedFalseOrderByIdxAsc(
-                        targetIdx, pageable);
+                channelBoardSlice = channelBoardRepository.findAllByChannelNameAndIsDeletedFalseOrderByIdxAsc(
+                        name, pageable);
                 break;
         }
 
@@ -69,7 +67,7 @@ public class ChannelBoardService {
                 })
                 .toList();
 
-        Long totalCount = channelBoardRepository.countByChannelIdxAndIsDeletedFalse(targetIdx);
+        Long totalCount = channelBoardRepository.countByChannelNameAndIsDeletedFalse(name);
         return new SliceBaseResponse<ChannelBoardReadResponseDto>(content, channelBoardSlice.hasNext(), totalCount);
     }
 
