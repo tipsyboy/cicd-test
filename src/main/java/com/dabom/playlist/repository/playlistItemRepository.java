@@ -18,7 +18,7 @@ public interface playlistItemRepository extends JpaRepository<PlaylistItem,Integ
 
     List<PlaylistItem> findAllByPlaylist(Playlist playlist);
 
-    @Query("SELECT pi.video FROM PlaylistItem pi WHERE pi.playlist = :playlist")
+    @Query("SELECT pi.video FROM PlaylistItem pi JOIN FETCH pi.video.channel WHERE pi.playlist = :playlist")
     List<Video> findVideosByPlaylist(@Param("playlist") Playlist playlist);
 
 }

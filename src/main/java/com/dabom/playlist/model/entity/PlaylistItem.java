@@ -1,6 +1,7 @@
 package com.dabom.playlist.model.entity;
 
 import com.dabom.video.model.Video;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,12 +15,12 @@ public class PlaylistItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "playlist_idx")
     private Playlist playlist;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_idx")
     private Video video;
 
     public PlaylistItem(Playlist playlist, Video video){
