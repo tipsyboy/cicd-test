@@ -29,11 +29,11 @@ public class Together extends BaseEntity {
     @Column(columnDefinition = "CHAR(36) DEFAULT (UUID())", updatable = false, insertable = false)
     private UUID code;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "master_idx")
     private Member master;
 
-    @OneToMany(mappedBy = "together")
+    @OneToMany(mappedBy = "together", fetch = FetchType.LAZY)
     private List<TogetherJoinMember> members;
 
     @Builder
