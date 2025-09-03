@@ -94,6 +94,10 @@ public class Member extends BaseEntity {
         this.isDeleted = true;
     }
 
+    public void rollBackMember() {
+        this.isDeleted = false;
+    }
+
     public void changeProfile(Image profile) {
         this.profileImage = profile;
     }

@@ -26,7 +26,10 @@ public class CustomMemberDetailsService implements UserDetailsService {
             throw new MemberException(MEMBER_NOT_FOUND);
         }
         Member member = optionalMember.get();
-
+        if(member.getIsDeleted()) {
+            member.rollBackMember();
+            member = repository.save(member);
+        }
         return MemberDetailsDto.builder()
                 .member(member)
                 .build();
