@@ -1,7 +1,7 @@
 package com.dabom.image.service;
 
 import com.dabom.image.exception.ImageException;
-import com.dabom.image.exception.ImageExceptionMessages;
+import com.dabom.image.exception.ImageExceptionType;
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.model.entity.Image;
 import com.dabom.image.repository.ImageRepository;
@@ -19,7 +19,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -64,13 +63,13 @@ public class S3ImageService implements ImageService {
             validateImage(file);
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("비어있습니다")) {
-                throw new ImageException(ImageExceptionMessages.FILE_EMPTY);
+                throw new ImageException(ImageExceptionType.FILE_EMPTY);
             } else if (e.getMessage().contains("초과할 수 없습니다")) {
-                throw new ImageException(ImageExceptionMessages.FILE_TOO_LARGE);
+                throw new ImageException(ImageExceptionType.FILE_TOO_LARGE);
             } else if (e.getMessage().contains("지원하지 않는 파일 형식")) {
-                throw new ImageException(ImageExceptionMessages.UNSUPPORTED_FILE_TYPE);
+                throw new ImageException(ImageExceptionType.UNSUPPORTED_FILE_TYPE);
             } else {
-                throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
+                throw new ImageException(ImageExceptionType.UPLOAD_FAILED);
             }
         }
 
@@ -119,7 +118,7 @@ public class S3ImageService implements ImageService {
                     } catch (ImageException e) {
                         throw e;
                     } catch (Exception e) {
-                        throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
+                        throw new ImageException(ImageExceptionType.UPLOAD_FAILED);
                     }
                 })
                 .collect(Collectors.toList());
@@ -142,7 +141,7 @@ public class S3ImageService implements ImageService {
             URL presignedUrl = presignedRequest.url();
             return presignedUrl.toString();
         } else {
-            throw new ImageException(ImageExceptionMessages.IMAGE_NOT_FOUND);
+            throw new ImageException(ImageExceptionType.IMAGE_NOT_FOUND);
         }
     }
 
@@ -153,7 +152,7 @@ public class S3ImageService implements ImageService {
             Image delImg = result.get();
             delImg.safeDelete();
         } else {
-            throw new ImageException(ImageExceptionMessages.IMAGE_NOT_FOUND);
+            throw new ImageException(ImageExceptionType.IMAGE_NOT_FOUND);
         }
     }
 }

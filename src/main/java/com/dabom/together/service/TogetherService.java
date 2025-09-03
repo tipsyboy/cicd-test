@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.dabom.together.exception.TogetherExceptionMessages.NOT_MASTER_MEMBER;
+import static com.dabom.together.exception.TogetherExceptionType.NOT_MASTER_MEMBER;
 
 @Service
 @Transactional(readOnly = true)

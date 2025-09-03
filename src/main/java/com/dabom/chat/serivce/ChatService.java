@@ -1,7 +1,7 @@
 package com.dabom.chat.serivce;
 
 import com.dabom.chat.exception.ChatException;
-import com.dabom.chat.exception.ChatExceptionMessages;
+import com.dabom.chat.exception.ChatExceptionType;
 import com.dabom.chat.model.dto.ChatMessageDto;
 import com.dabom.chat.model.dto.ChatRoomListResponseDto;
 import com.dabom.chat.model.dto.ChatRoomReadResponseDto;
@@ -41,11 +41,11 @@ public class ChatService {
 
     public Integer getMember(Principal principal) {
         if (!(principal instanceof UsernamePasswordAuthenticationToken)) {
-            throw new ChatException(ChatExceptionMessages.UNAUTHORIZED_ACCESS);
+            throw new ChatException(ChatExceptionType.UNAUTHORIZED_ACCESS);
         }
         UsernamePasswordAuthenticationToken authToken = (UsernamePasswordAuthenticationToken) principal;
         if (!(authToken.getPrincipal() instanceof MemberDetailsDto)) {
-            throw new ChatException(ChatExceptionMessages.UNAUTHORIZED_ACCESS);
+            throw new ChatException(ChatExceptionType.UNAUTHORIZED_ACCESS);
         }
         MemberDetailsDto memberDetails = (MemberDetailsDto) authToken.getPrincipal();
         return memberDetails.getIdx();
@@ -74,9 +74,9 @@ public class ChatService {
     public SliceBaseResponse<ChatRoomReadResponseDto> readRoom(Long roomIdx, Integer memberIdx, int page, int size) {
         // 채팅방 존재 여부 및 권한 확인
         ChatRoom chatRoom = chatRoomRepository.findById(roomIdx)
-                .orElseThrow(() -> new ChatException(ChatExceptionMessages.CHAT_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ChatException(ChatExceptionType.CHAT_ROOM_NOT_FOUND));
         if (!chatRoom.getMember1().getIdx().equals(memberIdx) && !chatRoom.getMember2().getIdx().equals(memberIdx)) {
-            throw new ChatException(ChatExceptionMessages.UNAUTHORIZED_ACCESS);
+            throw new ChatException(ChatExceptionType.UNAUTHORIZED_ACCESS);
         }
 
         // 페이징된 메시지 목록 조회
@@ -110,10 +110,10 @@ public class ChatService {
 
     public ChatMessageDto sendMessage(ChatMessageDto messageDto, MemberDetailsDto userDetails) {
         ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getRoomIdx())
-                .orElseThrow(() -> new ChatException(ChatExceptionMessages.CHAT_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ChatException(ChatExceptionType.CHAT_ROOM_NOT_FOUND));
 
         Member sender = memberRepository.findById(userDetails.getIdx())
-                .orElseThrow(() -> new ChatException(ChatExceptionMessages.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new ChatException(ChatExceptionType.MEMBER_NOT_FOUND));
 
         Member recipient = chatRoom.getMember1().getIdx().equals(sender.getIdx()) ? chatRoom.getMember2() : chatRoom.getMember1();
 

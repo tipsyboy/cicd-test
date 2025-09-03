@@ -14,7 +14,7 @@ import com.dabom.playlist.repository.playlistItemRepository;
 import com.dabom.video.model.Video;
 import com.dabom.video.repository.VideoRepository;
 import com.dabom.playlist.exception.PlaylistException;
-import com.dabom.playlist.exception.PlaylistExceptionMessages;
+import com.dabom.playlist.exception.PlaylistExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +36,7 @@ public class PlaylistService {
     public Integer register(PlaylistRegisterDto dto, Integer memberIdx) {
 
         Member member = memberRepository.findById(memberIdx)
-                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionType.MEMBER_NOT_FOUND));
 
         Playlist playlist = Playlist.builder()
                 .playlistTitle(dto.getPlaylistTitle())
@@ -48,18 +48,18 @@ public class PlaylistService {
     @Transactional
     public void add(AddVideoDto dto, Integer memberIdx) {
         Playlist playlist = playlistRepository.findById(dto.getPlaylistIdx())
-                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionType.PLAYLIST_NOT_FOUND));
 
         Video video = videoRepository.findById(dto.getVideoIdx())
-                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.VIDEO_NOT_FOUND));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionType.VIDEO_NOT_FOUND));
 
         if (!playlist.getMember().getIdx().equals(memberIdx)) {
-            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_ADD_VIDEO);
+            throw new PlaylistException(PlaylistExceptionType.NO_PERMISSION_ADD_VIDEO);
 
         }
 
         if (playlistItemRepository.existsByPlaylistAndVideo(playlist, video)) {
-            throw new PlaylistException(PlaylistExceptionMessages.VIDEO_ALREADY_IN_PLAYLIST);
+            throw new PlaylistException(PlaylistExceptionType.VIDEO_ALREADY_IN_PLAYLIST);
         }
 
         playlistItemRepository.save(new PlaylistItem(playlist, video));
@@ -68,10 +68,10 @@ public class PlaylistService {
     @Transactional
     public void delete(Integer playlistIdx, Integer memberIdx) {
         Playlist playlist = playlistRepository.findById(playlistIdx)
-                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionType.PLAYLIST_NOT_FOUND));
 
         if (!playlist.getMember().getIdx().equals(memberIdx)) {
-            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_DELETE_PLAYLIST);
+            throw new PlaylistException(PlaylistExceptionType.NO_PERMISSION_DELETE_PLAYLIST);
         }
         List<PlaylistItem> itemsToDelete = playlistItemRepository.findAllByPlaylist(playlist);
 
@@ -82,7 +82,7 @@ public class PlaylistService {
 
     public List<playlistResponseDto> list(Integer memberidx) {
         Member member = memberRepository.findById(memberidx)
-                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionType.MEMBER_NOT_FOUND));
 
         List<Playlist> playlists = playlistRepository.findAllByMember(member);
 
@@ -94,10 +94,10 @@ public class PlaylistService {
     @Transactional
     public void update(PlaylistUpdateDto dto, Integer playlistIdx, Integer memberIdx) {
         Playlist entity = playlistRepository.findById(playlistIdx)
-                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionType.PLAYLIST_NOT_FOUND));
 
         if (!entity.getMember().getIdx().equals(memberIdx)) {
-            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_UPDATE_PLAYLIST);
+            throw new PlaylistException(PlaylistExceptionType.NO_PERMISSION_UPDATE_PLAYLIST);
         }
 
         entity.setPlaylistTitle(dto.getPlaylistTitle());
@@ -106,10 +106,10 @@ public class PlaylistService {
 
     public PlaylistInnerDto getPlaylistDetails(Integer playlistIdx, Integer memberIdx) {
         Playlist playlist = playlistRepository.findById(playlistIdx)
-                .orElseThrow(() -> new PlaylistException(PlaylistExceptionMessages.PLAYLIST_NOT_FOUND));
+                .orElseThrow(() -> new PlaylistException(PlaylistExceptionType.PLAYLIST_NOT_FOUND));
 
         if (!playlist.getMember().getIdx().equals(memberIdx)) {
-            throw new PlaylistException(PlaylistExceptionMessages.NO_PERMISSION_VIEW_PLAYLIST);
+            throw new PlaylistException(PlaylistExceptionType.NO_PERMISSION_VIEW_PLAYLIST);
         }
 
         List<Video> videos = playlistItemRepository.findVideosByPlaylist(playlist);

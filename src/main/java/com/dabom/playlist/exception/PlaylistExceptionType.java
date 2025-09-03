@@ -3,7 +3,7 @@ package com.dabom.playlist.exception;
 import com.dabom.common.exception.ExceptionType;
 import org.springframework.http.HttpStatus;
 
-public enum PlaylistExceptionMessages implements ExceptionType {
+public enum PlaylistExceptionType implements ExceptionType {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     PLAYLIST_NOT_FOUND(HttpStatus.NOT_FOUND, "플레이리스트를 찾을 수 없습니다."),
     VIDEO_NOT_FOUND(HttpStatus.NOT_FOUND, "비디오를 찾을 수 없습니다."),
@@ -16,7 +16,7 @@ public enum PlaylistExceptionMessages implements ExceptionType {
     private final HttpStatus httpStatus;
     private final String message;
 
-    PlaylistExceptionMessages(HttpStatus httpStatus, String message) {
+    PlaylistExceptionType(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;
         this.message = message;
     }

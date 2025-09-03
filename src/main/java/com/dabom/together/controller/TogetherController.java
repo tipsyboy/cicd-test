@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static com.dabom.together.exception.TogetherExceptionMessages.CHOICE_OPEN_STATUS;
+import static com.dabom.together.exception.TogetherExceptionType.CHOICE_OPEN_STATUS;
 
 @RestController
 @RequestMapping("/api/together")

@@ -1,5 +1,7 @@
 package com.dabom.image.util;
 
+import com.dabom.image.exception.ImageException;
+import com.dabom.image.exception.ImageExceptionType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -33,16 +35,16 @@ public class ImageUtils {
 
     public static void validateImage(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("파일이 비어있습니다.");
+            throw new ImageException(ImageExceptionType.FILE_EMPTY);
         }
 
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("파일 크기는 10MB를 초과할 수 없습니다.");
+            throw new ImageException(ImageExceptionType.FILE_TOO_LARGE);
         }
 
         String extension = getFileExtension(file.getOriginalFilename());
         if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
-            throw new IllegalArgumentException("지원하지 않는 파일 형식입니다. (jpg, jpeg, png, gif, webp만 가능)");
+            throw new ImageException(ImageExceptionType.UNSUPPORTED_FILE_TYPE);
         }
     }
 }
