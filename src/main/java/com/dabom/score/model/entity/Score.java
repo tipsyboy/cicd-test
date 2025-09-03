@@ -3,7 +3,7 @@ package com.dabom.score.model.entity;
 import com.dabom.common.BaseEntity;
 import com.dabom.member.model.entity.Member;
 import com.dabom.score.exception.ScoreException;
-import com.dabom.score.exception.ScoreExceptionMessages;
+import com.dabom.score.exception.ScoreExceptionType;
 import com.dabom.video.model.Video;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -59,19 +59,19 @@ public class Score extends BaseEntity {
     @PreUpdate
     private void validate() {
         if (score < 0.0 || score > 5.0) {
-            throw new ScoreException(ScoreExceptionMessages.INVALID_SCORE_RANGE);
+            throw new ScoreException(ScoreExceptionType.INVALID_SCORE_RANGE);
         }
         if (member == null) {
-            throw new ScoreException(ScoreExceptionMessages.MEMBER_NOT_FOUND);
+            throw new ScoreException(ScoreExceptionType.MEMBER_NOT_FOUND);
         }
         if ((channel == null && video == null) || (channel != null && video != null)) {
-            throw new ScoreException(ScoreExceptionMessages.TARGET_NOT_SPECIFIED);
+            throw new ScoreException(ScoreExceptionType.TARGET_NOT_SPECIFIED);
         }
         if (channel != null && scoreType != ScoreType.CHANNEL) {
-            throw new ScoreException(ScoreExceptionMessages.SCORE_TYPE_MISMATCH);
+            throw new ScoreException(ScoreExceptionType.SCORE_TYPE_MISMATCH);
         }
         if (video != null && scoreType != ScoreType.VIDEO) {
-            throw new ScoreException(ScoreExceptionMessages.SCORE_TYPE_MISMATCH);
+            throw new ScoreException(ScoreExceptionType.SCORE_TYPE_MISMATCH);
         }
     }
 

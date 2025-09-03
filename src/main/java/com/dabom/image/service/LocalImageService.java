@@ -1,7 +1,7 @@
 package com.dabom.image.service;
 
 import com.dabom.image.exception.ImageException;
-import com.dabom.image.exception.ImageExceptionMessages;
+import com.dabom.image.exception.ImageExceptionType;
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.model.entity.Image;
 import com.dabom.image.repository.ImageRepository;
@@ -39,13 +39,13 @@ public class LocalImageService implements ImageService {
             validateImage(file);
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("비어있습니다")) {
-                throw new ImageException(ImageExceptionMessages.FILE_EMPTY);
+                throw new ImageException(ImageExceptionType.FILE_EMPTY);
             } else if (e.getMessage().contains("초과할 수 없습니다")) {
-                throw new ImageException(ImageExceptionMessages.FILE_TOO_LARGE);
+                throw new ImageException(ImageExceptionType.FILE_TOO_LARGE);
             } else if (e.getMessage().contains("지원하지 않는 파일 형식")) {
-                throw new ImageException(ImageExceptionMessages.UNSUPPORTED_FILE_TYPE);
+                throw new ImageException(ImageExceptionType.UNSUPPORTED_FILE_TYPE);
             } else {
-                throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
+                throw new ImageException(ImageExceptionType.UPLOAD_FAILED);
             }
         }
 
@@ -70,7 +70,7 @@ public class LocalImageService implements ImageService {
             return ImageUploadResponseDto.from(entity);
 
         } catch (IOException e) {
-            throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
+            throw new ImageException(ImageExceptionType.UPLOAD_FAILED);
         }
     }
 
@@ -83,7 +83,7 @@ public class LocalImageService implements ImageService {
                     } catch (ImageException e) {
                         throw e;
                     } catch (Exception e) {
-                        throw new ImageException(ImageExceptionMessages.UPLOAD_FAILED);
+                        throw new ImageException(ImageExceptionType.UPLOAD_FAILED);
                     }
                 })
                 .collect(Collectors.toList());
@@ -95,7 +95,7 @@ public class LocalImageService implements ImageService {
         if (result.isPresent()) {
             return result.get().getImageUrl();
         } else {
-            throw new ImageException(ImageExceptionMessages.IMAGE_NOT_FOUND);
+            throw new ImageException(ImageExceptionType.IMAGE_NOT_FOUND);
         }
     }
 
@@ -106,7 +106,7 @@ public class LocalImageService implements ImageService {
             Image delImg = result.get();
             delImg.safeDelete();
         } else {
-            throw new ImageException(ImageExceptionMessages.IMAGE_NOT_FOUND);
+            throw new ImageException(ImageExceptionType.IMAGE_NOT_FOUND);
         }
     }
 }

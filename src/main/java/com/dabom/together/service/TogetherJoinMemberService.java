@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.dabom.together.exception.TogetherExceptionMessages.MAX_TOGETHER_MEMBER;
-import static com.dabom.together.exception.TogetherExceptionMessages.NOT_VALID_CODE;
+import static com.dabom.together.exception.TogetherExceptionType.MAX_TOGETHER_MEMBER;
+import static com.dabom.together.exception.TogetherExceptionType.NOT_VALID_CODE;
 
 @Slf4j
 @Service

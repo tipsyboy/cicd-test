@@ -26,9 +26,13 @@ public enum ChannelBoardExceptionType implements ExceptionType {
     INVALID_PAGE_PARAMETER(BAD_REQUEST, "페이지 번호가 올바르지 않습니다."),
     INVALID_SIZE_PARAMETER(BAD_REQUEST, "페이지 크기가 올바르지 않습니다."),
 
+    // 403
+    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "해당 게시글에 대한 권한이 없습니다."),
+
     // CONFLICT (409) - 비즈니스 로직 충돌
     BOARD_ALREADY_DELETED(CONFLICT, "이미 삭제된 게시글입니다."),
     CHANNEL_CLOSED_FOR_BOARD(CONFLICT, "게시글 작성이 불가능한 채널입니다.");
+
 
     private final HttpStatus httpStatus;
     private final String message;

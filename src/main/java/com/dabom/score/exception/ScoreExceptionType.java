@@ -3,7 +3,7 @@ package com.dabom.score.exception;
 import com.dabom.common.exception.ExceptionType;
 import org.springframework.http.HttpStatus;
 
-public enum ScoreExceptionMessages implements ExceptionType {
+public enum ScoreExceptionType implements ExceptionType {
     INVALID_ACCESS(HttpStatus.FORBIDDEN, "잘못된 접근 입니다."),
     ALREADY_RATED_CHANNEL(HttpStatus.CONFLICT, "이미 해당 채널에 평점을 매겼습니다."),
     ALREADY_RATED_VIDEO(HttpStatus.CONFLICT, "이미 해당 동영상에 평점을 매겼습니다."),
@@ -16,7 +16,7 @@ public enum ScoreExceptionMessages implements ExceptionType {
     private final HttpStatus httpStatus;
     private final String message;
 
-    ScoreExceptionMessages(HttpStatus httpStatus, String message) {
+    ScoreExceptionType(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;
         this.message = message;
     }
