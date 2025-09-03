@@ -36,7 +36,7 @@ public class MemberService {
         String encodedPassword = encoder.encode(dto.getPassword());
         checkDuplicatedName(dto);
         Optional<Member> optional = repository.findByEmail(dto.getEmail());
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             Member member = optional.get();
             checkIsNotDelete(member);
             member.rollBackMember();
@@ -69,7 +69,7 @@ public class MemberService {
 
     public MemberEmailCheckResponseDto checkMemberEmail(String email) {
         Optional<Member> optionalMember = repository.findByEmail(email);
-        if(optionalMember.isEmpty()) {
+        if (optionalMember.isEmpty()) {
             return MemberEmailCheckResponseDto.of(false);
         }
         return MemberEmailCheckResponseDto.of(true);
@@ -77,7 +77,7 @@ public class MemberService {
 
     public MemberChannelNameCheckResponseDto checkMemberChannelName(String channelName) {
         Optional<Member> optionalMember = repository.findByName(channelName);
-        if(optionalMember.isEmpty()) {
+        if (optionalMember.isEmpty()) {
             return MemberChannelNameCheckResponseDto.of(false);
         }
         return MemberChannelNameCheckResponseDto.of(true);
@@ -110,27 +110,27 @@ public class MemberService {
     }
 
     private void checkIsNotDelete(Member member) {
-        if(member.getIsDeleted()) {
+        if (member.getIsDeleted()) {
             throw new MemberException(DUPLICATED_SIGNUP);
         }
     }
 
     private void checkDuplicatedName(MemberSignupRequestDto dto) {
         Optional<Member> checkName = repository.findByName(dto.getChannelName());
-        if(checkName.isEmpty()) {
+        if (checkName.isEmpty()) {
             return;
         }
         throw new MemberException(DUPLICATED_CHANNEL_NAME);
     }
 
     private void updateChannelContent(MemberUpdateChannelRequestDto dto, Member member) {
-        if(dto.getContent() != null) {
+        if (dto.getContent() != null) {
             member.updateContent(dto.getContent());
         }
     }
 
     private void updateChannelName(MemberUpdateChannelRequestDto dto, Member member) {
-        if(dto.getName() != null) {
+        if (dto.getName() != null) {
             checkDuplicateName(dto);
             member.updateName(dto.getName());
         }
@@ -138,7 +138,7 @@ public class MemberService {
 
     private void checkDuplicateName(MemberUpdateChannelRequestDto dto) {
         MemberChannelNameCheckResponseDto check = checkMemberChannelName(dto.getName());
-        if(check.isDuplicate()) {
+        if (check.isDuplicate()) {
             throw new MemberException(DUPLICATED_CHANNEL_NAME);
         }
     }
@@ -146,9 +146,20 @@ public class MemberService {
     private Member getMemberFromSecurity(MemberDetailsDto dto) {
         Integer idx = dto.getIdx();
         Optional<Member> optionalMember = repository.findById(idx);
-        if(optionalMember.isEmpty()) {
+        if (optionalMember.isEmpty()) {
             throw new MemberException(MEMBER_NOT_FOUND);
         }
         return optionalMember.get();
+    }
+
+    public String getProfileImg(MemberDetailsDto dto) {
+        Integer memberIdx = dto.getIdx();
+        Optional<Member> optionalMember = repository.findById(memberIdx);
+        if (optionalMember.isEmpty()) {
+            throw new MemberException(MEMBER_NOT_FOUND);
+        }
+        Member member = optionalMember.get();
+        String imageUrl = member.getProfileImage().getImageUrl();
+        return imageUrl;
     }
 }
