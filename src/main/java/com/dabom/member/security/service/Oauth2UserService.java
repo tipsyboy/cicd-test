@@ -3,6 +3,7 @@ package com.dabom.member.security.service;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.member.utils.RandomStringCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,20 +26,40 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         String social = userRequest.getClientRegistration().getRegistrationId();
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        if(Objects.equals(social, "google")) {
-            String name = (String) attributes.get("name");
-            String id = attributes.get("email").toString();
-            Member member = loginOrSignupMember(id, name);
-            return MemberDetailsDto.createFromOauth2(member, attributes);
-        } else {
-//        } else if (social == "kakao") {
-            Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+        return createOAuth2User(social, attributes);
+    }
 
-            String name = (String) properties.get("nickname");
-            String id = attributes.get("id").toString();
-            Member member = loginOrSignupMember(id, name);
-            return MemberDetailsDto.createFromOauth2(member, attributes);
-        }
+    private MemberDetailsDto createOAuth2User(String social, Map<String, Object> attributes) {
+        return switch (social) {
+            case "google" -> loginGoogle(attributes);
+            case "kakao"  -> loginKakao(attributes);
+            default       -> loginNaver(attributes);
+        };
+    }
+
+    private MemberDetailsDto loginNaver(Map<String, Object> attributes) {
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("response");
+
+        String name = properties.get("name") + RandomStringCreator.createRandomString();
+        String id = properties.get("id").toString();
+        Member member = loginOrSignupMember(id, name);
+        return MemberDetailsDto.createFromOauth2(member, attributes);
+    }
+
+    private MemberDetailsDto loginKakao(Map<String, Object> attributes) {
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+
+        String name = properties.get("nickname") + RandomStringCreator.createRandomString();
+        String id = attributes.get("id").toString();
+        Member member = loginOrSignupMember(id, name);
+        return MemberDetailsDto.createFromOauth2(member, attributes);
+    }
+
+    private MemberDetailsDto loginGoogle(Map<String, Object> attributes) {
+        String name = attributes.get("name") + RandomStringCreator.createRandomString();
+        String id = attributes.get("email").toString();
+        Member member = loginOrSignupMember(id, name);
+        return MemberDetailsDto.createFromOauth2(member, attributes);
     }
 
     private Member loginOrSignupMember(String id, String name) {

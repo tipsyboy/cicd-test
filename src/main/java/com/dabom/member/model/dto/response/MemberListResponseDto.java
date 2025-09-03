@@ -1,4 +1,4 @@
-package com.dabom.member.model.dto;
+package com.dabom.member.model.dto.response;
 
 import com.dabom.member.model.entity.Member;
 

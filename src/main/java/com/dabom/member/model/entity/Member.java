@@ -2,6 +2,7 @@ package com.dabom.member.model.entity;
 
 import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.common.BaseEntity;
+import com.dabom.image.model.entity.Image;
 import com.dabom.likes.model.likes.Likes;
 import com.dabom.score.model.entity.Score;
 import com.dabom.video.model.Video;
@@ -10,9 +11,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -56,11 +55,14 @@ public class Member extends BaseEntity {
     private List<Likes> likesList;
 
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Video> videoList = new ArrayList<>();
+    private List<Video> videoList;
+
+    @ManyToOne
+    @JoinColumn(name = "image_idx")
+    private Image profileImage;
 
     private Long sumScore;
     private Long sumScoreMember;
-    //private String profileImagePath;
     private Boolean isDeleted;
 
     @Builder
@@ -83,12 +85,16 @@ public class Member extends BaseEntity {
         this.content = content;
     }
 
-    public void voidScore(Long score) {
+    public void voteScore(Long score) {
         this.sumScore += score;
         this.sumScoreMember++;
     }
 
     public void deleteMember() {
         this.isDeleted = true;
+    }
+
+    public void changeProfile(Image profile) {
+        this.profileImage = profile;
     }
 }

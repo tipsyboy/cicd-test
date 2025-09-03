@@ -1,6 +1,6 @@
 package com.dabom.member.utils;
 
-import com.dabom.member.model.dto.MemberSignupRequestDto;
+import com.dabom.member.model.dto.request.MemberSignupRequestDto;
 import com.dabom.member.service.MemberService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

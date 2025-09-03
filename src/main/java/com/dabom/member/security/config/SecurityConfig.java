@@ -2,6 +2,7 @@ package com.dabom.member.security.config;
 
 import com.dabom.member.model.entity.MemberRole;
 import com.dabom.member.security.filter.JwtAuthFilter;
+import com.dabom.member.security.handler.CustomOAuth2AuthenticationFailureHandler;
 import com.dabom.member.security.handler.OAuth2AuthenticationSuccessHandler;
 import com.dabom.member.security.repository.StatelessAuthorizationRequestRepository;
 import com.dabom.member.security.service.Oauth2UserService;
@@ -41,6 +42,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration configuration;
     private final Oauth2UserService oauth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final CustomOAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -75,6 +77,7 @@ public class SecurityConfig {
                     config.authorizationEndpoint(auth ->
                             auth.authorizationRequestRepository(new StatelessAuthorizationRequestRepository()));
                     config.successHandler(oAuth2AuthenticationSuccessHandler);
+                    config.failureHandler(oAuth2AuthenticationFailureHandler);
                 }
         );
 

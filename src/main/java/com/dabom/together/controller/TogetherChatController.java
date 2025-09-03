@@ -1,6 +1,6 @@
 package com.dabom.together.controller;
 
-import com.dabom.member.model.dto.MemberInfoResponseDto;
+import com.dabom.member.model.dto.response.MemberInfoResponseDto;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.service.MemberService;
 import com.dabom.together.model.dto.request.TogetherMoveVideoRequestDto;

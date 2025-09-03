@@ -50,8 +50,8 @@ public class Video extends BaseEntity {
     @JoinColumn(name = "member_idx")
     private Member channel;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<VideoComment> videoCommentList = new ArrayList<>();
+    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
+    private List<VideoComment> videoCommentList;
 
 
     @Builder

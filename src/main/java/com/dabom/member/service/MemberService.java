@@ -1,8 +1,11 @@
 package com.dabom.member.service;
 
 import com.dabom.member.exception.MemberException;
-import com.dabom.member.exception.MemberExceptionType;
-import com.dabom.member.model.dto.*;
+import com.dabom.member.model.dto.request.MemberLoginRequestDto;
+import com.dabom.member.model.dto.request.MemberSearchRequestDto;
+import com.dabom.member.model.dto.request.MemberSignupRequestDto;
+import com.dabom.member.model.dto.request.MemberUpdateChannelRequestDto;
+import com.dabom.member.model.dto.response.*;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
