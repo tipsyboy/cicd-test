@@ -444,4 +444,11 @@ public class MemberController {
 
         return ResponseEntity.ok().headers(headers).body(BaseResponse.of("데이터 전달 성공", HttpStatus.OK));
     }
+
+    @GetMapping("/info/profileImg")
+    public ResponseEntity<BaseResponse<String>> getProfileImg(@AuthenticationPrincipal MemberDetailsDto dto) {
+        String imgUrl = memberService.getProfileImg(dto);
+
+        return ResponseEntity.ok().body(BaseResponse.of(imgUrl, HttpStatus.OK));
+    }
 }
