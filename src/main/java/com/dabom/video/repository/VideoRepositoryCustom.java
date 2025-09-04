@@ -9,4 +9,7 @@ public interface VideoRepositoryCustom {
     Slice<Video> searchByKeywordWithFetchJoin(String keyword, Pageable pageable);
 
     Slice<Video> findVisibleVideosWithFetchJoin(Pageable pageable);
+
+    Slice<Video> searchByNameWithFetchJoin(String name, Pageable pageable);
+
 }

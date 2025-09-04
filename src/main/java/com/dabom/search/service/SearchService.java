@@ -19,19 +19,23 @@ import java.util.List;
 public class SearchService {
     private final VideoRepository videoRepository;
 
-    public SliceBaseResponse<SearchResponseDto> getVideos(String keyword, Integer page, Integer size) {
+    public SliceBaseResponse<SearchResponseDto> getVideos(String keyword, String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Video> videoSlice;
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            videoSlice = videoRepository.findVisibleVideosWithFetchJoin(pageable);
-        } else {
+        if (name != null && !name.trim().isEmpty()) {
+            videoSlice = videoRepository.searchByNameWithFetchJoin(name.trim(), pageable);
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
             videoSlice = videoRepository.searchByKeywordWithFetchJoin(keyword.trim(), pageable);
+        } else {
+            videoSlice = videoRepository.findVisibleVideosWithFetchJoin(pageable);
         }
 
         List<SearchResponseDto> result = videoSlice.stream()
                 .map(SearchResponseDto::from)
                 .toList();
+
         return new SliceBaseResponse<>(result, videoSlice.hasNext());
     }
+
 }

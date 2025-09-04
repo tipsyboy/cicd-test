@@ -25,12 +25,13 @@ public class VideoRepositoryImpl implements VideoRepositoryCustom {
     public Slice<Video> searchByKeywordWithFetchJoin(String keyword, Pageable pageable) {
         List<Video> videos = queryFactory
                 .selectFrom(video)
-                .join(video.channel, member).fetchJoin()
+                .join(video.channel ).fetchJoin()
                 .where(
-                        video.isPublic.eq(true)
+                        video.isPublic.eq(true) //eq는 sql의 =연산자와 동일한 문법.
                                 .and(
-                                        video.title.containsIgnoreCase(keyword)
+                                        video.title.containsIgnoreCase(keyword) // 이게 풀스캔 방식(대소문자무시하면서)
                                                 .or(video.description.containsIgnoreCase(keyword))
+                                                .or(video.channel.name.containsIgnoreCase(keyword))
                                                 .or(videoTagContains(keyword))
                                 )
                 )
@@ -55,6 +56,24 @@ public class VideoRepositoryImpl implements VideoRepositoryCustom {
 
         return createSlice(videos, pageable);
     }
+
+    @Override
+    public Slice<Video> searchByNameWithFetchJoin(String name, Pageable pageable) {
+        List<Video> videos = queryFactory
+                .selectFrom(video)
+                .join(video.channel, member).fetchJoin()
+                .where(
+                        video.isPublic.eq(true)
+                                .and(video.channel.name.eq(name)) // 정확히 일치
+                )
+                .orderBy(video.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        return createSlice(videos, pageable);
+    }
+
 
     private BooleanExpression videoTagContains(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
