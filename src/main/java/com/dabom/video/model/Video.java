@@ -95,7 +95,7 @@ public class Video extends BaseEntity {
     }
 
     public void deleteVideo() {
-        this.isPublic = false;
+        this.isPublic = !this.isPublic;
     }
 
     public void incrementViews() {

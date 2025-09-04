@@ -52,7 +52,6 @@ public class VideoMetadataController {
     public ResponseEntity<BaseResponse<Integer>> deleteVideo(@PathVariable Integer videoIdx,
                                                              @AuthenticationPrincipal MemberDetailsDto loginMember) {
         Integer idx = videoService.deleteVideo(videoIdx, loginMember.getIdx());
-
         return ResponseEntity.ok(BaseResponse.of(idx, HttpStatus.OK));
     }
 }
