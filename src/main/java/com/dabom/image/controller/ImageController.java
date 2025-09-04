@@ -2,7 +2,6 @@ package com.dabom.image.controller;
 
 import com.dabom.common.BaseResponse;
 import com.dabom.image.constants.ImageSwaggerConstants;
-import com.dabom.image.model.dto.ImagePresignedUrlResponseDto;
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.service.ImageService;
 import com.dabom.image.service.S3ImageServiceV2;
