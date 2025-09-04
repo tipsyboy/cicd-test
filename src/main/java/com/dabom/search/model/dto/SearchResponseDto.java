@@ -38,10 +38,19 @@ public class SearchResponseDto {
         private String profileImg;
     }
 
-
-
     public static SearchResponseDto from(Video video, MemberService memberService) {
-        String channelProfileImg = memberService.getProfileImg(video.getChannel().getIdx());
+        String channelProfileImg = "https://via.placeholder.com/40"; // 기본값
+
+        try {
+            if (memberService != null && video.getChannel() != null) {
+                String profileImg = memberService.getProfileImg(video.getChannel().getIdx());
+                if (profileImg != null && !profileImg.trim().isEmpty()) {
+                    channelProfileImg = profileImg;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("오류테스트");
+        }
 
         return SearchResponseDto.builder()
                 .videoId(video.getIdx())
@@ -53,9 +62,9 @@ public class SearchResponseDto {
                 .isPublic(video.isPublic())
                 .uploadedAt(calculateDaysAgo(video.getCreatedAt()))
                 .channel(ChannelInfo.builder()
-                        .idx(video.getChannel().getIdx())
-                        .name(video.getChannel().getName())
-                        .content(video.getChannel().getContent())
+                        .idx(video.getChannel() != null ? video.getChannel().getIdx() : null)
+                        .name(video.getChannel() != null ? video.getChannel().getName() : "알 수 없음")
+                        .content(video.getChannel() != null ? video.getChannel().getContent() : null)
                         .profileImg(channelProfileImg)
                         .build())
                 .build();
