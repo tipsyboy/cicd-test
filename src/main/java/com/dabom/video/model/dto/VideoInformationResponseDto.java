@@ -26,7 +26,8 @@ public class VideoInformationResponseDto {
                 .videoIdx(entity.getIdx())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
-                .views(0L) // TODO: views 변경
+                .views(entity.getViews())
+                .totalReviewerCount(entity.getTotalReviewerCount())
                 .averageScore(entity.getAverageScore())
                 .isPublicVideo(entity.isPublic())
                 .uploadedAt(entity.getCreatedAt())

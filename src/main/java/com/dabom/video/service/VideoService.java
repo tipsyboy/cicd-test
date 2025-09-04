@@ -86,6 +86,7 @@ public class VideoService {
         scoreRepository.save(score);
     }
 
+    @Transactional
     public Integer deleteVideo(Integer videoIdx, Integer memberIdx) {
         Video video = videoRepository.findById(videoIdx)
                 .orElseThrow(() -> new VideoException(VideoExceptionType.VIDEO_NOT_FOUND));
