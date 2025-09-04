@@ -7,6 +7,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -68,7 +69,6 @@ public class JwtHandShakeInterceptor implements HandshakeInterceptor {
                 if (Objects.equals(cookie.getName(), ACCESS_TOKEN)) {
                     jwt = cookie.getValue();
                 }
-                break;
             }
         }
         return jwt;
@@ -88,9 +88,12 @@ public class JwtHandShakeInterceptor implements HandshakeInterceptor {
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     dto,
                     null,
-                    List.of(new SimpleGrantedAuthority(dto.getMemberRole().name()))
-            );
-
+                    List.of(new SimpleGrantedAuthority(dto.getMemberRole().name()))) {
+                @Override
+                public String getName() {
+                    return dto.getIdx().toString();
+                }
+            };
             SecurityContextHolder.getContext().setAuthentication(authentication);
             attributes.put("auth", authentication);
         }
