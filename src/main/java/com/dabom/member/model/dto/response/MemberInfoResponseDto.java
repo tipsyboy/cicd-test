@@ -1,10 +1,12 @@
 package com.dabom.member.model.dto.response;
 
+import com.dabom.image.model.entity.Image;
 import com.dabom.member.model.entity.Member;
 
 import java.util.regex.Pattern;
 
-public record MemberInfoResponseDto(Integer id, String name, String content, String email, Integer videoCount) {
+public record MemberInfoResponseDto(Integer id, String name, String content, String email, Integer videoCount,
+                                    String profileImg) {
 
     private static final String EMAIL_PATTERN =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
@@ -19,7 +21,9 @@ public record MemberInfoResponseDto(Integer id, String name, String content, Str
                 member.getName(),
                 member.getContent(),
                 processedEmail,
-                member.getVideoList().size());
+                member.getVideoList().size(),
+                null);
+
     }
 
     private static String processEmail(String email) {

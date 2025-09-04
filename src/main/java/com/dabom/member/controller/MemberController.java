@@ -452,12 +452,13 @@ public class MemberController {
 
     @GetMapping("/info/profileImg")
     public ResponseEntity<BaseResponse<String>> getProfileImg(@AuthenticationPrincipal MemberDetailsDto dto) {
-        String imgUrl = memberService.getProfileImg(dto);
+        Integer memberIdx = dto.getIdx();
+        String imgUrl = memberService.getProfileImg(memberIdx);
 
         return ResponseEntity.ok().body(BaseResponse.of(imgUrl, HttpStatus.OK));
     }
 
-    @PatchMapping("/profile-image")
+    @PostMapping("/profile-image")
     public ResponseEntity<BaseResponse<String>> updateProfileImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("directory") String directory,

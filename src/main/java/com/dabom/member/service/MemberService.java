@@ -2,6 +2,8 @@ package com.dabom.member.service;
 
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.model.entity.Image;
+import com.dabom.image.repository.ImageRepository;
+import com.dabom.image.service.ImageService;
 import com.dabom.member.exception.MemberException;
 import com.dabom.member.model.dto.request.MemberLoginRequestDto;
 import com.dabom.member.model.dto.request.MemberSearchRequestDto;
@@ -9,8 +11,6 @@ import com.dabom.member.model.dto.request.MemberSignupRequestDto;
 import com.dabom.member.model.dto.request.MemberUpdateChannelRequestDto;
 import com.dabom.member.model.dto.response.*;
 import com.dabom.member.model.entity.Member;
-import com.dabom.image.repository.ImageRepository;
-import com.dabom.image.service.ImageService;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.utils.JwtUtils;
@@ -71,8 +71,16 @@ public class MemberService {
 
     public MemberInfoResponseDto readMemberInfo(MemberDetailsDto dto) {
         Member member = getMemberFromSecurity(dto);
-
-        return MemberInfoResponseDto.toDto(member);
+        MemberInfoResponseDto responseDto = MemberInfoResponseDto.toDto(member);
+        String profileImageUrl = getProfileImg(member.getIdx());
+        return new MemberInfoResponseDto(
+            responseDto.id(),
+            responseDto.name(),
+            responseDto.content(),
+            responseDto.email(),
+            responseDto.videoCount(),
+            profileImageUrl
+        );
     }
 
     public MemberEmailCheckResponseDto checkMemberEmail(String email) {
@@ -93,7 +101,16 @@ public class MemberService {
 
     public MemberInfoResponseDto getMemberInfo(MemberDetailsDto dto) {
         Member member = repository.findById(dto.getIdx()).orElseThrow();
-        return MemberInfoResponseDto.toDto(member);
+        MemberInfoResponseDto responseDto = MemberInfoResponseDto.toDto(member);
+        String profileImageUrl = getProfileImg(member.getIdx());
+        return new MemberInfoResponseDto(
+            responseDto.id(),
+            responseDto.name(),
+            responseDto.content(),
+            responseDto.email(),
+            responseDto.videoCount(),
+            profileImageUrl
+        );
     }
 
     @Transactional
@@ -114,7 +131,16 @@ public class MemberService {
     public MemberInfoResponseDto getChannelInfoByChannelName(String channelName) {
         Member member = repository.findByName(channelName)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        return MemberInfoResponseDto.toDto(member);
+        MemberInfoResponseDto responseDto = MemberInfoResponseDto.toDto(member);
+        String profileImageUrl = getProfileImg(member.getIdx());
+        return new MemberInfoResponseDto(
+            responseDto.id(),
+            responseDto.name(),
+            responseDto.content(),
+            responseDto.email(),
+            responseDto.videoCount(),
+            profileImageUrl
+        );
     }
 
     private void checkIsNotDelete(Member member) {
@@ -160,8 +186,7 @@ public class MemberService {
         return optionalMember.get();
     }
 
-    public String getProfileImg(MemberDetailsDto dto) {
-        Integer memberIdx = dto.getIdx();
+    public String getProfileImg(Integer memberIdx) {
         Member member = repository.findById(memberIdx)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         if (member.getProfileImage() == null) {

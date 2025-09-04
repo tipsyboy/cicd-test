@@ -70,9 +70,6 @@ public class Member extends BaseEntity {
     private Boolean isDeleted;
 
     private Long sumScore;
-    private Long subscribeCount;
-    private Long sumScoreMember;
-    private Boolean isDeleted;
 
     @Builder
     public Member(String email, String name, String password, String memberRole, Long subscribeCount, Long score, Long sumScoreMember) {
