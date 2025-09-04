@@ -40,10 +40,10 @@ public class MemberService {
             Member member = optional.get();
             checkIsNotDelete(member);
             member.rollBackMember();
-            memberRepository.save(member);
+            repository.save(member);
             return;
         }
-        memberRepository.save(dto.toEntity(encodedPassword));
+        repository.save(dto.toEntity(encodedPassword));
     }
 
     public MemberLoginResponseDto loginMember(MemberLoginRequestDto dto) {
@@ -93,18 +93,18 @@ public class MemberService {
         Member member = getMemberFromSecurity(memberDetailsDto);
         updateChannelName(dto, member);
         updateChannelContent(dto, member);
-        memberRepository.save(member);
+        repository.save(member);
     }
 
     @Transactional
     public void deleteMember(MemberDetailsDto dto) {
         Member member = getMemberFromSecurity(dto);
         member.deleteMember();
-        memberRepository.save(member);
+        repository.save(member);
     }
 
     public MemberInfoResponseDto getChannelInfoByChannelName(String channelName) {
-        Member member = memberRepository.findByName(channelName)
+        Member member = repository.findByName(channelName)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         return MemberInfoResponseDto.toDto(member);
     }
@@ -144,7 +144,7 @@ public class MemberService {
     }
 
     private Member getMemberFromSecurity(MemberDetailsDto dto) {
-        Integer idx = dto.getIdx()
+        Integer idx = dto.getIdx();
         Optional<Member> optionalMember = repository.findById(idx);
         if (optionalMember.isEmpty()) {
             throw new MemberException(MEMBER_NOT_FOUND);
