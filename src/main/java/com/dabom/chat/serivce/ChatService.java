@@ -80,7 +80,7 @@ public class ChatService {
         }
 
         // 페이징된 메시지 목록 조회
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Slice<Chat> chatSlice = chatRepository.findByRoomIdxAndIsDeleted(roomIdx, pageable);
 
         // 메시지를 ChatMessageDto로 변환

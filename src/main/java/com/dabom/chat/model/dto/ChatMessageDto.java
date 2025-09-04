@@ -4,17 +4,19 @@ import com.dabom.chat.model.entity.Chat;
 import com.dabom.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@ToString // Add this line
 public class ChatMessageDto extends BaseEntity {
     private Long roomIdx;
     private Integer senderIdx;
     private String senderName;
     private Integer recipientIdx;
-    private String recipientName;
+    
     private String message;
     private Boolean isRead;
     private LocalDateTime createdAt;
@@ -26,7 +28,7 @@ public class ChatMessageDto extends BaseEntity {
                 .senderIdx(entity.getSender().getIdx())
                 .senderName(entity.getSender().getName())
                 .recipientIdx(entity.getRecipient().getIdx())
-                .recipientName(entity.getRecipient().getName())
+                
                 .message(entity.getMessage())
                 .isRead(entity.getIsRead())
                 .createdAt(entity.getCreatedAt())

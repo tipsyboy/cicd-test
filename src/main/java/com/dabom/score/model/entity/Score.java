@@ -78,4 +78,8 @@ public class Score extends BaseEntity {
     public void softDelete(){
         this.isDeleted = true;
     }
+
+    public void updateScore(double newScore) {
+        this.score = newScore;
+    }
 }
