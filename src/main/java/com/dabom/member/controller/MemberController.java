@@ -1,5 +1,6 @@
 package com.dabom.member.controller;
 
+import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.repository.ImageRepository;
 import com.dabom.image.service.ImageService;
 import com.dabom.common.BaseResponse;
@@ -459,13 +460,13 @@ public class MemberController {
     }
 
     @PostMapping("/profileimage")
-    public ResponseEntity<BaseResponse<String>> updateProfileImage(
+    public ResponseEntity<BaseResponse<ImageUploadResponseDto>> updateProfileImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("directory") String directory,
             @AuthenticationPrincipal MemberDetailsDto memberDetailsDto
     ) throws IOException {
-        memberService.updateMemberProfileImage(memberDetailsDto, file, directory);
-        return ResponseEntity.ok(BaseResponse.of("프로필 이미지 업데이트 성공", HttpStatus.OK));
+        ImageUploadResponseDto responseDto = memberService.updateMemberProfileImage(memberDetailsDto, file, directory);
+        return ResponseEntity.ok(BaseResponse.of(responseDto, HttpStatus.OK));
     }
 
     @GetMapping("/info/banner")

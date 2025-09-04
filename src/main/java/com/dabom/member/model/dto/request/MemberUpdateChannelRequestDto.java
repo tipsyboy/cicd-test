@@ -7,8 +7,8 @@ import lombok.Getter;
 public class MemberUpdateChannelRequestDto {
     @NotBlank
     private Integer id;
-//    @NotBlank
     private String name;
-
     private String content;
+    private Integer profileImageIdx;
+    private Integer bannerImageIdx;
 }
