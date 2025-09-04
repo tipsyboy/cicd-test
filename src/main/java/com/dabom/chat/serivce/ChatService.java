@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -34,7 +35,12 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final MemberRepository memberRepository;
 
-    public long createRoom(ChatRoomRegisterRequestDto dto) {
+    public long createRoom(Integer member1Idx, Integer member2Idx) {
+
+        Member member1 = memberRepository.findById(member1Idx).orElseThrow();
+        Member member2 = memberRepository.findById(member2Idx).orElseThrow();
+
+        ChatRoomRegisterRequestDto dto = new ChatRoomRegisterRequestDto(member1,member2);
         ChatRoom result = chatRoomRepository.save(dto.toEntity());
         return result.getIdx();
     }
