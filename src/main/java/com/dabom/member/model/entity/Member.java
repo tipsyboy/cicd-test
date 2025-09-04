@@ -116,4 +116,7 @@ public class Member extends BaseEntity {
     public void changeProfile(Image profile) {
         this.profileImage = profile;
     }
+    public void changeBannerImg(Image banner) {
+        this.bannerImage = banner;
+    }
 }

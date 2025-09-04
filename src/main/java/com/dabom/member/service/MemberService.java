@@ -190,7 +190,7 @@ public class MemberService {
         Member member = repository.findById(memberIdx)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         if (member.getProfileImage() == null) {
-            String defaultProfileUrl = "/static/Image/Dabompng.png";
+            String defaultProfileUrl = "/Image/Dabompng.png";
             return defaultProfileUrl;
         }
         return imageService.find(member.getProfileImage().getIdx());
@@ -204,10 +204,35 @@ public class MemberService {
     }
 
     @Transactional
+    public void updateBannerImage(MemberDetailsDto memberDetailsDto, Image image) {
+        Member member = getMemberFromSecurity(memberDetailsDto);
+        member.changeBannerImg(image);
+        repository.save(member);
+    }
+
+
+    @Transactional
     public void updateMemberProfileImage(MemberDetailsDto memberDetailsDto, MultipartFile file, String directory) throws IOException {
         ImageUploadResponseDto uploadResponse = imageService.uploadSingleImage(file, directory);
         Image profileImage = imageRepository.findById(uploadResponse.getIdx())
                 .orElseThrow(() -> new IllegalArgumentException("이미지를 찾을 수 없습니다."));
         updateProfileImage(memberDetailsDto, profileImage);
+    }
+
+    public String getBannerImage(Integer memberIdx) {
+        Member member = repository.findById(memberIdx)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        if (member.getBannerImage() == null) {
+            String defaultProfileUrl = "/Image/Dabompng.png";
+            return defaultProfileUrl;
+        }
+        return imageService.find(member.getBannerImage().getIdx());
+    }
+
+    public void updateBannerImage(MemberDetailsDto memberDetailsDto, MultipartFile file, String directory) {
+        ImageUploadResponseDto uploadResponse = imageService.uploadSingleImage(file, directory);
+        Image BannerImage = imageRepository.findById(uploadResponse.getIdx())
+                .orElseThrow(() -> new IllegalArgumentException("이미지를 찾을 수 없습니다."));
+        updateBannerImage(memberDetailsDto, BannerImage);
     }
 }
