@@ -41,7 +41,6 @@ public class SearchResponseDto {
     public static SearchResponseDto from(Video video, MemberService memberService) {
         String channelProfileImg = "https://via.placeholder.com/40"; // 기본값
 
-        // 안전한 프로필 이미지 로드
         try {
             if (memberService != null && video.getChannel() != null) {
                 String profileImg = memberService.getProfileImg(video.getChannel().getIdx());
@@ -50,10 +49,7 @@ public class SearchResponseDto {
                 }
             }
         } catch (Exception e) {
-            System.out.println("프로필 이미지 로드 실패 (사용자 ID: " +
-                               (video.getChannel() != null ? video.getChannel().getIdx() : "null") +
-                               "): " + e.getMessage());
-            // 기본값 사용
+            System.out.println("오류테스트");
         }
 
         return SearchResponseDto.builder()
