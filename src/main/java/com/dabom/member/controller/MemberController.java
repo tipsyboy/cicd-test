@@ -485,7 +485,13 @@ public class MemberController {
         memberService.updateBannerImage(memberDetailsDto, file, directory);
 
         return ResponseEntity.ok(BaseResponse.of("배너 업데이트 성공", HttpStatus.OK));
+    }
 
+    @GetMapping("/info/profileImg/{memberIdx}")
+    public ResponseEntity<BaseResponse<String>> getOtherProfileImg(@PathVariable Integer memberIdx) {
+        String imgUrl = memberService.getProfileImg(memberIdx);
+
+        return ResponseEntity.ok().body(BaseResponse.of(imgUrl, HttpStatus.OK));
     }
 
 }
