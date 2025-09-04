@@ -1,6 +1,7 @@
 package com.dabom.search.service;
 
 import com.dabom.common.SliceBaseResponse;
+import com.dabom.member.service.MemberService;
 import com.dabom.search.model.dto.SearchResponseDto;
 import com.dabom.video.model.Video;
 import com.dabom.video.repository.VideoRepository;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SearchService {
     private final VideoRepository videoRepository;
+    private final MemberService memberService;
 
     public SliceBaseResponse<SearchResponseDto> getVideos(String keyword, String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -32,10 +34,9 @@ public class SearchService {
         }
 
         List<SearchResponseDto> result = videoSlice.stream()
-                .map(SearchResponseDto::from)
+                .map(video -> SearchResponseDto.from(video, memberService))
                 .toList();
 
         return new SliceBaseResponse<>(result, videoSlice.hasNext());
     }
-
 }

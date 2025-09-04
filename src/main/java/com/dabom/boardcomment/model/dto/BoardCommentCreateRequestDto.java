@@ -2,6 +2,7 @@ package com.dabom.boardcomment.model.dto;
 
 import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.channelboard.model.entity.ChannelBoard;
+import com.dabom.member.model.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -11,10 +12,11 @@ public class BoardCommentCreateRequestDto {
     private String content;
 
 
-    public BoardComment toEntity(ChannelBoard board) {
+    public BoardComment toEntity(ChannelBoard board, Member member) {
         return BoardComment.builder()
                 .content(content)
                 .channelBoard(board)
+                .channel(member)
                 .build();
     }
 

@@ -2,6 +2,7 @@ package com.dabom.videocomment.service;
 
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
+import com.dabom.member.service.MemberService;
 import com.dabom.video.model.Video;
 import com.dabom.video.repository.VideoRepository;
 import com.dabom.videocomment.model.dto.VideoCommentRegisterDto;
@@ -11,10 +12,10 @@ import com.dabom.videocomment.model.entity.VideoComment;
 import com.dabom.videocomment.repository.VideoCommentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,6 +25,7 @@ public class VideoCommentService {
     private final VideoCommentRepository videoCommentRepository;
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Transactional
     public Integer register(VideoCommentRegisterDto dto, Integer videoIdx, Integer memberIdx) {
@@ -52,7 +54,8 @@ public class VideoCommentService {
         } else {
             result = videoCommentRepository.findByVideo_IdxAndIsDeletedFalse(videoIdx, pageable);
         }
-        return result.map(VideoCommentResponseDto::from);
+
+        return result.map(comment -> VideoCommentResponseDto.from(comment, memberService));
     }
 
     @Transactional

@@ -38,4 +38,7 @@ public interface ChannelBoardRepository extends JpaRepository<ChannelBoard, Inte
     @Query("SELECT COUNT(bc) FROM BoardComment bc " +
            "WHERE bc.channelBoard.idx = :boardIdx AND bc.isDeleted = false")
     Long countCommentsByBoardIdx(Integer boardIdx);
+
+
+
 }

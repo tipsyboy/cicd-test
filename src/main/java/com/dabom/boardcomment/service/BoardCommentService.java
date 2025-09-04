@@ -9,9 +9,10 @@ import com.dabom.boardcomment.repository.BoardCommentRepository;
 import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.channelboard.repositroy.ChannelBoardRepository;
 import com.dabom.common.SliceBaseResponse;
+import com.dabom.member.model.entity.Member;
+import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
-import com.dabom.video.exception.VideoException;
-import jakarta.persistence.EntityNotFoundException;
+import com.dabom.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,8 @@ public class BoardCommentService {
 
     private final BoardCommentRepository boardCommentRepository;
     private final ChannelBoardRepository channelBoardRepository;
+    private final MemberRepository memberRepository;
+    private final MemberService memberService; // 추가된 의존성
 
     public Integer create(BoardCommentCreateRequestDto dto, Integer boardIdx, MemberDetailsDto memberDetailsDto) {
         ChannelBoard board = channelBoardRepository.findById(boardIdx)
@@ -35,16 +38,21 @@ public class BoardCommentService {
             throw new BoardCommentException(BoardCommentExceptionType.COMMENT_CONTENT_EMPTY);
         }
 
-        BoardComment comment = dto.toEntity(board);
+        Member member = memberRepository.findById(memberDetailsDto.getIdx())
+                .orElseThrow(() -> new BoardCommentException(BoardCommentExceptionType.COMMENT_ACCESS_DENIED));
+
+        BoardComment comment = dto.toEntity(board, member);
         return boardCommentRepository.save(comment).getIdx();
     }
 
     public void delete(Integer commentIdx) {
         BoardComment entity = boardCommentRepository.findById(commentIdx)
                 .orElseThrow(() -> new BoardCommentException(BoardCommentExceptionType.COMMENT_NOT_FOUND));
+
         if (entity.getIsDeleted()) {
             throw new BoardCommentException(BoardCommentExceptionType.COMMENT_ALREADY_DELETED);
         }
+
         entity.delete();
         boardCommentRepository.save(entity);
     }
@@ -67,7 +75,7 @@ public class BoardCommentService {
         }
 
         return comments.stream()
-                .map(comment -> BoardCommentResponseDto.from(comment, memberDetailsDto))
+                .map(comment -> BoardCommentResponseDto.from(comment, memberDetailsDto, memberService))
                 .toList();
     }
 
@@ -77,7 +85,7 @@ public class BoardCommentService {
 
         comment.updateContent(dto.getContent());
         BoardComment updatedComment = boardCommentRepository.save(comment);
-        return BoardCommentResponseDto.from(updatedComment, memberDetailsDto);
+        return BoardCommentResponseDto.from(updatedComment, memberDetailsDto, memberService);
     }
 
     public SliceBaseResponse<BoardCommentResponseDto> getPagedComments(
@@ -100,7 +108,7 @@ public class BoardCommentService {
 
         List<BoardCommentResponseDto> content = commentSlice.getContent()
                 .stream()
-                .map(comment -> BoardCommentResponseDto.from(comment, memberDetailsDto))
+                .map(comment -> BoardCommentResponseDto.from(comment, memberDetailsDto, memberService))
                 .toList();
 
         long totalCount = boardCommentRepository.countByChannelBoard_IdxAndIsDeletedFalse(boardIdx);
