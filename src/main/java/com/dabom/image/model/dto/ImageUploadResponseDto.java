@@ -31,10 +31,8 @@ public class ImageUploadResponseDto {
 
     public static ImageUploadResponseDto from(Image entity) {
         return ImageUploadResponseDto.builder()
-                .originalName(entity.getOriginalName())
-                .imageName(entity.getImageName())
-                .imagePath(entity.getImagePath())
-                .imageUrl(entity.getImageUrl())
+                .originalName(entity.getOriginalFilename())
+                .imagePath(entity.getSavedPath())
                 .imageSize(entity.getFileSize())
                 .build();
     }

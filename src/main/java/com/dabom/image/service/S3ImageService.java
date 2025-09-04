@@ -90,10 +90,8 @@ public class S3ImageService implements ImageService {
         URL presignedUrl = presignedRequest.url();
 
         Image entity = Image.builder()
-                .originalName(file.getOriginalFilename())
-                .imageName(imageName)
-                .imageUrl(imageUrlPath)
-                .imagePath(s3Key)
+                .originalFilename(file.getOriginalFilename())
+                .savedPath(imageName)
                 .fileSize(file.getSize())
                 .build();
 
@@ -101,10 +99,10 @@ public class S3ImageService implements ImageService {
 
         return ImageUploadResponseDto.builder()
                 .idx(entity.getIdx())
-                .originalName(entity.getOriginalName())
-                .imageName(entity.getImageName())
+                .originalName(entity.getOriginalFilename())
+                .imageName(entity.getSavedPath())
                 .imageUrl(presignedUrl.toString())
-                .imagePath(entity.getImagePath())
+                .imagePath(entity.getSavedPath())
                 .build();
     }
 
@@ -129,7 +127,7 @@ public class S3ImageService implements ImageService {
         Optional<Image> result = imageRepository.findById(idx);
         if (result.isPresent()) {
             Image image = result.get();
-            String s3Key = image.getImagePath();
+            String s3Key = image.getSavedPath();
             // 프리사인드 URL 생성 (GET 요청용)
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(s3BucketName)

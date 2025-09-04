@@ -15,32 +15,27 @@ public class Image extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
-    private String originalName;
-    private String imageName;
-    private String imageUrl;
-    private String imagePath;
+
+    private String originalFilename;
+    private String savedPath;
+    
+    private String contentType; // 이미지 타입
     private Long fileSize;
+
+    private ImageType imageType;
+
     private Boolean isDeleted;
 
-    @OneToOne(mappedBy = "profileImage")
-    private Member profileOwner;
-
-    @OneToOne(mappedBy = "bannerImage")
-    private Member bannerOwner;
-
     @Builder
-    public Image(Integer idx, String originalName, String imageName, String imageUrl, String imagePath, Long fileSize,
-                 Member profileOwner, Member bannerOwner) {
-        this.idx = idx;
-        this.originalName = originalName;
-        this.imageName = imageName;
-        this.imageUrl = imageUrl;
-        this.imagePath = imagePath;
+    public Image(String originalFilename, String savedPath, String contentType, Long fileSize, ImageType imageType) {
+        this.originalFilename = originalFilename;
+        this.savedPath = savedPath;
+        this.contentType = contentType;
         this.fileSize = fileSize;
+        this.imageType = imageType;
         this.isDeleted = false;
-        this.profileOwner = profileOwner;
-        this.bannerOwner = bannerOwner;
     }
+
     public void safeDelete() {
         this.isDeleted = true;
     }

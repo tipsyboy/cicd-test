@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PresignedUrlResponseDto {
+public class VideoPresignedUrlResponseDto {
 
     private Integer videoIdx;
     private String uploadUrl;
@@ -15,7 +15,7 @@ public class PresignedUrlResponseDto {
     private Integer expiresIn;
 
     @Builder
-    private PresignedUrlResponseDto(Integer videoIdx, String uploadUrl, String s3Key, Integer expiresIn) {
+    private VideoPresignedUrlResponseDto(Integer videoIdx, String uploadUrl, String s3Key, Integer expiresIn) {
         this.videoIdx = videoIdx;
         this.uploadUrl = uploadUrl;
         this.s3Key = s3Key;

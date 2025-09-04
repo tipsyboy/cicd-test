@@ -57,7 +57,7 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Video> videoList;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profileimg_idx")
     private Image profileImage;
 
@@ -95,6 +95,10 @@ public class Member extends BaseEntity {
     public void voteScore(Long score) {
         this.score += score;
         this.sumScoreMember++;
+    }
+
+    public void updateProfileImage(Image profileImage) {
+        this.profileImage = profileImage;
     }
 
     public void countSubscribe() {

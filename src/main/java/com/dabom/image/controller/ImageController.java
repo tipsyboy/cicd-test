@@ -2,8 +2,10 @@ package com.dabom.image.controller;
 
 import com.dabom.common.BaseResponse;
 import com.dabom.image.constants.ImageSwaggerConstants;
+import com.dabom.image.model.dto.ImagePresignedUrlResponseDto;
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.service.ImageService;
+import com.dabom.image.service.S3ImageServiceV2;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +32,7 @@ import java.util.List;
 public class ImageController {
 
     private final ImageService imageService;
+    private final S3ImageServiceV2 s3ImageServiceV2;
 
     @Operation(
             summary = "단일 이미지 업로드",
