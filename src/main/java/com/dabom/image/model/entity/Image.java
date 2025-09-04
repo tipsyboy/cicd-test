@@ -1,10 +1,8 @@
 package com.dabom.image.model.entity;
 
 import com.dabom.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.dabom.member.model.entity.Member;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,8 +22,15 @@ public class Image extends BaseEntity {
     private Long fileSize;
     private Boolean isDeleted;
 
+    @OneToOne(mappedBy = "profileImage")
+    private Member profileOwner;
+
+    @OneToOne(mappedBy = "bannerImage")
+    private Member bannerOwner;
+
     @Builder
-    public Image(Integer idx, String originalName, String imageName, String imageUrl, String imagePath, Long fileSize) {
+    public Image(Integer idx, String originalName, String imageName, String imageUrl, String imagePath, Long fileSize,
+                 Member profileOwner, Member bannerOwner) {
         this.idx = idx;
         this.originalName = originalName;
         this.imageName = imageName;
@@ -33,6 +38,8 @@ public class Image extends BaseEntity {
         this.imagePath = imagePath;
         this.fileSize = fileSize;
         this.isDeleted = false;
+        this.profileOwner = profileOwner;
+        this.bannerOwner = bannerOwner;
     }
     public void safeDelete() {
         this.isDeleted = true;

@@ -130,7 +130,6 @@ public class S3ImageService implements ImageService {
         if (result.isPresent()) {
             Image image = result.get();
             String s3Key = image.getImagePath();
-
             // 프리사인드 URL 생성 (GET 요청용)
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(s3BucketName)

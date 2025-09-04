@@ -57,10 +57,15 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Video> videoList;
 
-    @ManyToOne
-    @JoinColumn(name = "image_idx")
+    @OneToOne
+    @JoinColumn(name = "profileimg_idx")
     private Image profileImage;
 
+    @OneToOne
+    @JoinColumn(name = "BannerImg_idx")
+    private Image bannerImage;
+
+    private Long sumScore;
     private Long subscribeCount;
     private Long sumScoreMember;
     private Boolean isDeleted;

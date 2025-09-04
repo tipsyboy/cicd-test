@@ -4,6 +4,7 @@ import com.dabom.common.BaseResponse;
 import com.dabom.image.constants.ImageSwaggerConstants;
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.service.ImageService;
+import com.dabom.member.security.dto.MemberDetailsDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,7 +69,10 @@ public class ImageController {
     @PostMapping("/upload")
     public ResponseEntity<BaseResponse<ImageUploadResponseDto>> register(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("directory") String directory) throws IOException {
+            @RequestParam("directory") String directory,
+            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto
+    ) throws IOException {
+        Integer memberIdx = memberDetailsDto.getIdx();
         ImageUploadResponseDto response = imageService.uploadSingleImage(file, directory);
         System.out.println(response);
         return ResponseEntity.ok(BaseResponse.of(response, HttpStatus.OK, "이미지 업로드 성공"));
