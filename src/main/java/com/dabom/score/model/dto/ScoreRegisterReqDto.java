@@ -13,16 +13,16 @@ public class ScoreRegisterReqDto {
 
     private double score;
     private Member member;
-    private Member channel;
-    private Video video;
+    private Integer channelIdx;
+    private Integer videoIdx;
     private ScoreType scoreType;
 
-    public Score toEntity(){
+    public Score toEntity(Member user,Member channel,Video video){
         return Score.builder()
                 .score(this.score)
-                .member(this.member)
-                .channel(this.channel)
-                .video(this.video)
+                .member(user)
+                .channel(channel)
+                .video(video)
                 .scoreType(this.scoreType)
                 .build();
     }

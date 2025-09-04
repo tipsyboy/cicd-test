@@ -28,7 +28,7 @@ public class ScoreController {
                                                        @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
         Integer memberIdx = memberDetailsDto.getIdx();
         scoreService.register(dto,memberIdx);
-        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
+        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK,"등록 성공!"));
     }
 
     @PostMapping("/update")
@@ -54,19 +54,11 @@ public class ScoreController {
         return ResponseEntity.ok(BaseResponse.of(averageScore, HttpStatus.OK));
     }
 
-    @GetMapping("/video/{videoIdx}/user/{memberIdx}")
-    public ResponseEntity<BaseResponse<Score>> getUserScoreForVideo(
-            @PathVariable("videoIdx") Integer videoIdx,
-            @PathVariable("memberIdx") Integer memberIdx) {
-        Optional<Score> score = scoreService.getUserScoreForVideo(videoIdx, memberIdx);
-        return ResponseEntity.ok(BaseResponse.of(score.orElse(null), HttpStatus.OK));
-    }
-
-    @PostMapping("/video")
-    public ResponseEntity<BaseResponse<Void>> saveOrUpdateVideoScore(
-            @RequestBody ScoreApiRequestDto dto,
-            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
-        scoreService.saveOrUpdateVideoScore(dto.getScore(), dto.getVideoIdx(), memberDetailsDto.getIdx());
-        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
-    }
+//    @GetMapping("/video/{videoIdx}/user/{memberIdx}")
+//    public ResponseEntity<BaseResponse<Score>> getUserScoreForVideo(
+//            @PathVariable("videoIdx") Integer videoIdx,
+//            @PathVariable("memberIdx") Integer memberIdx) {
+//        Optional<Score> score = scoreService.getUserScoreForVideo(videoIdx, memberIdx);
+//        return ResponseEntity.ok(BaseResponse.of(score.orElse(null), HttpStatus.OK));
+//    }
 }

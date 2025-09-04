@@ -29,11 +29,12 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
 
-    @GetMapping("/room/{memberIdx}")
-    public ResponseEntity<BaseResponse<Long>> createRoom(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,@PathVariable Integer memberIdx) {
+    @PostMapping("/room/{videoIdx}")
+    public ResponseEntity<BaseResponse<Long>> createRoom(
+            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto, @PathVariable Integer videoIdx) {
         Integer member1Idx = memberDetailsDto.getIdx();
-        long result = chatService.createRoom(member1Idx,memberIdx);
-        return ResponseEntity.ok(BaseResponse.of(result, HttpStatus.OK,"chatroomIdx"));
+        long chatRoomId = chatService.createRoom(member1Idx, videoIdx);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.of(chatRoomId, HttpStatus.CREATED, "chatroomId"));
     }
 
     @GetMapping("/list")
