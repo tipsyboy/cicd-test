@@ -65,6 +65,10 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "BannerImg_idx")
     private Image bannerImage;
 
+    private Long subscribeCount;
+    private Long sumScoreMember;
+    private Boolean isDeleted;
+
     private Long sumScore;
     private Long subscribeCount;
     private Long sumScoreMember;
