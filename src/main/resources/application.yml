@@ -95,4 +95,4 @@ file:
       segment-duration: ${FFMPEG_SEGMENT_DURATION}
 
 websocket:
-  allowed-origin: ${SERVER}
+  allowed-origin: ${SERVE

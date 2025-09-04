@@ -212,11 +212,12 @@ public class MemberService {
 
 
     @Transactional
-    public void updateMemberProfileImage(MemberDetailsDto memberDetailsDto, MultipartFile file, String directory) throws IOException {
+    public ImageUploadResponseDto updateMemberProfileImage(MemberDetailsDto memberDetailsDto, MultipartFile file, String directory) throws IOException {
         ImageUploadResponseDto uploadResponse = imageService.uploadSingleImage(file, directory);
         Image profileImage = imageRepository.findById(uploadResponse.getIdx())
                 .orElseThrow(() -> new IllegalArgumentException("이미지를 찾을 수 없습니다."));
         updateProfileImage(memberDetailsDto, profileImage);
+        return uploadResponse;
     }
 
     public String getBannerImage(Integer memberIdx) {
