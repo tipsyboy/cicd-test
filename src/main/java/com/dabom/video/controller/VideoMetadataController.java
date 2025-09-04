@@ -39,6 +39,13 @@ public class VideoMetadataController {
         return ResponseEntity.ok(BaseResponse.of(i, HttpStatus.OK));
     }
 
+    @PatchMapping("/{videoIdx}/visibility")
+    public ResponseEntity<BaseResponse<Integer>> toggleVideoVisibility(@PathVariable Integer videoIdx,
+                                                                       @AuthenticationPrincipal MemberDetailsDto loginMember) {
+        Integer idx = videoService.toggleVideoVisibility(videoIdx, loginMember.getIdx());
+        return ResponseEntity.ok(BaseResponse.of(idx, HttpStatus.OK, "비디오 상태가 성공적으로 변경되었습니다."));
+    }
+
     @PostMapping("/{videoIdx}/score")
     public ResponseEntity<BaseResponse<Void>> score(@PathVariable Integer videoIdx,
                                                     @AuthenticationPrincipal MemberDetailsDto loginMember,
@@ -46,12 +53,5 @@ public class VideoMetadataController {
 
         videoService.scoreVideo(requestDto, loginMember.getIdx(), videoIdx);
         return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK, "영상 평가가 완료되었습니다."));
-    }
-
-    @DeleteMapping("/metadata/{videoIdx}")
-    public ResponseEntity<BaseResponse<Integer>> deleteVideo(@PathVariable Integer videoIdx,
-                                                             @AuthenticationPrincipal MemberDetailsDto loginMember) {
-        Integer idx = videoService.deleteVideo(videoIdx, loginMember.getIdx());
-        return ResponseEntity.ok(BaseResponse.of(idx, HttpStatus.OK));
     }
 }
