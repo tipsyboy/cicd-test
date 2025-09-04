@@ -32,7 +32,6 @@ public class SearchResponseDto {
     @Builder
     public static class ChannelInfo {
         private Integer idx;
-        private String email;
         private String name;
         private String content;
     }
@@ -51,7 +50,8 @@ public class SearchResponseDto {
                 .uploadedAt(calculateDaysAgo(video.getCreatedAt()))
                 .channel(ChannelInfo.builder()
                         .idx(video.getChannel().getIdx())
-                        .content(video.getChannel().getName())
+                        .name(video.getChannel().getName())
+                        .content(video.getChannel().getContent())
                         .build())
                 .build();
     }
