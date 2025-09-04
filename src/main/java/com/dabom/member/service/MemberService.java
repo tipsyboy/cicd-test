@@ -1,5 +1,7 @@
 package com.dabom.member.service;
 
+import com.dabom.image.model.dto.ImageUploadResponseDto;
+import com.dabom.image.model.entity.Image;
 import com.dabom.member.exception.MemberException;
 import com.dabom.member.model.dto.request.MemberLoginRequestDto;
 import com.dabom.member.model.dto.request.MemberSearchRequestDto;
@@ -7,6 +9,8 @@ import com.dabom.member.model.dto.request.MemberSignupRequestDto;
 import com.dabom.member.model.dto.request.MemberUpdateChannelRequestDto;
 import com.dabom.member.model.dto.response.*;
 import com.dabom.member.model.entity.Member;
+import com.dabom.image.repository.ImageRepository;
+import com.dabom.image.service.ImageService;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.utils.JwtUtils;
@@ -17,7 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +36,8 @@ public class MemberService {
     private final MemberRepository repository;
     private final AuthenticationManager manager;
     private final PasswordEncoder encoder;
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Transactional
     public void signUpMember(MemberSignupRequestDto dto) {
@@ -154,12 +162,27 @@ public class MemberService {
 
     public String getProfileImg(MemberDetailsDto dto) {
         Integer memberIdx = dto.getIdx();
-        Optional<Member> optionalMember = repository.findById(memberIdx);
-        if (optionalMember.isEmpty()) {
-            throw new MemberException(MEMBER_NOT_FOUND);
+        Member member = repository.findById(memberIdx)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        if (member.getProfileImage() == null) {
+            String defaultProfileUrl = "/static/Image/Dabompng.png";
+            return defaultProfileUrl;
         }
-        Member member = optionalMember.get();
-        String imageUrl = member.getProfileImage().getImageUrl();
-        return imageUrl;
+        return imageService.find(member.getProfileImage().getIdx());
+    }
+
+    @Transactional
+    public void updateProfileImage(MemberDetailsDto memberDetailsDto, Image image) {
+        Member member = getMemberFromSecurity(memberDetailsDto);
+        member.changeProfile(image);
+        repository.save(member);
+    }
+
+    @Transactional
+    public void updateMemberProfileImage(MemberDetailsDto memberDetailsDto, MultipartFile file, String directory) throws IOException {
+        ImageUploadResponseDto uploadResponse = imageService.uploadSingleImage(file, directory);
+        Image profileImage = imageRepository.findById(uploadResponse.getIdx())
+                .orElseThrow(() -> new IllegalArgumentException("이미지를 찾을 수 없습니다."));
+        updateProfileImage(memberDetailsDto, profileImage);
     }
 }

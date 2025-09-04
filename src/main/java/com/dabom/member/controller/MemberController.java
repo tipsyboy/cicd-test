@@ -1,11 +1,10 @@
 package com.dabom.member.controller;
 
+import com.dabom.image.repository.ImageRepository;
+import com.dabom.image.service.ImageService;
 import com.dabom.common.BaseResponse;
 import com.dabom.member.model.dto.request.*;
-import com.dabom.member.model.dto.response.MemberChannelNameCheckResponseDto;
-import com.dabom.member.model.dto.response.MemberEmailCheckResponseDto;
-import com.dabom.member.model.dto.response.MemberInfoResponseDto;
-import com.dabom.member.model.dto.response.MemberLoginResponseDto;
+import com.dabom.member.model.dto.response.*;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +23,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.dabom.member.contants.MemberSwaggerConstants.*;
 import static com.dabom.member.contants.JWTConstants.ACCESS_TOKEN;
@@ -34,6 +36,8 @@ import static com.dabom.member.contants.JWTConstants.ACCESS_TOKEN;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Operation(
             summary = "멤버 회원 가입",
@@ -49,7 +53,8 @@ public class MemberController {
                                     value = SIGNUP_MEMBER_REQUEST
                             )
                     )
-            ),
+            )
+            ,
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -451,4 +456,15 @@ public class MemberController {
 
         return ResponseEntity.ok().body(BaseResponse.of(imgUrl, HttpStatus.OK));
     }
+
+    @PatchMapping("/profile-image")
+    public ResponseEntity<BaseResponse<String>> updateProfileImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("directory") String directory,
+            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto
+    ) throws IOException {
+        memberService.updateMemberProfileImage(memberDetailsDto, file, directory);
+        return ResponseEntity.ok(BaseResponse.of("프로필 이미지 업데이트 성공", HttpStatus.OK));
+    }
 }
+

@@ -28,6 +28,7 @@ public class ImageUploadResponseDto {
     @Schema(description = "파일 크기 (바이트 단위)", example = "102400")
     private Long imageSize;
 
+
     public static ImageUploadResponseDto from(Image entity) {
         return ImageUploadResponseDto.builder()
                 .originalName(entity.getOriginalName())
