@@ -87,7 +87,7 @@ public class VideoService {
     }
 
     @Transactional
-    public Integer deleteVideo(Integer videoIdx, Integer memberIdx) {
+    public Integer toggleVideoVisibility(Integer videoIdx, Integer memberIdx) {
         Video video = videoRepository.findById(videoIdx)
                 .orElseThrow(() -> new VideoException(VideoExceptionType.VIDEO_NOT_FOUND));
         Member channel = video.getChannel();
@@ -96,7 +96,7 @@ public class VideoService {
             throw new VideoException(VideoExceptionType.PERMISSION_DENIED);
         }
 
-        video.deleteVideo();
+        video.toggleVideoVisibility();
 
         return videoIdx;
     }

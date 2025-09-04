@@ -94,7 +94,7 @@ public class Video extends BaseEntity {
         this.averageScore = ((this.averageScore * (this.totalReviewerCount - 1)) + newScore.doubleValue()) / this.totalReviewerCount;
     }
 
-    public void deleteVideo() {
+    public void toggleVideoVisibility() {
         this.isPublic = !this.isPublic;
     }
 
