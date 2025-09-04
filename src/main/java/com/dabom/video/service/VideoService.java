@@ -4,12 +4,14 @@ import com.dabom.member.exception.MemberException;
 import com.dabom.member.exception.MemberExceptionType;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
+import com.dabom.s3.S3UrlBuilder;
 import com.dabom.score.model.entity.Score;
 import com.dabom.score.model.entity.ScoreType;
 import com.dabom.score.repository.ScoreRepository;
 import com.dabom.video.exception.VideoException;
 import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.video.model.Video;
+import com.dabom.video.model.dto.VideoInfoResponseDto;
 import com.dabom.video.model.dto.VideoInformationResponseDto;
 import com.dabom.video.model.dto.VideoMetadataRequestDto;
 import com.dabom.video.model.dto.score.VideoScoreRequestDto;
@@ -30,6 +32,7 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final ScoreRepository scoreRepository;
     private final MemberRepository memberRepository;
+    private final S3UrlBuilder s3UrlBuilder;
 
     @Transactional
     public Integer mappingMetadata(VideoMetadataRequestDto requestDto) {
@@ -51,7 +54,14 @@ public class VideoService {
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
 
         return channel.getVideoList().stream()
-                .map(VideoInformationResponseDto::toDto)
+                .map(video -> {
+                    String thumbnailUrl = null;
+                    if (video.getThumbnailImage() != null) {
+                        thumbnailUrl = s3UrlBuilder.buildPublicUrl(video.getThumbnailImage().getSavedPath());
+                    }
+
+                    return VideoInformationResponseDto.toDto(video, thumbnailUrl);
+                })
                 .toList();
     }
 
@@ -60,7 +70,13 @@ public class VideoService {
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
 
         return channel.getVideoList().stream()
-                .map(VideoInformationResponseDto::toDto)
+                .map(video -> {
+                    String thumbnailUrl = null;
+                    if (video.getThumbnailImage() != null) {
+                        thumbnailUrl = s3UrlBuilder.buildPublicUrl(video.getThumbnailImage().getSavedPath());
+                    }
+                    return VideoInformationResponseDto.toDto(video, thumbnailUrl);
+                })
                 .toList();
     }
 

@@ -61,7 +61,7 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "profileimg_idx")
     private Image profileImage;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "BannerImg_idx")
     private Image bannerImage;
 
@@ -97,10 +97,6 @@ public class Member extends BaseEntity {
         this.sumScoreMember++;
     }
 
-    public void updateProfileImage(Image profileImage) {
-        this.profileImage = profileImage;
-    }
-
     public void countSubscribe() {
         this.subscribeCount++;
     }
@@ -122,5 +118,13 @@ public class Member extends BaseEntity {
     }
     public void changeBannerImg(Image banner) {
         this.bannerImage = banner;
+    }
+
+    public void updateProfileImage(Image profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void updateBannerImage(Image bannerImage) {
+        this.bannerImage = bannerImage;
     }
 }

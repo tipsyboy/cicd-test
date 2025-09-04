@@ -2,64 +2,95 @@ package com.dabom.image.service;
 
 import com.dabom.image.model.dto.ImageCreateRequestDto;
 import com.dabom.member.exception.MemberException;
-import com.dabom.member.exception.MemberExceptionType;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.s3.PresignedUrlRequestDto;
 import com.dabom.s3.S3FileManager;
 import com.dabom.s3.S3PresignedUrlInformationDto;
-import com.dabom.image.exception.ImageException;
-import com.dabom.image.model.dto.ImagePresignedUrlResponseDto;
+import com.dabom.image.model.dto.PresignedUrlResponseDto;
 import com.dabom.image.model.entity.Image;
-import com.dabom.image.repository.ImageRepository;
+import com.dabom.video.exception.VideoException;
+import com.dabom.video.exception.VideoExceptionType;
+import com.dabom.video.model.Video;
+import com.dabom.video.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import static com.dabom.member.exception.MemberExceptionType.MEMBER_NOT_FOUND;
+import static com.dabom.video.exception.VideoExceptionType.VIDEO_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
 public class S3ImageServiceV2 {
 
-    private static final String IMAGE_FILE_PATH = "images/";
+    private static final String PROFILE_IMAGE_FILE_PATH = "images/profile";
+    private static final String BANNER_IMAGE_FILE_PATH = "images/banner";
+    private static final String VIDEO_THUMBNAIL_IMAGE_FILE_PATH = "images/thumbnail";
 
-    private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
+    private final VideoRepository videoRepository;
     private final S3FileManager s3FileManager;
 
 
-    @Transactional
-    public ImagePresignedUrlResponseDto getPresigned(PresignedUrlRequestDto requestDto) throws ImageException {
+    public PresignedUrlResponseDto getProfileImagePresignedUrl(PresignedUrlRequestDto requestDto) {
+        return createPresignedUrl(requestDto, PROFILE_IMAGE_FILE_PATH);
+    }
 
-        String s3Key = s3FileManager.generateS3Key(requestDto.originalFilename(), IMAGE_FILE_PATH);
+    public PresignedUrlResponseDto getBannerImagePresignedUrl(PresignedUrlRequestDto requestDto) {
+        return createPresignedUrl(requestDto, BANNER_IMAGE_FILE_PATH);
+    }
 
-//        Integer imageIdx = createImageEntity(file, s3Key);
-
-        S3PresignedUrlInformationDto presignedUrl = s3FileManager.createPresignedUrl(s3Key, requestDto.contentType());
-
-        return ImagePresignedUrlResponseDto.builder()
-                .uploadUrl(presignedUrl.uploadUrl())
-                .s3Key(s3Key)
-                .expiresIn(presignedUrl.expiresIn())
-                .build();
+    public PresignedUrlResponseDto getThumbnailPresignedUrl(PresignedUrlRequestDto requestDto) {
+        return createPresignedUrl(requestDto, VIDEO_THUMBNAIL_IMAGE_FILE_PATH);
     }
 
     @Transactional
-    public Integer createImage(ImageCreateRequestDto requestDto, Integer memberIdx) {
+    public Integer createMemberImage(ImageCreateRequestDto requestDto, Integer memberIdx) {
         Member member = memberRepository.findById(memberIdx)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        Image image = Image.builder()
+        Image image = createImageEntity(requestDto);
+
+        switch (requestDto.imageType()) {
+            case PROFILE -> member.updateProfileImage(image);
+            case BANNER -> member.updateBannerImage(image);
+        }
+
+        return member.getProfileImage().getIdx();
+    }
+
+    @Transactional
+    public Integer createThumbnailImage(ImageCreateRequestDto requestDto, Integer videoIdx) {
+        Video video = videoRepository.findById(videoIdx)
+                .orElseThrow(() -> new VideoException(VIDEO_NOT_FOUND));
+
+        Image thumbnail = createImageEntity(requestDto);
+        video.updateThumbnailImage(thumbnail);
+
+        return video.getThumbnailImage().getIdx();
+    }
+
+    private Image createImageEntity(ImageCreateRequestDto requestDto) {
+        return Image.builder()
                 .originalFilename(requestDto.originalFilename())
                 .savedPath(requestDto.s3Key())
                 .fileSize(requestDto.fileSize())
                 .contentType(requestDto.contentType())
                 .imageType(requestDto.imageType())
                 .build();
-        member.updateProfileImage(image);
+    }
 
-        return imageRepository.save(image).getIdx();
+    private PresignedUrlResponseDto createPresignedUrl(PresignedUrlRequestDto requestDto, String directoryPath) {
+        String s3Key = s3FileManager.generateS3Key(requestDto.originalFilename(), directoryPath);
+
+        S3PresignedUrlInformationDto presignedUrl =
+                s3FileManager.createPresignedUrl(s3Key, requestDto.contentType());
+
+        return PresignedUrlResponseDto.builder()
+                .uploadUrl(presignedUrl.uploadUrl())
+                .s3Key(s3Key)
+                .expiresIn(presignedUrl.expiresIn())
+                .build();
     }
 }

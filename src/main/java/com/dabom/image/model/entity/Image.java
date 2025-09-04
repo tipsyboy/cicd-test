@@ -22,6 +22,7 @@ public class Image extends BaseEntity {
     private String contentType; // 이미지 타입
     private Long fileSize;
 
+    @Enumerated(EnumType.STRING)
     private ImageType imageType;
 
     private Boolean isDeleted;
