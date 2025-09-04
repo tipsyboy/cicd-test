@@ -21,22 +21,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScoreService {
     private final ScoreRepository scoreRepository;
-    private final MemberRepository memberRepository; // Add this line
-    private final VideoRepository videoRepository; // Add this line
+    private final MemberRepository memberRepository;
+    private final VideoRepository videoRepository;
 
     @Transactional
     public void register(ScoreRegisterReqDto dto, Integer memberIdx) {
-        if (!dto.getMember().getIdx().equals(memberIdx)) {
-            throw new ScoreException(ScoreExceptionType.INVALID_ACCESS);
+        Member member = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new ScoreException(ScoreExceptionType.MEMBER_NOT_FOUND));
+
+        ScoreType scoreType = dto.getScoreType();
+        if (scoreType == ScoreType.VIDEO) {
+            Video video = videoRepository.findById(dto.getVideoIdx())
+                    .orElseThrow(() -> new ScoreException(ScoreExceptionType.VIDEO_NOT_FOUND));
+            scoreRepository.save(dto.toEntity(member, null, video));
+            return;
         }
-        if (dto.getScoreType() == ScoreType.CHANNEL && scoreRepository.existsByMemberAndChannelAndIsDeletedFalse(dto.getMember(), dto.getChannel())) {
-            throw new ScoreException(ScoreExceptionType.ALREADY_RATED_CHANNEL);
-        }
-        if (dto.getScoreType() == ScoreType.VIDEO && scoreRepository.existsByMemberAndVideoAndIsDeletedFalse(dto.getMember(), dto.getVideo())) {
-            throw new ScoreException(ScoreExceptionType.ALREADY_RATED_VIDEO);
+        if (scoreType == ScoreType.CHANNEL) {
+            Member channel = memberRepository.findById(dto.getChannelIdx())
+                    .orElseThrow(() -> new ScoreException(ScoreExceptionType.CHANNEL_NOT_FOUND));
+            scoreRepository.save(dto.toEntity(member, channel, null));
+            return;
         }
 
-        scoreRepository.save(dto.toEntity());
+        throw new ScoreException(ScoreExceptionType.SCORE_TYPE_MISMATCH);
     }
 
     @Transactional
@@ -72,37 +79,41 @@ public class ScoreService {
     }
 
     public Double getAverageScore(ScoreType type, Integer targetIdx) {
-        return scoreRepository.findAverageScoreByScoreTypeAndTargetIdx(type, targetIdx)
-                .orElse(0.0); // 평점이 없을 경우 0.0 반환
-    }
-
-    public Optional<Score> getUserScoreForVideo(Integer videoIdx, Integer memberIdx) {
-        return scoreRepository.findByMemberIdxAndVideoIdxAndIsDeletedFalse(memberIdx, videoIdx);
-    }
-
-    @Transactional
-    public void saveOrUpdateVideoScore(double scoreValue, Integer videoIdx, Integer memberIdx) {
-        Member member = memberRepository.findById(memberIdx)
-                .orElseThrow(() -> new ScoreException(ScoreExceptionType.MEMBER_NOT_FOUND));
-        Video video = videoRepository.findById(videoIdx)
-                .orElseThrow(() -> new ScoreException(ScoreExceptionType.VIDEO_NOT_FOUND));
-
-        Optional<Score> existingScore = scoreRepository.findByMemberIdxAndVideoIdxAndIsDeletedFalse(memberIdx, videoIdx);
-
-        if (existingScore.isPresent()) {
-            // Update existing score
-            Score scoreToUpdate = existingScore.get();
-            scoreToUpdate.updateScore(scoreValue);
-            scoreRepository.save(scoreToUpdate);
-        } else {
-            // Create new score
-            Score newScore = Score.builder()
-                    .score(scoreValue)
-                    .member(member)
-                    .video(video)
-                    .scoreType(ScoreType.VIDEO)
-                    .build();
-            scoreRepository.save(newScore);
+        if (type == ScoreType.CHANNEL) {
+            return scoreRepository.findAverageScoreByChannelIdx(targetIdx).orElse(0.0);
+        } else if (type == ScoreType.VIDEO) {
+            return scoreRepository.findAverageScoreByVideoIdx(targetIdx).orElse(0.0);
         }
+        else throw new ScoreException(ScoreExceptionType.SCORE_TYPE_MISMATCH);
     }
+
+//    public Optional<Score> getUserScoreForVideo(Integer videoIdx, Integer memberIdx) {
+//        return scoreRepository.findby(memberIdx, videoIdx);
+//    }
+
+//    @Transactional
+//    public void saveOrUpdateVideoScore(double scoreValue, Integer videoIdx, Integer memberIdx) {
+//        Member member = memberRepository.findById(memberIdx)
+//                .orElseThrow(() -> new ScoreException(ScoreExceptionType.MEMBER_NOT_FOUND));
+//        Video video = videoRepository.findById(videoIdx)
+//                .orElseThrow(() -> new ScoreException(ScoreExceptionType.VIDEO_NOT_FOUND));
+//
+//        Optional<Score> existingScore = scoreRepository.findByMemberIdxAndVideoIdxAndIsDeletedFalse(memberIdx, videoIdx);
+//
+//        if (existingScore.isPresent()) {
+//            // Update existing score
+//            Score scoreToUpdate = existingScore.get();
+//            scoreToUpdate.updateScore(scoreValue);
+//            scoreRepository.save(scoreToUpdate);
+//        } else {
+//            // Create new score
+//            Score newScore = Score.builder()
+//                    .score(scoreValue)
+//                    .member(member)
+//                    .video(video)
+//                    .scoreType(ScoreType.VIDEO)
+//                    .build();
+//            scoreRepository.save(newScore);
+//        }
+//    }
 }

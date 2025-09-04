@@ -17,11 +17,11 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
     boolean existsByMemberAndVideo(Member member, Video video);
 
-    Optional<Score> findByMemberIdxAndVideoIdxAndIsDeletedFalse(Integer memberIdx, Integer videoIdx);
+    @Query("SELECT AVG(s.score) FROM Score s WHERE s.scoreType = 'CHANNEL' AND s.isDeleted = FALSE AND s.channel.idx = :channelIdx")
+    Optional<Double> findAverageScoreByChannelIdx(@Param("channelIdx") Integer channelIdx);
 
-    @Query("SELECT AVG(s.score) FROM Score s WHERE s.scoreType = :scoreType AND s.isDeleted = FALSE AND " +
-            "( (:scoreType = 'CHANNEL' AND s.channel.idx = :targetIdx) OR " +
-            "  (:scoreType = 'VIDEO' AND s.video.idx = :targetIdx) )")
-    Optional<Double> findAverageScoreByScoreTypeAndTargetIdx(@Param("scoreType") ScoreType scoreType, @Param("targetIdx") Integer targetIdx);
+    // 비디오의 평균 점수를 계산하는 쿼리
+    @Query("SELECT AVG(s.score) FROM Score s WHERE s.scoreType = 'VIDEO' AND s.isDeleted = FALSE AND s.video.idx = :videoIdx")
+    Optional<Double> findAverageScoreByVideoIdx(@Param("videoIdx") Integer videoIdx);
 
 }

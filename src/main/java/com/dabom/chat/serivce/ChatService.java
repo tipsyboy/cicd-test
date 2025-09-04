@@ -14,6 +14,8 @@ import com.dabom.common.SliceBaseResponse;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.video.model.Video;
+import com.dabom.video.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,11 +36,23 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRepository chatRepository;
     private final MemberRepository memberRepository;
+    private final VideoRepository videoRepository;
 
-    public long createRoom(Integer member1Idx, Integer member2Idx) {
+    public long createRoom(Integer memberIdx, Integer videoIdx) {
 
-        Member member1 = memberRepository.findById(member1Idx).orElseThrow();
-        Member member2 = memberRepository.findById(member2Idx).orElseThrow();
+        Member member1 = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new ChatException(ChatExceptionType.MEMBER_NOT_FOUND));
+        Video video = videoRepository.findById(videoIdx)
+                .orElseThrow(() -> new ChatException(ChatExceptionType.MEMBER_NOT_FOUND));
+        Member member2 = video.getChannel();
+        if (member1.getIdx().equals(member2.getIdx())) {
+            throw new ChatException(ChatExceptionType.CANNOT_CHAT_WITH_SELF);
+        }
+
+        Optional<ChatRoom> existingRoom = chatRoomRepository.findByMember1AndMember2OrMember2AndMember1(member1, member2, member1, member2);
+        if (existingRoom.isPresent()) {
+            return existingRoom.get().getIdx();
+        }
 
         ChatRoomRegisterRequestDto dto = new ChatRoomRegisterRequestDto(member1,member2);
         ChatRoom result = chatRoomRepository.save(dto.toEntity());
