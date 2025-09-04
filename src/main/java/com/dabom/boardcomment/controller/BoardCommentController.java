@@ -1,5 +1,7 @@
 package com.dabom.boardcomment.controller;
 
+import com.dabom.boardcomment.exception.BoardCommentException;
+import com.dabom.boardcomment.exception.BoardCommentExceptionType;
 import com.dabom.boardcomment.model.dto.BoardCommentResponseDto;
 import com.dabom.common.BaseResponse;
 import com.dabom.boardcomment.model.dto.BoardCommentCreateRequestDto;
@@ -57,6 +59,9 @@ public class BoardCommentController {
     public ResponseEntity<BaseResponse<Integer>> create(@RequestBody BoardCommentCreateRequestDto dto,
                                                         @PathVariable Integer boardIdx,
                                                         @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
+        if(memberDetailsDto == null){
+            throw new BoardCommentException(BoardCommentExceptionType.COMMENT_ACCESS_DENIED);
+        }
         Integer idx = boardCommentService.create(dto, boardIdx, memberDetailsDto);
         return ResponseEntity.ok(BaseResponse.of(idx, HttpStatus.OK, "댓글이 성공적으로 등록되었습니다."));
     }

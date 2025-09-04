@@ -1,5 +1,6 @@
 package com.dabom.member.model.entity;
 
+import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.common.BaseEntity;
 import com.dabom.image.model.entity.Image;
@@ -64,6 +65,9 @@ public class Member extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "BannerImg_idx")
     private Image bannerImage;
+
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY)
+    private List<BoardComment> boardComments;
 
     private Long subscribeCount;
     private Long sumScoreMember;

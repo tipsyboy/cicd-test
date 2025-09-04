@@ -200,6 +200,7 @@ public class MemberService {
     public void updateProfileImage(MemberDetailsDto memberDetailsDto, Image image) {
         Member member = getMemberFromSecurity(memberDetailsDto);
         member.changeProfile(image);
+        System.out.println(member.getProfileImage());
         repository.save(member);
     }
 

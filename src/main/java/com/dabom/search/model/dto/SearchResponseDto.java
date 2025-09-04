@@ -1,5 +1,6 @@
 package com.dabom.search.model.dto;
 
+import com.dabom.member.service.MemberService;
 import com.dabom.video.model.Video;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,11 +35,14 @@ public class SearchResponseDto {
         private Integer idx;
         private String name;
         private String content;
+        private String profileImg;
     }
 
 
 
-    public static SearchResponseDto from(Video video) {
+    public static SearchResponseDto from(Video video, MemberService memberService) {
+        String channelProfileImg = memberService.getProfileImg(video.getChannel().getIdx());
+
         return SearchResponseDto.builder()
                 .videoId(video.getIdx())
                 .title(video.getTitle())
@@ -52,6 +56,7 @@ public class SearchResponseDto {
                         .idx(video.getChannel().getIdx())
                         .name(video.getChannel().getName())
                         .content(video.getChannel().getContent())
+                        .profileImg(channelProfileImg)
                         .build())
                 .build();
     }
