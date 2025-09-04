@@ -1,6 +1,7 @@
 package com.dabom.video.model;
 
 import com.dabom.common.BaseEntity;
+import com.dabom.image.model.entity.Image;
 import com.dabom.member.model.entity.Member;
 import com.dabom.videocomment.model.entity.VideoComment;
 import jakarta.persistence.*;
@@ -52,6 +53,10 @@ public class Video extends BaseEntity {
 
     @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
     private List<VideoComment> videoCommentList;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "thumbnail_idx")
+    private Image thumbnailImage;
 
 
     @Builder
