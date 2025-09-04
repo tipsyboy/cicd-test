@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "이미지 관리 기능")
 @RestController
@@ -27,27 +24,35 @@ public class ImageControllerV2 {
     @PostMapping("/presigned/profile")
     public ResponseEntity<BaseResponse<PresignedUrlResponseDto>> getProfileImagePresignedUrl(@RequestBody PresignedUrlRequestDto requestDto) {
         PresignedUrlResponseDto presigned = s3ImageServiceV2.getProfileImagePresignedUrl(requestDto);
-        return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK, "이미지 업로드가 완료되었습니다."));
+        return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK));
     }
 
     @PostMapping("/presigned/banner")
     public ResponseEntity<BaseResponse<PresignedUrlResponseDto>> getBannerImagePresignedUrl(@RequestBody PresignedUrlRequestDto requestDto) {
         PresignedUrlResponseDto presigned = s3ImageServiceV2.getBannerImagePresignedUrl(requestDto);
-        return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK, "이미지 업로드가 완료되었습니다."));
+        return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK));
     }
 
     @PostMapping("/presigned/thumbnail")
     public ResponseEntity<BaseResponse<PresignedUrlResponseDto>> getThumbnailImagePresignedUrl(@RequestBody PresignedUrlRequestDto requestDto) {
         PresignedUrlResponseDto presigned = s3ImageServiceV2.getThumbnailPresignedUrl(requestDto);
-        return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK, "이미지 업로드가 완료되었습니다."));
+        return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK));
     }
 
 
     @PostMapping
     public ResponseEntity<BaseResponse<Integer>> registerImage(@RequestBody ImageCreateRequestDto requestDto,
                                                                @AuthenticationPrincipal MemberDetailsDto loginMember) {
-        Integer imageIdx = s3ImageServiceV2.createImageEntity(requestDto, loginMember.getIdx());
+        Integer imageIdx = s3ImageServiceV2.createMemberImage(requestDto, loginMember.getIdx());
         return ResponseEntity.ok(BaseResponse.of(imageIdx, HttpStatus.OK, "이미지가 등록되었습니다."));
     }
+
+    @PostMapping("/thumbnail/{videoIdx}")
+    public ResponseEntity<BaseResponse<Integer>> registerImage(@RequestBody ImageCreateRequestDto requestDto,
+                                                               @PathVariable Integer videoIdx) {
+        Integer imageIdx = s3ImageServiceV2.createThumbnailImage(requestDto, videoIdx);
+        return ResponseEntity.ok(BaseResponse.of(imageIdx, HttpStatus.OK, "이미지가 등록되었습니다."));
+    }
+
 
 }

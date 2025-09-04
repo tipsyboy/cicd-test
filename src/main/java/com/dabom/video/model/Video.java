@@ -106,4 +106,8 @@ public class Video extends BaseEntity {
     public void incrementViews() {
         this.views = (this.views == null ? 1 : this.views + 1);
     }
+
+    public void updateThumbnailImage(Image thumbnail) {
+        this.thumbnailImage = thumbnail;
+    }
 }
