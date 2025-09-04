@@ -61,18 +61,19 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "image_idx")
     private Image profileImage;
 
-    private Long sumScore;
+    private Long subscribeCount;
     private Long sumScoreMember;
     private Boolean isDeleted;
 
     @Builder
-    public Member(String email, String name, String password, String memberRole) {
+    public Member(String email, String name, String password, String memberRole, Long subscribeCount, Long score, Long sumScoreMember) {
         this.email = email;
         this.name = name;
         this.content = null;
         this.password = password;
         this.memberRole = MemberRole.valueOf(memberRole);
-        this.sumScore = 0L;
+        this.subscribeCount = 0L;
+        this.score = 0L;
         this.sumScoreMember = 0L;
         this.isDeleted = false;
     }
@@ -86,8 +87,16 @@ public class Member extends BaseEntity {
     }
 
     public void voteScore(Long score) {
-        this.sumScore += score;
+        this.score += score;
         this.sumScoreMember++;
+    }
+
+    public void countSubscribe() {
+        this.subscribeCount++;
+    }
+
+    public void cancelSubscribe() {
+        this.subscribeCount--;
     }
 
     public void deleteMember() {

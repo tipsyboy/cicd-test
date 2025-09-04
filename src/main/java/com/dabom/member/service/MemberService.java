@@ -27,7 +27,7 @@ import static com.dabom.member.exception.MemberExceptionType.*;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
-    private final MemberRepository repository;
+    private final MemberRepository memberRepository;
     private final AuthenticationManager manager;
     private final PasswordEncoder encoder;
 
@@ -35,15 +35,15 @@ public class MemberService {
     public void signUpMember(MemberSignupRequestDto dto) {
         String encodedPassword = encoder.encode(dto.getPassword());
         checkDuplicatedName(dto);
-        Optional<Member> optional = repository.findByEmail(dto.getEmail());
+        Optional<Member> optional = memberRepository.findByEmail(dto.getEmail());
         if(optional.isPresent()) {
             Member member = optional.get();
             checkIsNotDelete(member);
             member.rollBackMember();
-            repository.save(member);
+            memberRepository.save(member);
             return;
         }
-        repository.save(dto.toEntity(encodedPassword));
+        memberRepository.save(dto.toEntity(encodedPassword));
     }
 
     public MemberLoginResponseDto loginMember(MemberLoginRequestDto dto) {
@@ -57,7 +57,7 @@ public class MemberService {
     }
 
     public MemberListResponseDto searchMemberName(MemberSearchRequestDto dto) {
-        List<Member> members = repository.findMembersByName(dto.getName());
+        List<Member> members = memberRepository.findMembersByName(dto.getName());
         return MemberListResponseDto.toDto(members);
     }
 
@@ -68,7 +68,7 @@ public class MemberService {
     }
 
     public MemberEmailCheckResponseDto checkMemberEmail(String email) {
-        Optional<Member> optionalMember = repository.findByEmail(email);
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
         if(optionalMember.isEmpty()) {
             return MemberEmailCheckResponseDto.of(false);
         }
@@ -76,7 +76,7 @@ public class MemberService {
     }
 
     public MemberChannelNameCheckResponseDto checkMemberChannelName(String channelName) {
-        Optional<Member> optionalMember = repository.findByName(channelName);
+        Optional<Member> optionalMember = memberRepository.findByName(channelName);
         if(optionalMember.isEmpty()) {
             return MemberChannelNameCheckResponseDto.of(false);
         }
@@ -84,7 +84,7 @@ public class MemberService {
     }
 
     public MemberInfoResponseDto getMemberInfo(MemberDetailsDto dto) {
-        Member member = repository.findById(dto.getIdx()).orElseThrow();
+        Member member = memberRepository.findById(dto.getIdx()).orElseThrow();
         return MemberInfoResponseDto.toDto(member);
     }
 
@@ -93,18 +93,18 @@ public class MemberService {
         Member member = getMemberFromSecurity(memberDetailsDto);
         updateChannelName(dto, member);
         updateChannelContent(dto, member);
-        repository.save(member);
+        memberRepository.save(member);
     }
 
     @Transactional
     public void deleteMember(MemberDetailsDto dto) {
         Member member = getMemberFromSecurity(dto);
         member.deleteMember();
-        repository.save(member);
+        memberRepository.save(member);
     }
 
     public MemberInfoResponseDto getChannelInfoByChannelName(String channelName) {
-        Member member = repository.findByName(channelName)
+        Member member = memberRepository.findByName(channelName)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         return MemberInfoResponseDto.toDto(member);
     }
@@ -116,7 +116,7 @@ public class MemberService {
     }
 
     private void checkDuplicatedName(MemberSignupRequestDto dto) {
-        Optional<Member> checkName = repository.findByName(dto.getChannelName());
+        Optional<Member> checkName = memberRepository.findByName(dto.getChannelName());
         if(checkName.isEmpty()) {
             return;
         }
@@ -145,7 +145,7 @@ public class MemberService {
 
     private Member getMemberFromSecurity(MemberDetailsDto dto) {
         Integer idx = dto.getIdx();
-        Optional<Member> optionalMember = repository.findById(idx);
+        Optional<Member> optionalMember = memberRepository.findById(idx);
         if(optionalMember.isEmpty()) {
             throw new MemberException(MEMBER_NOT_FOUND);
         }
