@@ -20,8 +20,9 @@ public class VideoInformationResponseDto {
     private double averageScore;
     private boolean isPublicVideo;
     private LocalDateTime uploadedAt;
+    private String thumbnailImage;
 
-    public static VideoInformationResponseDto toDto(Video entity) {
+    public static VideoInformationResponseDto toDto(Video entity, String thumbnailUrl) {
         return VideoInformationResponseDto.builder()
                 .videoIdx(entity.getIdx())
                 .title(entity.getTitle())
@@ -31,12 +32,15 @@ public class VideoInformationResponseDto {
                 .averageScore(entity.getAverageScore())
                 .isPublicVideo(entity.isPublic())
                 .uploadedAt(entity.getCreatedAt())
+                .thumbnailImage(thumbnailUrl)
                 .build();
     }
 
 
     @Builder(access = AccessLevel.PRIVATE)
-    private VideoInformationResponseDto(Integer videoIdx, String title, String description, Long views, Long totalReviewerCount, double averageScore, boolean isPublicVideo, LocalDateTime uploadedAt) {
+    private VideoInformationResponseDto(Integer videoIdx, String title, String description, Long views,
+                                        Long totalReviewerCount, double averageScore,
+                                        boolean isPublicVideo, LocalDateTime uploadedAt, String thumbnailImage) {
         this.videoIdx = videoIdx;
         this.title = title;
         this.description = description;
@@ -45,5 +49,6 @@ public class VideoInformationResponseDto {
         this.averageScore = averageScore;
         this.isPublicVideo = isPublicVideo;
         this.uploadedAt = uploadedAt;
+        this.thumbnailImage = thumbnailImage;
     }
 }
