@@ -2,6 +2,7 @@ package com.dabom.score.controller;
 
 import com.dabom.common.BaseResponse;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.score.model.dto.ScoreApiRequestDto;
 import com.dabom.score.model.dto.ScoreRegisterReqDto;
 import com.dabom.score.model.dto.ScoreUpdateReqDto;
 import com.dabom.score.model.entity.Score;
@@ -61,5 +62,11 @@ public class ScoreController {
         return ResponseEntity.ok(BaseResponse.of(score.orElse(null), HttpStatus.OK));
     }
 
-
+    @PostMapping("/video")
+    public ResponseEntity<BaseResponse<Void>> saveOrUpdateVideoScore(
+            @RequestBody ScoreApiRequestDto dto,
+            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
+        scoreService.saveOrUpdateVideoScore(dto.getScore(), dto.getVideoIdx(), memberDetailsDto.getIdx());
+        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
+    }
 }
