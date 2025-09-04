@@ -68,6 +68,9 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
                     .password(null)
                     .memberRole("USER")
                     .name(name)
+                    .sumScoreMember(0L)
+                    .score(0L)
+                    .subscribeCount(0L)
                     .build();
             return repository.save(newMember);
         }

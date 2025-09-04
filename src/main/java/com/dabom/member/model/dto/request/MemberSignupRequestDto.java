@@ -31,6 +31,9 @@ public class MemberSignupRequestDto {
                 .name(channelName)
                 .password(encodePassword)
                 .memberRole(memberRole)
+                .subscribeCount(0L)
+                .score(0L)
+                .sumScoreMember(0L)
                 .build();
     }
 }
