@@ -187,13 +187,20 @@ public class MemberService {
     }
 
     public String getProfileImg(Integer memberIdx) {
-        Member member = repository.findById(memberIdx)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        if (member.getProfileImage() == null) {
-            String defaultProfileUrl = "/Image/Dabompng.png";
-            return defaultProfileUrl;
+        try {
+            Member member = repository.findById(memberIdx)
+                    .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+            if (member.getProfileImage() == null) {
+                String defaultProfileUrl = "/Image/Dabompng.png";
+                return defaultProfileUrl;
+            }
+            return imageService.find(member.getProfileImage().getIdx());
+
+        } catch (Exception e) {
+
+            return "/Image/Dabompng.png"; // 기본 이미지 반환
         }
-        return imageService.find(member.getProfileImage().getIdx());
     }
 
     @Transactional
