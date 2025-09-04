@@ -58,10 +58,8 @@ public class LocalImageService implements ImageService {
             file.transferTo(new File(imagePath));
 
             Image entity = Image.builder()
-                    .originalName(file.getOriginalFilename())
-                    .imageName(imageName)
-                    .imageUrl(imageUrlPath)
-                    .imagePath(imagePath)
+                    .originalFilename(file.getOriginalFilename())
+                    .savedPath(imageName)
                     .fileSize(file.getSize())
                     .build();
 
@@ -93,7 +91,7 @@ public class LocalImageService implements ImageService {
     public String find(Integer idx) throws ImageException {
         Optional<Image> result = imageRepository.findById(idx);
         if (result.isPresent()) {
-            return result.get().getImageUrl();
+            return result.get().getSavedPath();
         } else {
             throw new ImageException(ImageExceptionType.IMAGE_NOT_FOUND);
         }

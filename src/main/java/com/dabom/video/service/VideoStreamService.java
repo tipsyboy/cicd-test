@@ -5,7 +5,7 @@ import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.video.model.Video;
 import com.dabom.video.model.dto.VideoInfoResponseDto;
 import com.dabom.video.repository.VideoRepository;
-import com.dabom.video.service.utils.S3UrlBuilder;
+import com.dabom.s3.S3UrlBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

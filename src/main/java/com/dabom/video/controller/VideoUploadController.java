@@ -2,8 +2,8 @@ package com.dabom.video.controller;
 
 import com.dabom.common.BaseResponse;
 import com.dabom.member.security.dto.MemberDetailsDto;
-import com.dabom.video.model.dto.PresignedUrlRequestDto;
-import com.dabom.video.model.dto.PresignedUrlResponseDto;
+import com.dabom.s3.PresignedUrlRequestDto;
+import com.dabom.video.model.dto.VideoPresignedUrlResponseDto;
 import com.dabom.video.service.local.VideoLocalUploadService;
 import com.dabom.video.service.s3.VideoS3UploadService;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +33,9 @@ public class VideoUploadController {
     }
 
     @PostMapping("/presigned")
-    public ResponseEntity<BaseResponse<PresignedUrlResponseDto>> getPresignedUrl(@RequestBody PresignedUrlRequestDto requestDto,
-                                                                                 @AuthenticationPrincipal MemberDetailsDto loginMember) {
-        PresignedUrlResponseDto response = videoS3UploadService.generatePresignedUrl(requestDto, loginMember.getIdx());
+    public ResponseEntity<BaseResponse<VideoPresignedUrlResponseDto>> getPresignedUrl(@RequestBody PresignedUrlRequestDto requestDto,
+                                                                                      @AuthenticationPrincipal MemberDetailsDto loginMember) {
+        VideoPresignedUrlResponseDto response = videoS3UploadService.generatePresignedUrl(requestDto, loginMember.getIdx());
         return ResponseEntity.ok(BaseResponse.of(response, HttpStatus.OK));
     }
 

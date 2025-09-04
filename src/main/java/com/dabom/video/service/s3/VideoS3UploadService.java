@@ -1,5 +1,7 @@
 package com.dabom.video.service.s3;
 
+import com.dabom.s3.S3FileManager;
+import com.dabom.s3.S3PresignedUrlInformationDto;
 import com.dabom.member.exception.MemberException;
 import com.dabom.member.exception.MemberExceptionType;
 import com.dabom.member.model.entity.Member;
@@ -8,22 +10,12 @@ import com.dabom.video.exception.VideoException;
 import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.video.model.Video;
 import com.dabom.video.model.VideoStatus;
-import com.dabom.video.model.dto.PresignedUrlRequestDto;
-import com.dabom.video.model.dto.PresignedUrlResponseDto;
+import com.dabom.s3.PresignedUrlRequestDto;
+import com.dabom.video.model.dto.VideoPresignedUrlResponseDto;
 import com.dabom.video.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -33,17 +25,11 @@ public class VideoS3UploadService {
     private static final Long MAX_FILE_SIZE = 1024 * 1024 * 100L;
     private static final String VIDEO_TEMP_PATH = "videos/original/";
 
-    @Value("${spring.cloud.aws.s3.bucket}")
-    private String bucketName;
-
-    @Value("${spring.cloud.aws.s3.presigned-url-duration}")
-    private int presignedUrlDuration;
-
-    private final S3Presigner s3Presigner;
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
+    private final S3FileManager s3FileManager;
 
-    public PresignedUrlResponseDto generatePresignedUrl(PresignedUrlRequestDto requestDto, Integer memberIdx) {
+    public VideoPresignedUrlResponseDto generatePresignedUrl(PresignedUrlRequestDto requestDto, Integer memberIdx) {
         Member channel = memberRepository.findById(memberIdx)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
 
@@ -51,29 +37,20 @@ public class VideoS3UploadService {
 //        validateFile(request);
 
         // 2. S3 Key 생성 (UUID 기반)
-        String s3Key = generateS3Key(requestDto.originalFilename());
+        String s3Key = s3FileManager.generateS3Key(requestDto.originalFilename(), VIDEO_TEMP_PATH);
 
         // 3. Video Entity 생성
         Integer videoIdx = createVideoEntity(requestDto, s3Key, channel);
 
         // 4. Presigned URL 생성
-        String uploadUrl = createPresignedUrl(s3Key, requestDto.contentType());
+        S3PresignedUrlInformationDto presignedUrlInfo = s3FileManager.createPresignedUrl(s3Key, requestDto.contentType());
 
-        return PresignedUrlResponseDto.builder()
+        return VideoPresignedUrlResponseDto.builder()
                 .videoIdx(videoIdx)
-                .uploadUrl(uploadUrl)
+                .uploadUrl(presignedUrlInfo.uploadUrl())
                 .s3Key(s3Key)
-                .expiresIn(presignedUrlDuration)
+                .expiresIn(presignedUrlInfo.expiresIn())
                 .build();
-    }
-
-    private String generateS3Key(String originalFileName) {
-        String todayPath = LocalDate.now()
-                .format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        String extension = extractExtension(originalFileName);
-        String uuid = UUID.randomUUID().toString();
-
-        return VIDEO_TEMP_PATH + todayPath + "/" + uuid + "." + extension;
     }
 
     private Integer createVideoEntity(PresignedUrlRequestDto requestDto, String s3Key, Member channel) {
@@ -86,23 +63,6 @@ public class VideoS3UploadService {
                 .contentType(requestDto.contentType())
                 .build();
         return videoRepository.save(video).getIdx();
-    }
-
-    private String createPresignedUrl(String s3Key, String contentType) {
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(s3Key)
-                .contentType(contentType)
-                .build();
-
-        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofSeconds(presignedUrlDuration))
-                .putObjectRequest(putObjectRequest)
-                .build();
-
-        PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
-
-        return presignedRequest.url().toString();
     }
 
     private String extractExtension(String fileName) {
