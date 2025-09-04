@@ -26,15 +26,29 @@ public class Subscribe extends BaseEntity {
     @JoinColumn(name = "subscriber_idx")
     private Member subscriber;
     private Boolean voteScore;
+    private Boolean isDelete;
 
     @Builder
     public Subscribe(Member channel, Member subscriber) {
         this.channel = channel;
         this.subscriber = subscriber;
         this.voteScore = false;
+        this.isDelete = false;
     }
 
     public void voteScore() {
         this.voteScore = true;
+    }
+
+    public void cancelScore() {
+        this.voteScore = false;
+    }
+
+    public void delete() {
+        this.isDelete = true;
+    }
+
+    public void rollBack() {
+        this.isDelete = false;
     }
 }
