@@ -9,7 +9,6 @@ import com.dabom.s3.S3FileManager;
 import com.dabom.s3.S3PresignedUrlInformationDto;
 import com.dabom.image.model.dto.PresignedUrlResponseDto;
 import com.dabom.image.model.entity.Image;
-import com.dabom.image.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,6 @@ public class S3ImageServiceV2 {
     private static final String BANNER_IMAGE_FILE_PATH = "images/banner";
     private static final String VIDEO_THUMBNAIL_IMAGE_FILE_PATH = "images/thumbnail";
 
-    private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final S3FileManager s3FileManager;
 
@@ -42,7 +40,7 @@ public class S3ImageServiceV2 {
     }
 
     @Transactional
-    public Integer createImage(ImageCreateRequestDto requestDto, Integer memberIdx) {
+    public Integer createImageEntity(ImageCreateRequestDto requestDto, Integer memberIdx) {
         Member member = memberRepository.findById(memberIdx)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -53,10 +51,15 @@ public class S3ImageServiceV2 {
                 .contentType(requestDto.contentType())
                 .imageType(requestDto.imageType())
                 .build();
-        member.updateProfileImage(image);
 
-        return imageRepository.save(image).getIdx();
+        switch (requestDto.imageType()) {
+            case PROFILE -> member.updateProfileImage(image);
+            case BANNER -> member.updateBannerImage(image);
+        }
+
+        return member.getProfileImage().getIdx();
     }
+
 
     private PresignedUrlResponseDto createPresignedUrl(PresignedUrlRequestDto requestDto, String directoryPath) {
         String s3Key = s3FileManager.generateS3Key(requestDto.originalFilename(), directoryPath);

@@ -30,6 +30,12 @@ public class ImageControllerV2 {
         return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK, "이미지 업로드가 완료되었습니다."));
     }
 
+    @PostMapping("/presigned/banner")
+    public ResponseEntity<BaseResponse<PresignedUrlResponseDto>> getBannerImagePresignedUrl(@RequestBody PresignedUrlRequestDto requestDto) {
+        PresignedUrlResponseDto presigned = s3ImageServiceV2.getBannerImagePresignedUrl(requestDto);
+        return ResponseEntity.ok(BaseResponse.of(presigned, HttpStatus.OK, "이미지 업로드가 완료되었습니다."));
+    }
+
     @PostMapping("/presigned/thumbnail")
     public ResponseEntity<BaseResponse<PresignedUrlResponseDto>> getThumbnailImagePresignedUrl(@RequestBody PresignedUrlRequestDto requestDto) {
         PresignedUrlResponseDto presigned = s3ImageServiceV2.getThumbnailPresignedUrl(requestDto);
@@ -38,10 +44,10 @@ public class ImageControllerV2 {
 
 
     @PostMapping
-    public ResponseEntity<BaseResponse<Integer>> registerProfileImage(@RequestBody ImageCreateRequestDto requestDto,
-                                                                      @AuthenticationPrincipal MemberDetailsDto loginMember) {
-        Integer imageIdx = s3ImageServiceV2.createImage(requestDto, loginMember.getIdx());
-        return ResponseEntity.ok(BaseResponse.of(imageIdx, HttpStatus.OK, "프로필 이미지가 등록되었습니다."));
+    public ResponseEntity<BaseResponse<Integer>> registerImage(@RequestBody ImageCreateRequestDto requestDto,
+                                                               @AuthenticationPrincipal MemberDetailsDto loginMember) {
+        Integer imageIdx = s3ImageServiceV2.createImageEntity(requestDto, loginMember.getIdx());
+        return ResponseEntity.ok(BaseResponse.of(imageIdx, HttpStatus.OK, "이미지가 등록되었습니다."));
     }
 
 }
