@@ -24,4 +24,8 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
     @Query("SELECT AVG(s.score) FROM Score s WHERE s.scoreType = 'VIDEO' AND s.isDeleted = FALSE AND s.video.idx = :videoIdx")
     Optional<Double> findAverageScoreByVideoIdx(@Param("videoIdx") Integer videoIdx);
 
+    Optional<Score> findByMemberAndVideo(Member member, Video video);
+
+    Optional<Score> findByMemberAndChannel(Member member, Member channel);
+
 }
