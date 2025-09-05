@@ -54,7 +54,7 @@ public class S3FileManager {
         String extension = extractExtension(originalFileName);
         String uuid = UUID.randomUUID().toString();
 
-        return uploadPath + "/" + todayPath + "/" + uuid + "." + extension;
+        return uploadPath + todayPath + "/" + uuid + "." + extension;
     }
 
     private String extractExtension(String fileName) {

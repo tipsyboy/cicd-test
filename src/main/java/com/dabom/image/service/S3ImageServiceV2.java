@@ -1,16 +1,15 @@
 package com.dabom.image.service;
 
 import com.dabom.image.model.dto.ImageCreateRequestDto;
+import com.dabom.image.model.dto.PresignedUrlResponseDto;
+import com.dabom.image.model.entity.Image;
 import com.dabom.member.exception.MemberException;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.s3.PresignedUrlRequestDto;
 import com.dabom.s3.S3FileManager;
 import com.dabom.s3.S3PresignedUrlInformationDto;
-import com.dabom.image.model.dto.PresignedUrlResponseDto;
-import com.dabom.image.model.entity.Image;
 import com.dabom.video.exception.VideoException;
-import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.video.model.Video;
 import com.dabom.video.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
