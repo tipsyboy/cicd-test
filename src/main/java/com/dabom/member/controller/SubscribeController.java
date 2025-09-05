@@ -2,41 +2,51 @@ package com.dabom.member.controller;
 
 import com.dabom.common.BaseResponse;
 import com.dabom.member.model.dto.request.MemberSubscribeRequestDto;
+import com.dabom.member.model.dto.request.SubscribeCreateDto;
+import com.dabom.member.model.dto.response.MemberInfoResponseDto;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.service.SubscribeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/subscribe")
+@RequestMapping("/api/member")
 @RequiredArgsConstructor
 public class SubscribeController {
     private final SubscribeService subscribeService;
 
-    @PostMapping("/save")
-    public ResponseEntity<BaseResponse<String>> subscribe(@RequestBody MemberSubscribeRequestDto dto,
-                                                          @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
-        subscribeService.subscribe(dto.getMemberIdx(), memberDetailsDto.getIdx());
+    @PostMapping("/subscribe/{channelIdx}")
+    public ResponseEntity<BaseResponse<String>> createSubscribe(
+            @AuthenticationPrincipal MemberDetailsDto memberdto,
+            @PathVariable Integer channelIdx,
+            @RequestBody SubscribeCreateDto dto) {
+
+        subscribeService.create(dto, memberdto.getIdx(), channelIdx);
+
         return ResponseEntity.ok(BaseResponse.of("구독 성공", HttpStatus.OK));
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<BaseResponse<String>> subscribeDelete(@RequestBody MemberSubscribeRequestDto dto,
-                                                                @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
-        subscribeService.subscribeDelete(dto.getMemberIdx(), memberDetailsDto.getIdx());
-        return ResponseEntity.ok(BaseResponse.of("구독 취소", HttpStatus.OK));
+    @GetMapping("/subscriptions")
+    public ResponseEntity<BaseResponse<List<MemberInfoResponseDto>>> subList(
+            @AuthenticationPrincipal MemberDetailsDto dto) {
+        List<MemberInfoResponseDto> subscribedChannels = subscribeService.sublist(dto.getIdx());
+
+        return ResponseEntity.ok(BaseResponse.of(subscribedChannels, HttpStatus.OK));
+
     }
 
-    @PostMapping
-    public ResponseEntity<BaseResponse<Boolean>> getSubscribe(@RequestBody MemberSubscribeRequestDto dto,
-                                                     @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
-        Boolean subscribe = subscribeService.getSubscribe(dto.getMemberIdx(), memberDetailsDto.getIdx());
-        return ResponseEntity.ok(BaseResponse.of(subscribe, HttpStatus.OK));
+    @DeleteMapping("/unsubscribe/{channelIdx}")
+    public ResponseEntity<BaseResponse<String>> unsubscribeChannel(
+            @AuthenticationPrincipal MemberDetailsDto memberdto,
+            @PathVariable Integer channelIdx) {
+
+        subscribeService.unsubscribe(memberdto.getIdx(), channelIdx);
+
+        return ResponseEntity.ok(BaseResponse.of("채널 구독 취소 성공", HttpStatus.OK));
     }
 }

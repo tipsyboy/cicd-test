@@ -5,7 +5,7 @@ import com.dabom.member.model.entity.Member;
 
 import java.util.regex.Pattern;
 
-public record MemberInfoResponseDto(Integer id, String name, String content, String email, Integer videoCount,
+public record MemberInfoResponseDto(Integer id, String name, String content, String email, Integer videoCount, Integer subscriberCount,
                                     String profileImg) {
 
     private static final String EMAIL_PATTERN =
@@ -22,6 +22,7 @@ public record MemberInfoResponseDto(Integer id, String name, String content, Str
                 member.getContent(),
                 processedEmail,
                 member.getVideoList().size(),
+                member.getSubscriptions().size(),
                 null);
 
     }
