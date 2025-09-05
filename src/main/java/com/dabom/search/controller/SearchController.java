@@ -82,7 +82,7 @@ public class SearchController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        SliceBaseResponse<SearchResponseDto> result = searchService.getVideos(keyword,channelName, page, size);
+        SliceBaseResponse<SearchResponseDto> result = searchService.getVideos(keyword, channelName, page, size);
 
         return ResponseEntity.ok(
                 BaseResponse.of(result, HttpStatus.OK, "비디오 조회 완료"));

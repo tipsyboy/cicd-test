@@ -2,6 +2,7 @@ package com.dabom.search.service;
 
 import com.dabom.common.SliceBaseResponse;
 import com.dabom.member.service.MemberService;
+import com.dabom.s3.S3UrlBuilder;
 import com.dabom.search.model.dto.SearchResponseDto;
 import com.dabom.video.model.Video;
 import com.dabom.video.repository.VideoRepository;
@@ -20,6 +21,7 @@ import java.util.List;
 public class SearchService {
     private final VideoRepository videoRepository;
     private final MemberService memberService;
+    private final S3UrlBuilder s3UrlBuilder;
 
     public SliceBaseResponse<SearchResponseDto> getVideos(String keyword, String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -34,7 +36,7 @@ public class SearchService {
         }
 
         List<SearchResponseDto> result = videoSlice.stream()
-                .map(video -> SearchResponseDto.from(video, memberService))
+                .map(video -> SearchResponseDto.from(video, memberService, s3UrlBuilder))
                 .toList();
 
         return new SliceBaseResponse<>(result, videoSlice.hasNext());
