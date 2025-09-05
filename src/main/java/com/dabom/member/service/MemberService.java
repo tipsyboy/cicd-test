@@ -79,6 +79,7 @@ public class MemberService {
             responseDto.content(),
             responseDto.email(),
             responseDto.videoCount(),
+            responseDto.subscriberCount(),
             profileImageUrl
         );
     }
@@ -109,6 +110,7 @@ public class MemberService {
             responseDto.content(),
             responseDto.email(),
             responseDto.videoCount(),
+            responseDto.subscriberCount(),
             profileImageUrl
         );
     }
@@ -139,6 +141,7 @@ public class MemberService {
             responseDto.content(),
             responseDto.email(),
             responseDto.videoCount(),
+            responseDto.subscriberCount(),
             profileImageUrl
         );
     }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface SubscribeRepository extends JpaRepository<Subscribe, Integer> {
-    Optional<Subscribe> findByChannelAndSubscriber(Member channel, Member Subscriber);
+public interface SubscribeRepository extends JpaRepository<Subscribe,Integer> {
+    Optional<Subscribe> findBySubscriberAndChannel(Member subscriber, Member channel);
+    void deleteBySubscriberAndChannel(Member subscriber, Member channel);
 }
