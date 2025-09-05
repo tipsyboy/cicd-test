@@ -6,7 +6,8 @@ public final class ImageSwaggerConstants {
                 "file": "[이미지 파일]",
                 "directory": "uploads"
             }
-            """;
+            """
+    ;
 
     public static final String IMAGE_UPLOAD_RESPONSE = """
             {
@@ -20,14 +21,16 @@ public final class ImageSwaggerConstants {
                 "code": 200,
                 "message": "이미지 업로드 성공"
             }
-            """;
+            """
+    ;
 
     public static final String IMAGE_MULTIPLE_UPLOAD_REQUEST = """
             {
                 "files": ["[이미지 파일1]", "[이미지 파일2]"],
                 "directory": "Uploads"
             }
-            """;
+            """
+    ;
 
     public static final String IMAGE_MULTIPLE_UPLOAD_RESPONSE = """
             {
@@ -50,7 +53,8 @@ public final class ImageSwaggerConstants {
                 "code": 200,
                 "message": "다중 이미지 업로드 성공"
             }
-            """;
+            """
+    ;
 
     public static final String IMAGE_FIND_RESPONSE = """
             {
@@ -58,7 +62,8 @@ public final class ImageSwaggerConstants {
                 "code": 200,
                 "message": "이미지 조회 성공"
             }
-            """;
+            """
+    ;
 
     public static final String IMAGE_DELETE_RESPONSE = """
             {
@@ -66,5 +71,19 @@ public final class ImageSwaggerConstants {
                 "code": 200,
                 "message": "이미지 삭제 성공"
             }
-            """;
+            """
+    ;
+
+    public static final String IMAGE_UPLOAD_PRESIGNED_URL_RESPONSE = """
+            {
+                "data": {
+                    "uploadUrl": "https://s3.presigned.url/for/upload",
+                    "s3Key": "s3-object-key",
+                    "expiresIn": 3600
+                },
+                "code": 200,
+                "message": "Presigned URL for image upload"
+            }
+            """
+    ;
 }
