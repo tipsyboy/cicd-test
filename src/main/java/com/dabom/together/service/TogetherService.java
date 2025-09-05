@@ -14,7 +14,6 @@ import com.dabom.together.model.entity.Together;
 import com.dabom.together.model.entity.TogetherJoinMember;
 import com.dabom.together.repository.TogetherJoinMemberRepository;
 import com.dabom.together.repository.TogetherRepository;
-import com.dabom.video.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +33,6 @@ import static com.dabom.together.exception.TogetherExceptionType.NOT_MASTER_MEMB
 @RequiredArgsConstructor
 public class TogetherService {
     private final TogetherRepository togetherRepository;
-    private final VideoRepository videoRepository;
     private final TogetherJoinMemberRepository togetherJoinMemberRepository;
     private final MemberRepository memberRepository;
 
