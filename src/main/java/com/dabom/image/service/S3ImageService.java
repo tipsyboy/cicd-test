@@ -133,8 +133,10 @@ public class S3ImageService implements ImageService {
                     .bucket(s3BucketName)
                     .key(s3Key)
                     .build();
-            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(r ->
-                    r.signatureDuration(Duration.ofSeconds(presignedUrlDuration)).getObjectRequest(getObjectRequest));
+            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(r -> r
+                    .signatureDuration(Duration.ofSeconds(presignedUrlDuration))
+                    .getObjectRequest(getObjectRequest)
+            );
             URL presignedUrl = presignedRequest.url();
             return presignedUrl.toString();
         } else {

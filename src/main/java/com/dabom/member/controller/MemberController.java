@@ -459,32 +459,11 @@ public class MemberController {
         return ResponseEntity.ok().body(BaseResponse.of(imgUrl, HttpStatus.OK));
     }
 
-    @PostMapping("/profileimage")
-    public ResponseEntity<BaseResponse<ImageUploadResponseDto>> updateProfileImage(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("directory") String directory,
-            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto
-    ) throws IOException {
-        ImageUploadResponseDto responseDto = memberService.updateMemberProfileImage(memberDetailsDto, file, directory);
-        return ResponseEntity.ok(BaseResponse.of(responseDto, HttpStatus.OK));
-    }
-
     @GetMapping("/info/banner")
     public ResponseEntity<BaseResponse<String>> getBanner(@AuthenticationPrincipal MemberDetailsDto dto) {
         Integer memberIdx = dto.getIdx();
         String imgUrl = memberService.getBannerImage(memberIdx);
         return ResponseEntity.ok().body(BaseResponse.of(imgUrl, HttpStatus.OK));
-    }
-
-    @PostMapping("/bannerimage")
-    public ResponseEntity<BaseResponse<String>> updateBannerImage(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("directory") String directory,
-            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto
-    ) throws IOException {
-        memberService.updateBannerImage(memberDetailsDto, file, directory);
-
-        return ResponseEntity.ok(BaseResponse.of("배너 업데이트 성공", HttpStatus.OK));
     }
 
     @GetMapping("/info/profileImg/{memberIdx}")
