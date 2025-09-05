@@ -60,8 +60,9 @@ public class MemberService {
         Authentication authenticate = manager.authenticate(token);
         MemberDetailsDto userDto = (MemberDetailsDto) authenticate.getPrincipal();
         String jwt = JwtUtils.generateLoginToken(userDto.getIdx(), userDto.getEmail(), userDto.getMemberRole());
+        String refreshJwt = JwtUtils.generateRefreshToken(userDto.getIdx(), userDto.getEmail(), userDto.getMemberRole());
 
-        return MemberLoginResponseDto.of(jwt, userDto.getName());
+        return MemberLoginResponseDto.of(jwt, refreshJwt, userDto.getName());
     }
 
     public MemberListResponseDto searchMemberName(MemberSearchRequestDto dto) {
