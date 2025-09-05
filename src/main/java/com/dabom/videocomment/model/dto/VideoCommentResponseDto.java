@@ -1,6 +1,12 @@
 package com.dabom.videocomment.model.dto;
 
+import com.dabom.boardcomment.exception.BoardCommentException;
+import com.dabom.boardcomment.exception.BoardCommentExceptionType;
+import com.dabom.boardcomment.model.entity.BoardComment;
+import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.service.MemberService;
+import com.dabom.video.exception.VideoException;
+import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.videocomment.model.entity.VideoComment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -17,13 +23,15 @@ public class VideoCommentResponseDto {
     private String updatedAt;
     private Boolean isModified;
     private Integer likes;
+    private Integer likesCount;
+    private Boolean isLikes;
     private Integer memberIdx;
     private String username;
 
     @JsonProperty("profileImg")
     private String profileImg;
 
-    public static VideoCommentResponseDto from(VideoComment entity, MemberService memberService) {
+    public static VideoCommentResponseDto from(VideoComment entity, MemberService memberService, MemberDetailsDto memberDetailsDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         // 안전한 프로필 이미지 로드
@@ -37,10 +45,7 @@ public class VideoCommentResponseDto {
                 }
             }
         } catch (Exception e) {
-            System.out.println("댓글 작성자 프로필 이미지 로드 실패 (사용자 ID: " +
-                               (entity.getMember() != null ? entity.getMember().getIdx() : "null") +
-                               "): " + e.getMessage());
-            // 기본값 사용
+            throw new VideoException(VideoExceptionType.INVALID_CONTENT_TYPE);
         }
 
         return VideoCommentResponseDto.builder()
@@ -50,15 +55,24 @@ public class VideoCommentResponseDto {
                 .updatedAt(entity.getUpdatedAt().format(formatter))
                 .isModified(!entity.getCreatedAt().equals(entity.getUpdatedAt()))
                 .likes(entity.getLikes())
+                .likesCount(entity.getLikesCount() != null ? entity.getLikesCount() : 0)
+                .isLikes(checkUserLikes(entity, memberDetailsDto))
                 .memberIdx(entity.getMember() != null ? entity.getMember().getIdx() : null)
                 .username(entity.getMember() != null ? entity.getMember().getName() : "알 수 없음")
                 .profileImg(profileImgUrl)
                 .build();
     }
 
-    // 기존 메서드와의 호환성을 위해 유지 (deprecated)
-    @Deprecated
-    public static VideoCommentResponseDto from(VideoComment entity) {
-        return from(entity, null);
+    private static Boolean checkUserLikes(VideoComment entity, MemberDetailsDto memberDetailsDto) {
+        if (memberDetailsDto == null || entity.getLikesList() == null) return false;
+
+        return entity.getLikesList().stream()
+                .anyMatch(like -> like.getChannel().getIdx().equals(memberDetailsDto.getIdx()));
     }
+
+    public static VideoCommentResponseDto from(VideoComment entity, MemberService memberService) {
+        return from(entity, memberService, null);
+    }
+
+
 }

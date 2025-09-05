@@ -9,6 +9,8 @@ import com.dabom.likes.repository.LikesRepository;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.videocomment.model.entity.VideoComment;
+import com.dabom.videocomment.repository.VideoCommentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class LikesService {
 
     private final BoardCommentRepository boardCommentRepository;
     private final ChannelBoardRepository channelBoardRepository;
+    private final VideoCommentRepository videoCommentRepository;
 
     public void handleBoardCommentLike(MemberDetailsDto memberDetailsDto, Integer Idx) {
         BoardComment boardComment = boardCommentRepository.findById(Idx).orElseThrow(()->new EntityNotFoundException(""));
@@ -59,6 +62,26 @@ public class LikesService {
             channelBoard.incrementLikeCount();
         }
         channelBoardRepository.save(channelBoard);
+    }
+
+    public void handelVideoCommentLike(MemberDetailsDto memberDetailsDto, Integer idx) {
+        VideoComment videoComment = videoCommentRepository.findById(idx).orElseThrow( () -> new EntityNotFoundException(""));
+        Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow(() -> new EntityNotFoundException(""));
+
+        Optional<Likes> result = likesRepository.findByChannelAndVideoComment(member,videoComment);
+        if(result.isPresent()){
+            likesRepository.delete(result.get());
+            videoComment.decrementLikeCount();
+        } else{
+            Likes likes = Likes.builder()
+                    .channel(member)
+                    .videoComment(videoComment)
+                    .build();
+            likesRepository.save(likes);
+            videoComment.incrementLikeCount();
+        }
+        videoCommentRepository.save(videoComment);
+
     }
 
 }
