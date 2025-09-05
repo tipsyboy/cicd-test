@@ -31,12 +31,6 @@ public class ScoreController {
         return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK,"등록 성공!"));
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<BaseResponse<Void>> update(@RequestBody ScoreUpdateReqDto dto) {
-        scoreService.update(dto);
-        return ResponseEntity.ok(BaseResponse.of(null, HttpStatus.OK));
-    }
-
     @GetMapping("/delete/{type},{idx}")
     public ResponseEntity<BaseResponse<Void>> delete(@PathVariable("type") ScoreType type,
                                                      @PathVariable("idx") Integer Scoreidx,
@@ -54,11 +48,4 @@ public class ScoreController {
         return ResponseEntity.ok(BaseResponse.of(averageScore, HttpStatus.OK));
     }
 
-//    @GetMapping("/video/{videoIdx}/user/{memberIdx}")
-//    public ResponseEntity<BaseResponse<Score>> getUserScoreForVideo(
-//            @PathVariable("videoIdx") Integer videoIdx,
-//            @PathVariable("memberIdx") Integer memberIdx) {
-//        Optional<Score> score = scoreService.getUserScoreForVideo(videoIdx, memberIdx);
-//        return ResponseEntity.ok(BaseResponse.of(score.orElse(null), HttpStatus.OK));
-//    }
 }
