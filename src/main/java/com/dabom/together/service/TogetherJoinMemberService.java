@@ -1,11 +1,11 @@
 package com.dabom.together.service;
 
+import com.dabom.member.exception.MemberException;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.together.exception.TogetherException;
 import com.dabom.together.model.dto.response.TogetherInfoResponseDto;
-import com.dabom.together.model.dto.response.TogetherJoinInfoResponseDto;
 import com.dabom.together.model.dto.request.TogetherJoinWithCodeRequestDto;
 import com.dabom.together.model.dto.response.TogetherListResponseDto;
 import com.dabom.together.model.entity.Together;
@@ -14,17 +14,15 @@ import com.dabom.together.repository.TogetherJoinMemberRepository;
 import com.dabom.together.repository.TogetherRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.dabom.together.exception.TogetherExceptionType.MAX_TOGETHER_MEMBER;
-import static com.dabom.together.exception.TogetherExceptionType.NOT_VALID_CODE;
+import static com.dabom.member.exception.MemberExceptionType.MEMBER_NOT_FOUND;
+import static com.dabom.together.exception.TogetherExceptionType.*;
 
 @Slf4j
 @Service
@@ -37,12 +35,14 @@ public class TogetherJoinMemberService {
 
     @Transactional
     public TogetherInfoResponseDto joinNewTogetherMember(Integer togetherIdx, MemberDetailsDto memberDetailsDto) {
-        Together together = togetherRepository.findById(togetherIdx).orElseThrow();
-        Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
+        Together together = togetherRepository.findById(togetherIdx)
+                .orElseThrow(() -> new TogetherException(NOT_VALID_TOGETHER));
+        Member member = memberRepository.findById(memberDetailsDto.getIdx())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         Optional<TogetherJoinMember> optional = togetherJoinMemberRepository.findByMemberAndTogether(member, together);
 
         if(optional.isPresent()) {
-            return isSoftDeleted(optional.get(), together);
+            return rollBackTogether(optional.get(), together);
         }
 
         TogetherJoinMember entity = TogetherJoinMember.builder()
@@ -60,7 +60,7 @@ public class TogetherJoinMemberService {
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
         TogetherJoinMember joinMember =
                 togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together)
-                        .orElseThrow();
+                        .orElseThrow(() -> new TogetherException(NOT_ACCEPT_MEMBER));
 
         return TogetherInfoResponseDto.toDtoInJoin(together, member);
     }
@@ -69,11 +69,12 @@ public class TogetherJoinMemberService {
     public TogetherInfoResponseDto joinTogetherWithCodeMember(TogetherJoinWithCodeRequestDto dto, MemberDetailsDto memberDetailsDto) {
         Together together = togetherRepository.findByCode(transformUUID(dto.getCode()))
                 .orElseThrow(() -> new TogetherException(NOT_VALID_CODE));
-        Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
+        Member member = memberRepository.findById(memberDetailsDto.getIdx())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         Optional<TogetherJoinMember> optional = togetherJoinMemberRepository.findByMemberAndTogether(member, together);
 
         if(optional.isPresent()) {
-            return isSoftDeleted(optional.get(), together);
+            return rollBackTogether(optional.get(), together);
         }
 
         TogetherJoinMember entity = toEntity(together, member);
@@ -97,44 +98,22 @@ public class TogetherJoinMemberService {
         return TogetherListResponseDto.toDto(togethers);
     }
 
-    public TogetherJoinInfoResponseDto loginTogetherMember(Integer togetherIdx, Member member) {
-        Together together = togetherRepository.findById(togetherIdx).orElseThrow();
-        TogetherJoinMember togetherJoinMember
-                = togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together).orElseThrow();
-
-        return TogetherJoinInfoResponseDto.toDto(together);
-    }
-
     @Transactional
     public void leaveTogetherMember(Integer togetherIdx, MemberDetailsDto memberDetailsDto) {
         Together together = togetherRepository.findById(togetherIdx).orElseThrow();
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
 
         TogetherJoinMember togetherJoinMember
-                = togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together).orElseThrow();
+                = togetherJoinMemberRepository.findByMemberAndTogether(member, together)
+                .orElseThrow(() -> new TogetherException(NOT_VALID_TOGETHER));
+        if(togetherJoinMember.getIsDelete()) {
+            return;
+        }
         togetherJoinMember.leaveTogether();
         together.leaveMember();
 
         togetherRepository.save(together);
         togetherJoinMemberRepository.save(togetherJoinMember);
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 10 0 * * *")
-    public void deleteSoftDeletedMembers() {
-        log.info("함께하기 멤버 삭제 스케줄 시작: {}", LocalDateTime.now());
-        // 방법 1: find & delete each
-        List<TogetherJoinMember> toDelete = togetherJoinMemberRepository.findByIsDeleteTrue();
-        if (!toDelete.isEmpty()) {
-            togetherJoinMemberRepository.deleteAll(toDelete);
-            log.info("Soft-deleted TogetherJoinMember {}건 영구 삭제 완료", toDelete.size());
-        } else {
-            log.info("삭제 대상 없음");
-        }
-
-        // 방법 2: bulk delete 쿼리 사용 시
-        // int deletedCount = repository.deleteAllByIsDeleteTrue();
-        // log.info("Bulk delete 완료: {}건", deletedCount);
     }
 
     private UUID transformUUID(String code) {
@@ -145,7 +124,7 @@ public class TogetherJoinMemberService {
         }
     }
 
-    private TogetherInfoResponseDto isSoftDeleted(TogetherJoinMember togetherJoinMember, Together together) {
+    private TogetherInfoResponseDto rollBackTogether(TogetherJoinMember togetherJoinMember, Together together) {
         if(togetherJoinMember.getIsDelete()) {
             togetherJoinMember.comeBackTogether();
             together.joinMember();

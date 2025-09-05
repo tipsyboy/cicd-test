@@ -443,14 +443,6 @@ public class MemberController {
         return ResponseEntity.ok(BaseResponse.of(channelInfo, HttpStatus.OK));
     }
 
-    @GetMapping("/token")
-    public ResponseEntity<BaseResponse<String>> getToken(@AuthenticationPrincipal MemberDetailsDto dto) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + dto.getJwt());
-
-        return ResponseEntity.ok().headers(headers).body(BaseResponse.of("데이터 전달 성공", HttpStatus.OK));
-    }
-
     @GetMapping("/info/profileImg")
     public ResponseEntity<BaseResponse<String>> getProfileImg(@AuthenticationPrincipal MemberDetailsDto dto) {
         Integer memberIdx = dto.getIdx();

@@ -22,7 +22,6 @@ public class MemberDetailsDto implements UserDetails, OAuth2User {
     private final MemberRole memberRole;
     private final Boolean isDeleted;
     private final Map<String, Object> attributes;
-    private String jwt;
 
     @Builder
     public MemberDetailsDto(Member member) {
@@ -50,11 +49,11 @@ public class MemberDetailsDto implements UserDetails, OAuth2User {
         this.attributes = attributes;
     }
 
-    public static MemberDetailsDto createFromToken(Integer idx, String name, String memberRole, String jwt) {
-        return new MemberDetailsDto(idx, name, null, memberRole, jwt);
+    public static MemberDetailsDto createFromToken(Integer idx, String name, String memberRole) {
+        return new MemberDetailsDto(idx, name, null, memberRole);
     }
 
-    private MemberDetailsDto(Integer idx, String name, String password, String memberRole, String jwt) {
+    private MemberDetailsDto(Integer idx, String name, String password, String memberRole) {
         this.idx = idx;
         this.email = name;
         this.name = name;
@@ -62,7 +61,6 @@ public class MemberDetailsDto implements UserDetails, OAuth2User {
         this.isDeleted = false;
         this.memberRole = MemberRole.valueOf(memberRole);
         this.attributes = null;
-        this.jwt = jwt;
     }
 
     @Override
