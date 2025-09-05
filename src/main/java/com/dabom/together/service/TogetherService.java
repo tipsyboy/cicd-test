@@ -1,5 +1,6 @@
 package com.dabom.together.service;
 
+import com.dabom.member.exception.MemberException;
 import com.dabom.member.model.entity.Member;
 import com.dabom.member.repository.MemberRepository;
 import com.dabom.member.security.dto.MemberDetailsDto;
@@ -21,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
+import static com.dabom.member.exception.MemberExceptionType.MEMBER_NOT_FOUND;
+import static com.dabom.together.exception.TogetherExceptionType.NOT_ACCEPT_MEMBER;
 import static com.dabom.together.exception.TogetherExceptionType.NOT_MASTER_MEMBER;
 
 @Service
@@ -36,6 +40,17 @@ public class TogetherService {
     public TogetherInfoResponseDto createTogether(TogetherCreateRequestDto dto, MemberDetailsDto memberDetailsDto) {
         Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
         Together together = togetherRepository.save(dto.toEntity(member));
+        Optional<TogetherJoinMember> optional = togetherJoinMemberRepository.findByMemberAndTogether(member, together);
+        if(optional.isPresent()) {
+            TogetherJoinMember joinMember = optional.get();
+            if(joinMember.getIsDelete()) {
+                joinMember.comeBackTogether();
+                togetherJoinMemberRepository.save(joinMember);
+                return TogetherInfoResponseDto.toCreateDto(together);
+            }
+            return TogetherInfoResponseDto.toCreateDto(together);
+        }
+
         TogetherJoinMember togetherJoinMember = TogetherJoinMember.builder()
                 .isJoin(true)
                 .isDelete(false)
@@ -96,8 +111,10 @@ public class TogetherService {
 
     public TogetherMemberListResponseDto getTogetherMembersFromMaster(Integer togetherIdx, MemberDetailsDto memberDetailsDto) {
         Together together = validMasterMember(togetherIdx, memberDetailsDto);
-
-        return TogetherMemberListResponseDto.toDto(together);
+        List<TogetherJoinMember> joinMembers = togetherJoinMemberRepository.findByTogether(together);
+        Member master = memberRepository.findById(memberDetailsDto.getIdx())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        return TogetherMemberListResponseDto.toDto(joinMembers, master);
     }
 
     public TogetherMasterResponseDto isMaster(Integer togetherIdx, MemberDetailsDto memberDetailsDto) {
@@ -122,10 +139,15 @@ public class TogetherService {
                                    MemberDetailsDto memberDetailsDto) {
         Together together = validMasterMember(togetherIdx, memberDetailsDto);
 
-        Member member = memberRepository.findById(memberIdx).orElseThrow();
-        TogetherJoinMember kickMember = togetherJoinMemberRepository.findByMemberAndTogetherAndIsDeleteFalse(member, together).orElseThrow();
-        kickMember.expel();
+        Member member = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        TogetherJoinMember kickMember = togetherJoinMemberRepository.findByMemberAndTogether(member, together)
+                .orElseThrow(() -> new TogetherException(NOT_ACCEPT_MEMBER));
+        if(kickMember.getIsDelete()) {
+            return TogetherInfoResponseDto.toDto(together);
+        }
 
+        kickMember.expel();
         togetherJoinMemberRepository.save(kickMember);
         together.leaveMember();
         Together save = togetherRepository.save(together);
@@ -146,7 +168,8 @@ public class TogetherService {
 
     private Together validMasterMember(Integer togetherIdx, MemberDetailsDto memberDetailsDto) {
         Together together = togetherRepository.findById(togetherIdx).orElseThrow();
-        Member member = memberRepository.findById(memberDetailsDto.getIdx()).orElseThrow();
+        Member member = memberRepository.findById(memberDetailsDto.getIdx())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         if(!together.getMaster().equals(member)) {
             throw new TogetherException(NOT_MASTER_MEMBER);
         }

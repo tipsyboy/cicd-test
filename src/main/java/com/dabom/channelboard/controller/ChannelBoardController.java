@@ -106,7 +106,8 @@ public class ChannelBoardController {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "oldest") String sort,
             @RequestParam String channelName) {
-        // 인증 정보 수동으로 가져오기
+        // 인증 정보 수동으로 가져오기 왜냐면 이미지 넣을때 로그인값에서 가져와야 되는 경우도 있는데
+        // 선택적으로 수동으로 가져와야됨. 이미지 안넣을때는 굳이 필요없음.. 근데 그냥 required = false가 안먹힘
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         MemberDetailsDto memberDetailsDto = null;
 
@@ -145,6 +146,7 @@ public class ChannelBoardController {
                     )
             }
     )
+
     @GetMapping("/read/{boardIdx}")
     public ResponseEntity<BaseResponse<ChannelBoardReadResponseDto>> read(@PathVariable Integer boardIdx,
                                                                           @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {

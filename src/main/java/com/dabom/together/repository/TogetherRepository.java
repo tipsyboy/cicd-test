@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface TogetherRepository extends JpaRepository<Together, Integer> {
+public interface TogetherRepository extends JpaRepository<Together, Integer>, TogetherRepositoryCustom {
+
     List<Together> findByMaster(Member master);
     Optional<Together> findByCode(UUID code);
     @Query("SELECT t FROM Together t WHERE t.isOpen = true AND t.isDelete = false")
     List<Together> findAllTrue();
     @Query("SELECT t FROM Together t WHERE t.isOpen = true AND t.isDelete = false ORDER BY t.createdAt DESC")
     Slice<Together> findAllByIsOpenTrue(Pageable pageable);
-    @Query("SELECT t FROM Together t WHERE t.isOpen = true AND t.isDelete = false AND t.title = :title ORDER BY t.createdAt DESC")
-    Slice<Together> searchAllByIsOpenTrue(String title, Pageable pageable);
 }

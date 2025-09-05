@@ -28,8 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static com.dabom.member.contants.JWTConstants.*;
 import static com.dabom.member.contants.MemberSwaggerConstants.*;
-import static com.dabom.member.contants.JWTConstants.ACCESS_TOKEN;
 
 @Tag(name = "멤버 관리 기능")
 @RestController
@@ -126,11 +126,20 @@ public class MemberController {
                     .secure(false)
 //                    .sameSite("None")
                     .path("/")
-                    .maxAge(60 * 60) // 1시간
+                    .maxAge(ACCESS_TOKEN_EXP)
+                    .build();
+
+            ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN, responseDto.refreshJwt())
+                    .httpOnly(true)
+                    .secure(false)
+//                    .sameSite("None")
+                    .path("/")
+                    .maxAge(REFRESH_TOKEN_EXP)
                     .build();
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                     .body(BaseResponse.of(responseDto.channelName(), HttpStatus.OK));
         }
         return ResponseEntity.status(400).body(BaseResponse.of("로그인 실패", HttpStatus.BAD_REQUEST));
@@ -181,8 +190,17 @@ public class MemberController {
                 .maxAge(0)
                 .build();
 
+        ResponseCookie deleteRefreshToken = ResponseCookie.from(REFRESH_TOKEN, "")
+                .httpOnly(true)
+                .secure(true)
+//                .sameSite("None")
+                .path("/")
+                .maxAge(0)
+                .build();
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteAccessToken.toString())
+                .header(HttpHeaders.SET_COOKIE, deleteRefreshToken.toString())
                 .body(BaseResponse.of("로그아웃 성공했습니다.", HttpStatus.OK));
     }
 
@@ -443,13 +461,7 @@ public class MemberController {
         return ResponseEntity.ok(BaseResponse.of(channelInfo, HttpStatus.OK));
     }
 
-    @GetMapping("/token")
-    public ResponseEntity<BaseResponse<String>> getToken(@AuthenticationPrincipal MemberDetailsDto dto) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + dto.getJwt());
 
-        return ResponseEntity.ok().headers(headers).body(BaseResponse.of("데이터 전달 성공", HttpStatus.OK));
-    }
 
     @GetMapping("/info/profileImg")
     public ResponseEntity<BaseResponse<String>> getProfileImg(@AuthenticationPrincipal MemberDetailsDto dto) {

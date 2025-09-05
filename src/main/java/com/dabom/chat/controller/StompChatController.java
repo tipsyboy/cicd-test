@@ -33,6 +33,10 @@ public class StompChatController {
 
         ChatMessageDto savedMessage = chatService.sendMessage(message, memberDetailsDto);
 
+        System.out.println(message.getRecipientIdx());
+        System.out.println(message.getSenderIdx());
+
+
         template.convertAndSendToUser(
                 savedMessage.getRecipientIdx().toString(),
                 "/queue/messages",

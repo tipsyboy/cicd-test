@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,6 +100,14 @@ public class LikesController {
             @AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
             @PathVariable Integer idx) {
         likesService.handleChannelBoardLike(memberDetailsDto, idx);
+
+        return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/videoComment/{idx}")
+    public ResponseEntity handleVideoCommentLike(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+                                                 @PathVariable Integer idx) {
+        likesService.handelVideoCommentLike(memberDetailsDto, idx);
 
         return ResponseEntity.ok(true);
     }

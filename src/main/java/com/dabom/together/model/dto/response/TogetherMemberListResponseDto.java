@@ -7,13 +7,11 @@ import com.dabom.together.model.entity.TogetherJoinMember;
 import java.util.List;
 
 public record TogetherMemberListResponseDto(List<TogetherMemberInfoResponseDto> members) {
-    public static TogetherMemberListResponseDto toDto(Together together) {
-        List<TogetherJoinMember> memberlist = together.getMembers();
-        Member master = together.getMaster();
-
+    public static TogetherMemberListResponseDto toDto(List<TogetherJoinMember> memberlist, Member master) {
         List<TogetherMemberInfoResponseDto> list =
-                memberlist.stream().map((member) ->
-                        TogetherMemberInfoResponseDto.toDto(member, master))
+                memberlist.stream()
+                        .filter(member -> !member.getIsDelete())
+                        .map(member -> TogetherMemberInfoResponseDto.toDto(member, master))
                         .toList();
 
         return new TogetherMemberListResponseDto(list);
