@@ -146,6 +146,7 @@ public class ChannelBoardController {
                     )
             }
     )
+
     @GetMapping("/read/{boardIdx}")
     public ResponseEntity<BaseResponse<ChannelBoardReadResponseDto>> read(@PathVariable Integer boardIdx,
                                                                           @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
