@@ -5,6 +5,7 @@ import com.dabom.channelboard.model.entity.ChannelBoard;
 import com.dabom.likes.model.likes.Likes;
 import com.dabom.member.model.entity.Member;
 import com.dabom.video.model.Video;
+import com.dabom.videocomment.model.entity.VideoComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -13,4 +14,6 @@ public interface LikesRepository extends JpaRepository<Likes,Integer> {
     Optional<Likes> findByChannelAndBoardComment(Member member, BoardComment boardComment);
 
     Optional<Likes> findByChannelAndChannelBoard(Member member, ChannelBoard channelBoard);
+
+    Optional<Likes> findByChannelAndVideoComment(Member member, VideoComment videoComment);
 }
