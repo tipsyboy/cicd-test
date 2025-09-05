@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TogetherRepository extends JpaRepository<Together, Integer> {
+
     List<Together> findByMaster(Member master);
     Optional<Together> findByCode(UUID code);
     @Query("SELECT t FROM Together t WHERE t.isOpen = true AND t.isDelete = false")

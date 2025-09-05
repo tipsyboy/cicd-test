@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface VideoRepository extends JpaRepository<Video, Integer>,VideoRepositoryCustom  {
+import java.util.Optional;
+
+public interface VideoRepository extends JpaRepository<Video, Integer>,VideoRepositoryCustom {
 
     // 키워드 검색말고 그냥 비디오 전체검색임
     @Query(value = "SELECT * FROM video WHERE is_public = 1 ORDER BY created_at DESC", nativeQuery = true)
@@ -18,8 +20,8 @@ public interface VideoRepository extends JpaRepository<Video, Integer>,VideoRepo
 
     // 특정 키워드 검색 쿼리(관련도 높은 순)
     @Query(value = "SELECT * FROM video WHERE is_public  = 1 " +
-                   "AND MATCH(title, description) AGAINST (:keyword IN BOOLEAN MODE) " +
-                   "ORDER BY MATCH(title, description) AGAINST (:keyword IN BOOLEAN MODE) DESC, created_at DESC",
+            "AND MATCH(title, description) AGAINST (:keyword IN BOOLEAN MODE) " +
+            "ORDER BY MATCH(title, description) AGAINST (:keyword IN BOOLEAN MODE) DESC, created_at DESC",
             nativeQuery = true)
     Slice<Video> searchByKeywordOrderByRelevance(@Param("keyword") String keyword, Pageable pageable);
     //"AND v.video_status = 'DONE' " +  // 인코딩 완료된 것만

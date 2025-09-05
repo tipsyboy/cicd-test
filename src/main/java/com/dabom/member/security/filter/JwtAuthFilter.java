@@ -64,13 +64,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private void haveTokenLogic(String jwt) {
         if(jwt != null) {
             Claims claims = JwtUtils.getClaims(jwt);
-            haveDabomTokenLogic(claims, jwt);
+            haveDabomTokenLogic(claims);
         }
     }
 
-    private void haveDabomTokenLogic(Claims claims, String jwt) {
+    private void haveDabomTokenLogic(Claims claims) {
         if(claims != null) {
-            MemberDetailsDto dto = createDetailsFromToken(claims, jwt);
+            MemberDetailsDto dto = createDetailsFromToken(claims);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     dto,
@@ -82,10 +82,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
     }
 
-    private MemberDetailsDto createDetailsFromToken(Claims claims, String jwt) {
+    private MemberDetailsDto createDetailsFromToken(Claims claims) {
         Integer idx = Integer.parseInt(JwtUtils.getValue(claims, TOKEN_IDX));
         String name = JwtUtils.getValue(claims, TOKEN_NAME);
         String role = JwtUtils.getValue(claims, TOKEN_USER_ROLE);
-        return MemberDetailsDto.createFromToken(idx, name, role, jwt);
+        return MemberDetailsDto.createFromToken(idx, name, role);
     }
 }

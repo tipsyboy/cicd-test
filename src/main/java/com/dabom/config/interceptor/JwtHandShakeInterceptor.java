@@ -103,7 +103,7 @@ public class JwtHandShakeInterceptor implements HandshakeInterceptor {
         Integer idx = Integer.parseInt(JwtUtils.getValue(claims, TOKEN_IDX));
         String name = JwtUtils.getValue(claims, TOKEN_NAME);
         String role = JwtUtils.getValue(claims, TOKEN_USER_ROLE);
-        return MemberDetailsDto.createFromToken(idx, name, role, jwt);
+        return MemberDetailsDto.createFromToken(idx, name, role);
     }
 
     @Override
