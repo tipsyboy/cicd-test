@@ -17,6 +17,7 @@ public class VideoInfoResponseDto {
     private String savedPath;
     private String channelName;
     private Long viewCount;
+    private Double videoScore;
     private Long subscribeCount;
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -27,6 +28,7 @@ public class VideoInfoResponseDto {
         this.savedPath = savedPath;
         this.channelName = channelName;
         this.viewCount = viewCount;
+        this.videoScore = videoScore;
         this.subscribeCount = subscribeCount;
     }
 
@@ -39,6 +41,10 @@ public class VideoInfoResponseDto {
                 .subscribeCount(entity.getChannel().getSubscribeCount())
                 .channelName(entity.getChannel().getName())
                 .savedPath(savedPath)
+                .channelName(entity.getChannel().getName())
+                .viewCount(entity.getViews())
+                .videoScore(entity.getAverageScore())
+                .subscribeCount(entity.getChannel().getSubscribeCount())
                 .build();
     }
 }

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import static com.dabom.member.exception.MemberExceptionType.MEMBER_NOT_FOUND;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SubscribeService {
     private final SubscribeRepository subscribeRepository;
@@ -42,7 +42,6 @@ public class SubscribeService {
         return subscribe.getIdx();
     }
 
-    @Transactional(readOnly = true)
     public List<MemberInfoResponseDto> sublist(Integer subscriberIdx) {
         Member subscriber = memberRepository.findById(subscriberIdx)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -68,5 +67,15 @@ public class SubscribeService {
         } else {
             throw new MemberException(MEMBER_NOT_FOUND);
         }
+    }
+
+    public Boolean isSubscribe(Integer subscriberIdx, Integer channelIdx) {
+        Member subscriber = memberRepository.findById(subscriberIdx)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        Member channel = memberRepository.findById(channelIdx)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        Optional<Subscribe> optionalSubscribe = subscribeRepository.findBySubscriberAndChannel(subscriber, channel);
+
+        return optionalSubscribe.isPresent();
     }
 }

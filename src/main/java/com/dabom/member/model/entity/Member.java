@@ -76,7 +76,7 @@ public class Member extends BaseEntity {
     private Long sumScore;
 
     @Builder
-    public Member(String email, String name, String password, String memberRole, Long subscribeCount, Long score, Long sumScoreMember) {
+    private Member(String email, String name, String password, String memberRole, Long subscribeCount, Long score, Long sumScoreMember) {
         this.email = email;
         this.name = name;
         this.content = null;
