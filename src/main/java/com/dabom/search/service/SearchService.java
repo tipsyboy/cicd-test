@@ -74,7 +74,7 @@ public class SearchService {
                 }
             }
         } catch (Exception e) {
-            log.warn("썸네일 이미지 조회 실패");
+            log.warn("썸네일 이미지 조회 실패 ");
         }
         return DEFAULT_THUMBNAIL_IMAGE;
     }
