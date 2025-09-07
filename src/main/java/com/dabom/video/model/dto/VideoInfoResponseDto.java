@@ -21,7 +21,9 @@ public class VideoInfoResponseDto {
     private Long subscribeCount;
 
     @Builder(access = AccessLevel.PRIVATE)
+
     private VideoInfoResponseDto(Integer idx, String title, String description, String savedPath, String channelName, Long viewCount, Long subscribeCount, Double videoScore) {
+
         this.idx = idx;
         this.title = title;
         this.description = description;
@@ -37,9 +39,6 @@ public class VideoInfoResponseDto {
                 .idx(entity.getIdx())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
-                .viewCount(entity.getViews())
-                .subscribeCount(entity.getChannel().getSubscribeCount())
-                .channelName(entity.getChannel().getName())
                 .savedPath(savedPath)
                 .channelName(entity.getChannel().getName())
                 .viewCount(entity.getViews())

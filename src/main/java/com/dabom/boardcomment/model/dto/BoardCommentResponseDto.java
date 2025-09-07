@@ -19,13 +19,12 @@ public class BoardCommentResponseDto {
     private Integer likesCount;
     private Boolean isLikes;
     private String name;
-    private String profileImg; // 추가된 필드
+    private String profileImg;
 
     public static BoardCommentResponseDto from(BoardComment entity, MemberDetailsDto memberDetailsDto, MemberService memberService) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        // 댓글 작성자의 프로필 이미지 URL 생성
-        String profileImgUrl = "https://via.placeholder.com/32"; // 기본값
+        String profileImgUrl = "https://via.placeholder.com/32";
         if (memberService != null) {
             profileImgUrl = memberService.getProfileImg(entity.getChannel().getIdx());
         }
@@ -43,13 +42,11 @@ public class BoardCommentResponseDto {
                 .build();
     }
 
-    // 기존 메서드와의 호환성을 위해 유지 (deprecated)
     @Deprecated
     public static BoardCommentResponseDto from(BoardComment entity, MemberDetailsDto memberDetailsDto) {
         return from(entity, memberDetailsDto, null); // memberService를 null로 전달
     }
 
-    // 더 오래된 호환성을 위해 유지 (deprecated)
     @Deprecated
     public static BoardCommentResponseDto from(BoardComment entity) {
         return from(entity, null, null); // 모든 파라미터를 null로 전달
