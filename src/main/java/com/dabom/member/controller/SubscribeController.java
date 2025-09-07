@@ -32,7 +32,7 @@ public class SubscribeController {
         return ResponseEntity.ok(BaseResponse.of("구독 성공", HttpStatus.OK));
     }
 
-    @GetMapping("/subscribe")
+    @GetMapping
     public ResponseEntity<BaseResponse<List<MemberInfoResponseDto>>> subList(
             @AuthenticationPrincipal MemberDetailsDto dto) {
         List<MemberInfoResponseDto> subscribedChannels = subscribeService.sublist(dto.getIdx());

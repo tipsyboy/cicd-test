@@ -21,7 +21,9 @@ public class VideoInfoResponseDto {
     private Long subscribeCount;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private VideoInfoResponseDto(Integer idx, String title, String description, String savedPath, String channelName, Long viewCount, Double videoScore, Long subscribeCount) {
+
+    private VideoInfoResponseDto(Integer idx, String title, String description, String savedPath, String channelName, Long viewCount, Long subscribeCount, Double videoScore) {
+
         this.idx = idx;
         this.title = title;
         this.description = description;
