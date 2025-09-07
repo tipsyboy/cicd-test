@@ -58,8 +58,9 @@ public class VideoCommentController {
     @GetMapping("/list/{videoIdx}/paged")
     public ResponseEntity<BaseResponse<Slice<VideoCommentResponseDto>>> list(
             @PathVariable Integer videoIdx,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Slice<VideoCommentResponseDto> response = videoCommentService.list(videoIdx, pageable);
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
+        Slice<VideoCommentResponseDto> response = videoCommentService.list(videoIdx, pageable, memberDetailsDto);
         return ResponseEntity.ok(
                 BaseResponse.of(response, HttpStatus.OK, "댓글 목록 조회 성공")
         );

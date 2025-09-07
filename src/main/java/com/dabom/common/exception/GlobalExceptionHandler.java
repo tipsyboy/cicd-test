@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     // 이외의 모든 예외를 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> globalExceptionHandler(Exception e) {
-        log.error("[Exception] 예기치 못한 예외가 발생: {}", e.getMessage(), e);
+        log.error("[Exception] 예기치 예외가 발생: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 내부 오류가 발생했습니다"));
     }

@@ -1,12 +1,6 @@
 package com.dabom.videocomment.model.dto;
 
-import com.dabom.boardcomment.exception.BoardCommentException;
-import com.dabom.boardcomment.exception.BoardCommentExceptionType;
-import com.dabom.boardcomment.model.entity.BoardComment;
 import com.dabom.member.security.dto.MemberDetailsDto;
-import com.dabom.member.service.MemberService;
-import com.dabom.video.exception.VideoException;
-import com.dabom.video.exception.VideoExceptionType;
 import com.dabom.videocomment.model.entity.VideoComment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -31,22 +25,8 @@ public class VideoCommentResponseDto {
     @JsonProperty("profileImg")
     private String profileImg;
 
-    public static VideoCommentResponseDto from(VideoComment entity, MemberService memberService, MemberDetailsDto memberDetailsDto) {
+    public static VideoCommentResponseDto from(VideoComment entity, String profileImg, MemberDetailsDto memberDetailsDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        // 안전한 프로필 이미지 로드
-        String profileImgUrl = "https://via.placeholder.com/40"; // 기본값
-
-        try {
-            if (memberService != null && entity.getMember() != null) {
-                String profileImg = memberService.getProfileImg(entity.getMember().getIdx());
-                if (profileImg != null && !profileImg.trim().isEmpty()) {
-                    profileImgUrl = profileImg;
-                }
-            }
-        } catch (Exception e) {
-            throw new VideoException(VideoExceptionType.INVALID_CONTENT_TYPE);
-        }
 
         return VideoCommentResponseDto.builder()
                 .idx(entity.getIdx())
@@ -57,9 +37,9 @@ public class VideoCommentResponseDto {
                 .likes(entity.getLikes())
                 .likesCount(entity.getLikesCount() != null ? entity.getLikesCount() : 0)
                 .isLikes(checkUserLikes(entity, memberDetailsDto))
-                .memberIdx(entity.getMember() != null ? entity.getMember().getIdx() : null)
-                .username(entity.getMember() != null ? entity.getMember().getName() : "알 수 없음")
-                .profileImg(profileImgUrl)
+                .memberIdx(entity.getMember().getIdx())
+                .username(entity.getMember().getName())
+                .profileImg(profileImg)
                 .build();
     }
 
@@ -69,10 +49,5 @@ public class VideoCommentResponseDto {
         return entity.getLikesList().stream()
                 .anyMatch(like -> like.getChannel().getIdx().equals(memberDetailsDto.getIdx()));
     }
-
-    public static VideoCommentResponseDto from(VideoComment entity, MemberService memberService) {
-        return from(entity, memberService, null);
-    }
-
 
 }

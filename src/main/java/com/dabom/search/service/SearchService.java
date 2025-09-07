@@ -23,6 +23,9 @@ public class SearchService {
     private final MemberService memberService;
     private final S3UrlBuilder s3UrlBuilder;
 
+    private static final String DEFAULT_PROFILE_IMAGE = "/Image/Dabompng.png";
+    private static final String DEFAULT_THUMBNAIL_IMAGE = "/Image/Dabompng.png";
+
     public SliceBaseResponse<SearchResponseDto> getVideos(String keyword, String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Video> videoSlice;
@@ -36,9 +39,43 @@ public class SearchService {
         }
 
         List<SearchResponseDto> result = videoSlice.stream()
-                .map(video -> SearchResponseDto.from(video, memberService, s3UrlBuilder))
+                .map(video -> {
+                    String profileImg = getProfileImgSafely(video);
+                    String thumbnail = getThumbnailSafely(video);
+                    return SearchResponseDto.from(video, profileImg, thumbnail);
+                })
                 .toList();
 
         return new SliceBaseResponse<>(result, videoSlice.hasNext());
+    }
+
+    private String getProfileImgSafely(Video video) {
+        try {
+            if (video.getChannel() != null) {
+                String profileImg = memberService.getProfileImg(video.getChannel().getIdx());
+                if (profileImg != null && !profileImg.trim().isEmpty()) {
+                    return profileImg;
+                }
+            }
+        } catch (Exception e) {
+            log.warn("프로필 이미지 조회 실패");
+        }
+        return DEFAULT_PROFILE_IMAGE;
+    }
+
+    private String getThumbnailSafely(Video video) {
+        try {
+            if (video.getThumbnailImage() != null &&
+                video.getThumbnailImage().getSavedPath() != null) {
+
+                String savedPath = video.getThumbnailImage().getSavedPath();
+                if (!savedPath.trim().isEmpty()) {
+                    return s3UrlBuilder.buildPublicUrl(savedPath);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("썸네일 이미지 조회 실패");
+        }
+        return DEFAULT_THUMBNAIL_IMAGE;
     }
 }
