@@ -32,6 +32,9 @@ import static com.dabom.member.contants.JWTConstants.*;
 
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
+    private final String RECREATE_TOKEN_MESSAGE = "새로운 토큰이 발급되었습니다.";
+    private final String REMOVE_TOKEN_MESSAGE = "다시 로그인해주세요!";
+
     private final ObjectMapper objectMapper;
 
     @Override
@@ -46,20 +49,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private boolean exceptionHandler(Token jwt, HttpServletResponse response, String uri) throws IOException {
         try {
-            haveTokenLogic(jwt.aT());
+            haveTokenLogic(jwt);
             return false;
-        } catch (ExpiredJwtException e) {
-            haveRefreshTokenLogic(jwt.rT(), response, uri);
+        } catch (ExpiredJwtException | IllegalArgumentException e) {
+            haveRefreshTokenLogic(jwt, response, uri);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             // 잘못된 토큰 403 Error 내려주기
-            return true;
+            return false;
         } catch (UnsupportedJwtException e) {
             // 지원되지 않는 토큰 403 Error 내려주기
-            return true;
-        } catch (IllegalArgumentException e) {
-            // 빈 토큰 403 Error 내려주기
-            return true;
+            return false;
         }
     }
 
@@ -79,11 +79,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         return Token.toDto(aT, rT);
     }
 
-    private void haveTokenLogic(String jwt) {
-        if(jwt != null) {
-            Claims claims = JwtUtils.getClaims(jwt);
+    private void haveTokenLogic(Token jwt) {
+        if(jwt.aT() != null) {
+            Claims claims = JwtUtils.getClaims(jwt.aT());
             haveDabomTokenLogic(claims);
         }
+        throw new IllegalArgumentException();
     }
 
     private void haveDabomTokenLogic(Claims claims) {
@@ -107,12 +108,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         return MemberDetailsDto.createFromToken(idx, name, role);
     }
 
-    private void haveRefreshTokenLogic(String jwt, HttpServletResponse response, String uri) throws IOException {
-        if(jwt != null) {
-            Claims claims = JwtUtils.getClaims(jwt);
-            Token token = reCreateToken(claims);
+    private void haveRefreshTokenLogic(Token jwt, HttpServletResponse response, String uri) throws IOException {
+        try {
+            if(jwt.rT() != null) {
+                Claims claims = JwtUtils.getClaims(jwt.rT());
+                Token token = reCreateToken(claims);
 
-            redirectToken(response, token, uri);
+                redirectToken(response, token, uri);
+            }
+        } catch (ExpiredJwtException e) {
+            removeToken(response, uri);
         }
     }
 
@@ -128,31 +133,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private void redirectToken(HttpServletResponse response, Token token, String uri) throws IOException {
-        createCookie(ACCESS_TOKEN, token.aT(), response);
-        createCookie(REFRESH_TOKEN, token.rT(), response);
+        createCookie(ACCESS_TOKEN, token.aT(), response, ACCESS_TOKEN_EXP);
+        createCookie(REFRESH_TOKEN, token.rT(), response, REFRESH_TOKEN_EXP);
 
-        String jsonResponse = createResponse(response, uri);
+        String jsonResponse = createResponse(response, uri, RECREATE_TOKEN_MESSAGE);
 
         response.getWriter().write(jsonResponse);
     }
 
-    private String createResponse(HttpServletResponse response, String uri) throws JsonProcessingException {
+    private void removeToken(HttpServletResponse response, String uri) throws IOException {
+        createCookie(ACCESS_TOKEN, "", response, 0);
+        createCookie(REFRESH_TOKEN, "", response, 0);
+
+        String jsonResponse = createResponse(response, uri, REMOVE_TOKEN_MESSAGE);
+
+        response.getWriter().write(jsonResponse);
+    }
+
+    private String createResponse(HttpServletResponse response, String uri, String message) throws JsonProcessingException {
         response.setStatus(HttpStatus.FOUND.value());
         response.setHeader("Location", uri);
         response.setContentType("application/json");
-        BaseResponse<String> res = BaseResponse.of("새로운 토큰이 발급되었습니다.", HttpStatus.OK);
+        BaseResponse<String> res = BaseResponse.of(message, HttpStatus.OK);
         return objectMapper.writeValueAsString(res);
     }
 
-    private void createCookie(String tokenName, String token, HttpServletResponse response) {
+    private void createCookie(String tokenName, String token, HttpServletResponse response, Integer age) {
         Cookie newRefreshTokenCookie = new Cookie(tokenName, token);
         newRefreshTokenCookie.setPath("/");
         newRefreshTokenCookie.setHttpOnly(true);
-        if(tokenName.equals(ACCESS_TOKEN)) {
-            newRefreshTokenCookie.setMaxAge(ACCESS_TOKEN_EXP);
-        } else {
-            newRefreshTokenCookie.setMaxAge(REFRESH_TOKEN_EXP);
-        }
+        newRefreshTokenCookie.setMaxAge(age);
         // 필요에 따라 secure, maxAge 설정 추가
         response.addCookie(newRefreshTokenCookie);
     }

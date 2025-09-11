@@ -22,14 +22,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         MemberDetailsDto dto = (MemberDetailsDto) authentication.getPrincipal();
 
-        String jwt = JwtUtils.generateLoginToken(dto.getIdx(), dto.getEmail(), dto.getMemberRole());
+        String aT = JwtUtils.generateLoginToken(dto.getIdx(), dto.getEmail(), dto.getMemberRole());
+        String rT = JwtUtils.generateRefreshToken(dto.getIdx(), dto.getEmail(), dto.getMemberRole());
 
-        if (jwt != null) {
-            Cookie cookie = new Cookie(ACCESS_TOKEN, jwt);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
+        if (aT != null && rT != null) {
+            Cookie access = new Cookie(ACCESS_TOKEN, aT);
+            Cookie refresh = new Cookie(ACCESS_TOKEN, rT);
 
-            response.addCookie(cookie);
+            setCookieSetting(access);
+            setCookieSetting(refresh);
+            response.addCookie(access);
+            response.addCookie(refresh);
+
             response.setContentType("text/html");
             response.getWriter().write(
                     "<script>" +
@@ -38,5 +42,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                             "</script>"
             );
         }
+    }
+
+    private void setCookieSetting(Cookie cookie) {
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
     }
 }
