@@ -1,7 +1,7 @@
 name: project cicd
 on:
   push:
-    branches: [main]
+    branches: [release/latest]
 jobs:
   build:
     name: build
