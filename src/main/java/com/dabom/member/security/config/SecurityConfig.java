@@ -6,6 +6,7 @@ import com.dabom.member.security.handler.CustomOAuth2AuthenticationFailureHandle
 import com.dabom.member.security.handler.OAuth2AuthenticationSuccessHandler;
 import com.dabom.member.security.repository.StatelessAuthorizationRequestRepository;
 import com.dabom.member.security.service.Oauth2UserService;
+import com.dabom.member.service.CookieService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,7 @@ public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomOAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final ObjectMapper objectMapper;
+    private final CookieService cookieService;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -70,7 +72,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        JwtAuthFilter jwtAuthFilter = new JwtAuthFilter(objectMapper);
+        JwtAuthFilter jwtAuthFilter = new JwtAuthFilter(objectMapper, cookieService);
         http.oauth2Login(
                 config -> {
                     config.userInfoEndpoint(

@@ -4,6 +4,7 @@ import com.dabom.common.BaseResponse;
 import com.dabom.member.model.entity.MemberRole;
 import com.dabom.member.security.dto.MemberDetailsDto;
 import com.dabom.member.security.dto.Token;
+import com.dabom.member.service.CookieService;
 import com.dabom.member.utils.JwtUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,6 +38,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final String REMOVE_TOKEN_MESSAGE = "다시 로그인해주세요!";
 
     private final ObjectMapper objectMapper;
+    private final CookieService cookieService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -159,11 +162,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private void createCookie(String tokenName, String token, HttpServletResponse response, Integer age) {
-        Cookie newRefreshTokenCookie = new Cookie(tokenName, token);
-        newRefreshTokenCookie.setPath("/");
-        newRefreshTokenCookie.setHttpOnly(true);
-        newRefreshTokenCookie.setMaxAge(age);
-        // 필요에 따라 secure, maxAge 설정 추가
-        response.addCookie(newRefreshTokenCookie);
+        ResponseCookie jwtCookie = cookieService.createJwtCookie(tokenName, token, (long) age);
+        cookieService.addCookieToResponse(jwtCookie, response);
     }
 }

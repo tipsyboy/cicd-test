@@ -96,3 +96,9 @@ file:
 
 websocket:
   allowed-origin: ${SERVER}
+
+app:
+  cookie:
+    isSecure: ${COOKIE_SECURE:false}
+    same-site: ${COOKIE_SAME_SITE:Lax}
+    domain: ${COOKIE_DOMAIN:localhost}

@@ -1,12 +1,10 @@
 package com.dabom.member.controller;
 
-import com.dabom.image.model.dto.ImageUploadResponseDto;
-import com.dabom.image.repository.ImageRepository;
-import com.dabom.image.service.ImageService;
 import com.dabom.common.BaseResponse;
 import com.dabom.member.model.dto.request.*;
 import com.dabom.member.model.dto.response.*;
 import com.dabom.member.security.dto.MemberDetailsDto;
+import com.dabom.member.service.CookieService;
 import com.dabom.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,9 +22,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 import static com.dabom.member.contants.JWTConstants.*;
 import static com.dabom.member.contants.MemberSwaggerConstants.*;
@@ -37,8 +32,7 @@ import static com.dabom.member.contants.MemberSwaggerConstants.*;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final ImageService imageService;
-    private final ImageRepository imageRepository;
+    private final CookieService cookieService;
 
     @Operation(
             summary = "멤버 회원 가입",
@@ -121,25 +115,12 @@ public class MemberController {
     public ResponseEntity<BaseResponse<String>> loginMember(@Valid @RequestBody MemberLoginRequestDto dto) {
         MemberLoginResponseDto responseDto = memberService.loginMember(dto);
         if (responseDto.jwt() != null) {
-            ResponseCookie accessTokenCookie = ResponseCookie.from(ACCESS_TOKEN, responseDto.jwt())
-                    .httpOnly(true)
-                    .secure(false)
-//                    .sameSite("None")
-                    .path("/")
-                    .maxAge(ACCESS_TOKEN_EXP)
-                    .build();
-
-            ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN, responseDto.refreshJwt())
-                    .httpOnly(true)
-                    .secure(false)
-//                    .sameSite("None")
-                    .path("/")
-                    .maxAge(REFRESH_TOKEN_EXP)
-                    .build();
+            ResponseCookie aTCookie = cookieService.createJwtCookie(ACCESS_TOKEN, responseDto.jwt(), (long) ACCESS_TOKEN_EXP);
+            ResponseCookie rTCookie = cookieService.createJwtCookie(REFRESH_TOKEN, responseDto.jwt(), (long) REFRESH_TOKEN_EXP);
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                    .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, aTCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, rTCookie.toString())
                     .body(BaseResponse.of(responseDto.channelName(), HttpStatus.OK));
         }
         return ResponseEntity.status(400).body(BaseResponse.of("로그인 실패", HttpStatus.BAD_REQUEST));

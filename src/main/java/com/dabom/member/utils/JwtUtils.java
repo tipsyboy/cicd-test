@@ -20,7 +20,6 @@ public class JwtUtils {
     private static final Long REFRESH_EXP = 1000 * 60 * 60 * 12L; // 12시간
 
     public static String generateLoginToken(Integer idx, String name, MemberRole role) {
-
         Map<String, String> claims =  new HashMap<>();
         claims.put(TOKEN_IDX, ""+idx);
         claims.put(TOKEN_NAME, name);
