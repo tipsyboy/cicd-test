@@ -100,5 +100,5 @@ websocket:
 app:
   cookie:
     isSecure: ${COOKIE_SECURE:false}
-    same-site: ${COOKIE_SAME_SITE:Lax}
+    sameSite: ${COOKIE_SAME_SITE:Lax}
     domain: ${COOKIE_DOMAIN:localhost}

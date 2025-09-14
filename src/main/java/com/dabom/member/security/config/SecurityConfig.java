@@ -9,6 +9,7 @@ import com.dabom.member.security.service.Oauth2UserService;
 import com.dabom.member.service.CookieService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -41,6 +42,8 @@ public class SecurityConfig {
     };
     private static final String[] SWAGGER_LIST = {"/swagger-ui*/**", "/v3/api-docs/**", "/webjars/**"};
 
+    @Value("${websocket.allowed-origin}")
+    private String frontServer;
     private final AuthenticationConfiguration configuration;
     private final Oauth2UserService oauth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -52,10 +55,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:5174",
+        configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173"
         ));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setExposedHeaders(List.of("*"));
         configuration.setMaxAge(3600L);

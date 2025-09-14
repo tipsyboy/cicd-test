@@ -5,6 +5,7 @@ import com.dabom.image.exception.ImageExceptionType;
 import com.dabom.image.model.dto.ImageUploadResponseDto;
 import com.dabom.image.model.entity.Image;
 import com.dabom.image.repository.ImageRepository;
+import com.dabom.s3.S3UrlBuilder;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ import static com.dabom.image.util.ImageUtils.validateImage;
 public class S3ImageService implements ImageService {
 
     private final ImageRepository imageRepository;
-
+    private final S3UrlBuilder s3UrlBuilder;
     private final S3Presigner s3Presigner;
 
     @Value("${spring.cloud.aws.s3.bucket}")
@@ -138,7 +139,8 @@ public class S3ImageService implements ImageService {
                     .getObjectRequest(getObjectRequest)
             );
             URL presignedUrl = presignedRequest.url();
-            return presignedUrl.toString();
+//            return presignedUrl.toString();
+            return s3UrlBuilder.buildPublicUrl(s3Key);
         } else {
             throw new ImageException(ImageExceptionType.IMAGE_NOT_FOUND);
         }

@@ -86,8 +86,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(jwt.aT() != null) {
             Claims claims = JwtUtils.getClaims(jwt.aT());
             haveDabomTokenLogic(claims);
+            return;
         }
-        throw new IllegalArgumentException();
+        if(jwt.rT() != null) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private void haveDabomTokenLogic(Claims claims) {
