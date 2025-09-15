@@ -1,4 +1,4 @@
-<h1 align="center">Dabom(FlowBox)  </h1>
+**<h1 align="center">Dabom(FlowBox)  </h1>
 <div align="center"> 
  <img src="https://github.com/user-attachments/assets/99a3a5a1-a808-4a5b-9a72-877bafb953b4" width="150"/>
 </div>
@@ -14,11 +14,11 @@
 <table align="center">
   <tbody>
     <tr>
-      <td align="center"><a href="https://github.com/raccoon-coding"><img src="https://github.com/user-attachments/assets/8ef94525-6a70-491d-9a34-3691697dc0cc" width="100px;" alt=""/><br /><sub><b> 팀원: 최민성</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/tipsyboy"><img src="https://github.com/user-attachments/assets/c61a596d-9437-41cf-b9c5-7b9af1bdfd12" width="100px;" alt=""/><br /><sub><b> 팀원 : 양형모</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/flionme"><img src="https://github.com/user-attachments/assets/f03ffdd5-6948-452b-8c72-c7a8a3136a30" width="100px;" alt=""/><br /><sub><b> 팀원 : 김성인</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/KimHanryang"><img src="https://github.com/user-attachments/assets/f03ffdd5-6948-452b-8c72-c7a8a3136a30" width="100px;" alt=""/><br /><sub><b> 팀원 : 김륜환</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/kbw07"><img src="https://github.com/user-attachments/assets/f03ffdd5-6948-452b-8c72-c7a8a3136a30" width="100px;" alt=""/><br /><sub><b> 팀원 : 강병욱 </b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/raccoon-coding"><img src="https://github.com/user-attachments/assets/cd54a924-3b11-4ba6-b682-711026407caa" width="100px;" alt=""/><br /><sub><b> 팀원: 최민성</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/tipsyboy"><img src="https://github.com/user-attachments/assets/307b28e9-f277-4bbd-9ece-77ca04cce34f" width="100px;" alt=""/><br /><sub><b> 팀원: 양형모</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/flionme"><img src="https://github.com/user-attachments/assets/194a7eaa-752e-461d-94e9-3057659bdafe" width="100px;" alt=""/><br /><sub><b> 팀원 : 김성인</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/Hanryang-Kim"><img src="https://github.com/user-attachments/assets/df5ffff0-a06b-4579-a695-4338bd1d2b91" width="100px;" alt=""/><br /><sub><b> 팀원 : 김륜환</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/kbw07"><img src="https://github.com/user-attachments/assets/a1fdbad2-dd82-48c7-941f-422f6e73d58f" width="100px;" alt=""/><br /><sub><b> 팀원 : 강병욱 </b></sub></a><br /></td>
     </tr>
   </tbody>
 </table>
@@ -31,6 +31,23 @@
 
 비대면 소통이 일상화된 시대에, 단순한 영상 시청을 넘어 **실시간 공유와 소통이 가능한 스트리밍 서비스**를 개발하고자 합니다.
 영상 콘텐츠와 실시간 채팅, 동시 시청 기능을 결합하여 새로운 형태의 디지털 공동체 경험을 제공하는 것이 저희의 목표입니다.
+
+---
+## 💚 Front-end
+<a href="https://www.dabomvideo.kro.kr">프론트 주소</a>
+##  📜소프트웨어 아키텍처
+<a href="https://github.com/beyond-sw-camp/be17-3rd-FlowBox-DaBom/wiki/%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4-%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90">소프트웨어 아키텍쳐</a>
+
+## 🔧시스템 아키텍처
+<a href="https://github.com/beyond-sw-camp/be17-3rd-FlowBox-DaBom/wiki/%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90">시스템 아키텍쳐</a>
+
+## 📝 기능 명세서
+<a href="https://api.dabomvideo.kro.kr/swagger-ui/index.html"> 기능 명세서 - Swagger-ui </a>
+
+## 💡 성능 개선
+<a href="https://github.com/beyond-sw-camp/be17-3rd-FlowBox-DaBom/wiki/%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0"> 테스트 및 결과</a>
+
+---
 
 ## ✨ 주요 기능
 
@@ -72,7 +89,14 @@
 
 ### ✔️Front-end
 
-![Vue.js](https://img.shields.io/badge/vue.js-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D) ![Socket.js](https://img.shields.io/badge/Socket.js-black?style=for-the-badge&logo=socket.io&logoColor=white) ![pinia](https://img.shields.io/badge/Pinia-ffd859?style=for-the-badge&logoColor=black) ![NginX](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![Axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white) ![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Vue.js](https://img.shields.io/badge/vue.js-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
+![Socket.js](https://img.shields.io/badge/Socket.js-black?style=for-the-badge&logo=socket.io&logoColor=white)
+![pinia](https://img.shields.io/badge/Pinia-ffd859?style=for-the-badge&logoColor=black)
+![NginX](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![Axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
 
 ### ✔️Back-end
@@ -108,14 +132,4 @@
 4. ex
 5.
 ---
-##  📜소프트웨어 아키텍처
-<a href="https://github.com/beyond-sw-camp/be17-3rd-FlowBox-DaBom/wiki/%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4-%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90">소프트웨어 아키텍쳐</a>
 
-## 시스템 아키텍처
-<a href="https://github.com/beyond-sw-camp/be17-3rd-FlowBox-DaBom/wiki/%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90">시스템 아키텍쳐</a>
-
-## 📝 기능 명세서
-<a href=" "> 기능 명세서 - Swagger-ui </a>
-
-## 💡 성능 개선
-<a href=" "> 테스트 및 결과</a>
