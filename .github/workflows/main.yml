@@ -54,7 +54,40 @@ jobs:
           port: 224
           script: |
             echo "연결"
-            ip addr
-            echo "test" > /tmp/test.txt
-#            kubectl set image deployment/your-app your-app=${{ secrets.DOCKERHUB_USERNAME }}/back:latest
-#            kubectl rollout restart deployment/your-app
+            cat <<'EOF' | kubectl apply -f -
+            apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+              name: spring-deployment-blue
+            spec:
+              selector:
+                matchLabels:
+                  type: app
+                  ver: blue
+              replicas: 1
+              strategy:
+                type: RollingUpdate
+              template:
+                metadata:
+                  labels:
+                    type: app
+                    ver: blue
+                spec:
+                  containers:
+                    - name: container
+                      image: tipsyboy/back:latest
+                      livenessProbe:
+                        httpGet:
+                          path: /health
+                          port: 8080
+                        initialDelaySeconds: 20
+                        periodSeconds: 10
+                      readinessProbe:
+                        httpGet:
+                          path: /test
+                          port: 8080
+                        initialDelaySeconds: 20
+                        periodSeconds: 10
+                        successThreshold: 3
+                  terminationGracePeriodSeconds: 0
+            EOF
