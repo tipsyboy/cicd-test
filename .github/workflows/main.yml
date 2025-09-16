@@ -54,9 +54,6 @@ jobs:
           debug: true  # 디버그 로그 활성화
           script: |
             echo "연결 성공!"
-            whoami
-            pwd
-            echo "나는 kbw다" > /tmp/test.txt
-            ls -la /tmp/test.txt
+            ip addr
 #            kubectl set image deployment/your-app your-app=${{ secrets.DOCKERHUB_USERNAME }}/back:latest
 #            kubectl rollout restart deployment/your-app
