@@ -54,7 +54,7 @@ jobs:
           port: 224
           script: |
             echo "연결"
-            cat <<'EOF' | kubectl apply -f -
+            sudo cat <<'EOF' | kubectl apply -f -
             apiVersion: apps/v1
             kind: Deployment
             metadata:
