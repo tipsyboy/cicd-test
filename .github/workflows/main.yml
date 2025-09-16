@@ -55,5 +55,6 @@ jobs:
           script: |
             echo "연결"
             ip addr
+            echo "test" > /tmp/test.txt
 #            kubectl set image deployment/your-app your-app=${{ secrets.DOCKERHUB_USERNAME }}/back:latest
 #            kubectl rollout restart deployment/your-app
