@@ -36,7 +36,7 @@ public class BoardCommentController {
 
     @Operation(
             summary = "댓글 등록",
-            description = "게시글에 새로운 댓글을 등록하는 기능1",
+            description = "게시글에 새로운 댓글을 등록하는 기능",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "댓글 등록 요청 데이터",
                     required = true,
