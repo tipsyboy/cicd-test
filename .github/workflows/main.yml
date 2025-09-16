@@ -39,3 +39,19 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+
+  deploy:
+    name: Deploy to K8s
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: SSH to K8s master and deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.K8S_HOST }}
+          username: ${{ secrets.K8S_USER }}
+          password: qwer1234
+          script: |
+            echo "나는 kbw다" > /tmp/test
+#            kubectl set image deployment/your-app your-app=${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+#            kubectl rollout restart deployment/your-app
