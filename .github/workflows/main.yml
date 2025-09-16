@@ -59,6 +59,7 @@ jobs:
             kind: Deployment
             metadata:
               name: spring-deployment-blue
+              namespace: yhm
             spec:
               selector:
                 matchLabels:
