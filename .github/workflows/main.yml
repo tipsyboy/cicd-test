@@ -48,12 +48,12 @@ jobs:
       - name: SSH to K8s master and deploy
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.K8S_HOST }}
-          username: ${{ secrets.K8S_USER }}
-          password: ${{ secrets.K8S_PASSWORD }}
-          debug: true  # 디버그 로그 활성화
+          host: 175.197.41.119
+          username: test
+          password: qwer1234
+          port: 224
           script: |
-            echo "연결 성공!"
+            echo "연결"
             ip addr
 #            kubectl set image deployment/your-app your-app=${{ secrets.DOCKERHUB_USERNAME }}/back:latest
 #            kubectl rollout restart deployment/your-app
