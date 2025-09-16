@@ -52,6 +52,6 @@ jobs:
           username: ${{ secrets.K8S_USER }}
           password: qwer1234
           script: |
-            echo "나는 kbw다" > /tmp/test
+            echo "나는 kbw다" > /tmp/test.txt
 #            kubectl set image deployment/your-app your-app=${{ secrets.DOCKERHUB_USERNAME }}/back:latest
 #            kubectl rollout restart deployment/your-app
