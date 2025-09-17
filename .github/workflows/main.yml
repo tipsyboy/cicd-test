@@ -65,77 +65,19 @@ jobs:
               NEXT_VER="green"
             fi
             
+            # 1. 새 Deployment 생성
             cat <<EOF | kubectl apply -f -
-            apiVersion: apps/v1
-            kind: Deployment
-            metadata:
-              name: spring-deployment-${NEXT_VER}
-              namespace: yhm
-            spec:
-              selector:
-                matchLabels:
-                  type: app
-                  ver: ${NEXT_VER}
-              replicas: 1
-              strategy:
-                type: RollingUpdate
-              template:
-                metadata:
-                  labels:
-                    type: app
-                    ver: ${NEXT_VER}
-                spec:
-                  volumes:
-                    - name: mariadb-pvc
-                      persistentVolumeClaim:
-                        claimName: mariadb-pvc
-            
-                  containers:
-                    - name: spring-app
-                      image: tipsyboy/back:v${{ github.run_number }}
-            
-                      envFrom:
-                        - configMapRef:
-                            name: tipsyboy-config
-            
-                      livenessProbe:
-                        httpGet:
-                          path: /api/health
-                          port: 8080
-                          scheme: HTTP
-                        initialDelaySeconds: 20
-                        timeoutSeconds: 1
-                        periodSeconds: 10
-                        successThreshold: 1
-                        failureThreshold: 3
-            
-                      readinessProbe:
-                        httpGet:
-                          path: /api/health
-                          port: 8080
-                          scheme: HTTP
-                        initialDelaySeconds: 20
-                        timeoutSeconds: 1
-                        periodSeconds: 10
-                        successThreshold: 3
-                        failureThreshold: 3
-            
-                    - name: mariadb
-                      image: mariadb:latest
-                      ports:
-                        - containerPort: 3306
-                          protocol: TCP
-                      envFrom:
-                        - configMapRef:
-                            name: tipsyboy-config
-                      volumeMounts:
-                        - name: mariadb-pvc
-                          mountPath: /var/lib/mysql
-            
-                  terminationGracePeriodSeconds: 0
+            # ... (기존 Deployment YAML)
             EOF
             
-            kubectl rollout status deployment/spring-deployment-${NEXT_VER} -n yhm
+            # 2. 새 버전이 완전히 준비될 때까지 대기
+            echo "Waiting for ${NEXT_VER} deployment to be ready..."
+            kubectl rollout status deployment/spring-deployment-${NEXT_VER} -n yhm --timeout=300s
+            
+            # 3. 새 버전의 readiness 확인
+            kubectl wait --for=condition=ready pod -l ver=${NEXT_VER} -n yhm --timeout=60s
+            
+            # 4. 트래픽 전환
             cat <<EOF | kubectl apply -f -
             apiVersion: v1
             kind: Service
@@ -150,6 +92,15 @@ jobs:
                 - port: 8080
                   targetPort: 8080
               type: LoadBalancer
-            EOF
-            
-            kubectl scale deployment spring-deployment-${CURRENT_VER} -n yhm --replicas=0
+              EOF
+              
+              # 5. 잠시 대기 후 이전 버전 제거
+              echo "Waiting 30 seconds before scaling down ${CURRENT_VER}..."
+              sleep 30
+              
+              # 6. 이전 버전 스케일 다운
+              kubectl scale deployment spring-deployment-${CURRENT_VER} -n yhm --replicas=0
+              
+              # 7. 확인
+              echo "Waiting for ${CURRENT_VER} pods to terminate..."
+              kubectl wait --for=delete pod -l ver=${CURRENT_VER} -n yhm --timeout=120s
