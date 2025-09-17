@@ -8,6 +8,6 @@ public class HealthController {
 
     @GetMapping("/api/health")
     public String check() {
-        return "됨?";
+        return "되는거냐 이게??";
     }
 }
