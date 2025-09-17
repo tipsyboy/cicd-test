@@ -1,0 +1,37 @@
+  cat <<'EOF' | kubectl apply -f -
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: spring-deployment-blue
+  spec:
+    selector:
+      matchLabels:
+        type: app
+        ver: blue
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          type: app
+          ver: blue
+      spec:
+        containers:
+          - name: container
+            image: ddarahakit2025/spring_basic:v1
+            livenessProbe:		# 컨테이너가 살았는지 죽었는지 판단, 지정한 시간 안에 응답 없으면 파드 재실행
+              httpGet:
+                path: /health
+                port: 8080
+              initialDelaySeconds: 20
+              periodSeconds: 10
+            readinessProbe:		# 프로그램이 실행 완료 됐는지 판단, 통과 못하면 Service의 부하분산에서 제외
+              httpGet:
+                path: /test
+                port: 8080
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              successThreshold: 3
+        terminationGracePeriodSeconds: 0
+    EOF
