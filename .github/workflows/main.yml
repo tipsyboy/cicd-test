@@ -57,17 +57,25 @@ jobs:
             
             ip addr
             
+            if kubectl get svc tipsyboy-test-service -n yhm -o wide | grep -q "green"; then
+              CURRENT_VER="green"
+              NEXT_VER="blue"
+            else
+              CURRENT_VER="blue"
+              NEXT_VER="green"
+            fi
+            
             cat <<'EOF' | kubectl apply -f -
             apiVersion: apps/v1
             kind: Deployment
             metadata:
-              name: spring-deployment-blue
+              name: spring-deployment-${NEXT_VER}
               namespace: yhm
             spec:
               selector:
                 matchLabels:
                   type: app
-                  ver: blue
+                  ver: ${NEXT_VER}
               replicas: 1
               strategy:
                 type: RollingUpdate
@@ -75,7 +83,7 @@ jobs:
                 metadata:
                   labels:
                     type: app
-                    ver: blue
+                    ver: ${NEXT_VER}
                 spec:
                   volumes:
                     - name: mariadb-pvc
@@ -126,3 +134,22 @@ jobs:
             
                   terminationGracePeriodSeconds: 0
             EOF
+            
+            kubectl rollout status deployment/spring-deployment-${NEXT_VER} -n yhm
+            cat <<EOF | kubectl apply -f -
+            apiVersion: v1
+            kind: Service
+            metadata:
+              name: tipsyboy-test-service
+              namespace: yhm
+            spec:
+              selector:
+                type: app
+                ver: ${NEXT_VER}
+              ports:
+                - port: 8080
+                  targetPort: 8080
+              type: LoadBalancer
+            EOF
+            
+            kubectl scale deployment spring-deployment-${CURRENT_VER} -n yhm --replicas=0
