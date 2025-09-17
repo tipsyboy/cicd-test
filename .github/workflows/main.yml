@@ -88,7 +88,7 @@ jobs:
                   volumes:
                     - name: mariadb-pvc
                       persistentVolumeClaim:
-                        claimName: mariadb-pvc
+                        claimName: mariadb-pvc-${NEXT_VER}
             
                   containers:
                     - name: spring-app
