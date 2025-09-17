@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-deployment-blue
+  namespace: yhm
+spec:
+  selector:
+    matchLabels:
+      type: app
+      ver: blue
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        type: app
+        ver: blue
+    spec:
+      volumes:
+        - name: mariadb-pvc
+          persistentVolumeClaim:
+            claimName: yhm/mariadb-pvc
+
+      containers:
+        - name: spring-app
+          image: tipsyboy/back:v${{ github.run_number }}
+
+          envFrom:
+            - configMapRef:
+                name: tipsyboy-config
+
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+
+          readinessProbe:
+              httpGet:
+                path: /api/health
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 20
+              timeoutSeconds: 1
+              periodSeconds: 10
+              successThreshold: 3
+              failureThreshold: 3
+
+        - name: mariadb
+          image: mariadb:latest
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: tipsyboy-config
+          volumeMounts:
+            - name: mariadb-pvc
+              mountPath: /var/lib/mysql
+
+      terminationGracePeriodSeconds: 0
