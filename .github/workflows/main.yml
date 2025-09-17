@@ -78,7 +78,7 @@ jobs:
                   volumes:
                     - name: mariadb-pvc
                       persistentVolumeClaim:
-                        claimName: yhm/mariadb-pvc
+                        claimName: mariadb-pvc
             
                   containers:
                     - name: spring-app
